@@ -1,12 +1,3 @@
-export interface ChatMessage {
-    id: string;
-    sender: string;
-    content: string;
-    timestamp: Date;
-    sent: boolean;
-    isPlayerMessage?: boolean;
-}
-
 export interface Chat {
     id: string;
     name: string;
@@ -23,6 +14,15 @@ export interface Chat {
     canView: boolean;
     isEvidence?: boolean;
     platform?: string;
+}
+
+export interface ChatMessage {
+    id: string;
+    sender: string;
+    content: string;
+    timestamp: Date;
+    sent: boolean;
+    isPlayerMessage?: boolean;
 }
 
 export interface ChatFilter {

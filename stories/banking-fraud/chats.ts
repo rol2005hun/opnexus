@@ -1,7 +1,7 @@
 // Banking Fraud Investigation - Chat Messages
-import type { ChatConversation } from '@/types/content';
+import type { EvidenceConversation } from '@/types/content';
 
-export const chats: ChatConversation[] = [
+export const chats: EvidenceConversation[] = [
     {
         id: 'chat_bank_001',
         participants: ['David Chen', 'Michael Torres'],

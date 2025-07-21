@@ -1,5 +1,5 @@
 // Banking Fraud Investigation - Story Data
-import type { StoryContent, StorySetting, Suspect, DatabaseRecord, StoryApp, StoryEvent, Objective } from '@/types/content';
+import type { StoryContent, StorySetting, Suspect, DatabaseRecord, StoryApp, StoryEvent, Objective, EvidenceConversation } from '@/types/content';
 import { characters } from './characters';
 import { emails } from './emails';
 import { chats } from './chats';

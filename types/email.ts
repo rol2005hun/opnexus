@@ -1,4 +1,3 @@
-// Email App Interfaces and Types
 export interface EmailMessage {
   id: string
   from: string

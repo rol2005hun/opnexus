@@ -1,5 +1,7 @@
 // Nexus-Corp Leak Investigation - Chat Messages 
-import type { ChatMessage } from '@/types/content';export const chats: ChatMessage[] = [
+import type { EvidenceMessage } from '@/types/content';
+
+export const chats: EvidenceMessage[] = [
     {
         id: 'chat_001',
         sender: 'Aaron Cole',
