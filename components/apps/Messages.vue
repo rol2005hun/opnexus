@@ -1,6 +1,6 @@
 <template>
   <div class="app-messages">
-    <!-- Chat List -->
+    
     <div class="chat-list">
       <div class="chat-header">
         <h3>Messages</h3>
@@ -21,10 +21,9 @@
       </div>
     </div>
 
-    <!-- Message Area -->
     <div class="message-area">
       <div v-if="activeChatData" class="chat-view">
-        <!-- Chat Header -->
+        
         <div class="chat-header-bar">
           <div class="contact-info">
             <div class="contact-avatar">{{ activeChatData.avatar }}</div>
@@ -36,7 +35,6 @@
           </div>
         </div>
 
-        <!-- Messages -->
         <div class="messages" ref="messagesContainer">
           <div v-for="message in activeChatData.messages" :key="message.id" class="message"
             :class="{ sent: message.sent, received: !message.sent }">
@@ -47,7 +45,6 @@
           </div>
         </div>
 
-        <!-- Message Input -->
         <div class="message-input">
           <input v-model="newMessage" type="text" placeholder="Type a message..." @keyup.enter="sendMessage">
           <button @click="sendMessage" :disabled="!newMessage.trim()">📤</button>

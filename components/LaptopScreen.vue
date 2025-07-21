@@ -1,11 +1,11 @@
 <template>
     <div class="laptop-screen">
         <div class="laptop-frame">
-            <!-- Screen -->
+            
             <div class="screen">
-                <!-- Desktop -->
+                
                 <div class="desktop">
-                    <!-- Desktop Icons -->
+                    
                     <div class="desktop-icons">
                         <div v-for="app in laptopStore.apps" :key="app.id" class="desktop-icon"
                             @click="laptopStore.openApp(app.id)">
@@ -14,14 +14,12 @@
                         </div>
                     </div>
 
-                    <!-- Windows -->
                     <div class="windows-container">
                         <Window v-for="app in laptopStore.openApps" :key="app.id" :app="app"
                             @close="laptopStore.closeApp(app.id)" @minimize="laptopStore.minimizeApp(app.id)"
                             @maximize="laptopStore.maximizeApp(app.id)" @focus="laptopStore.bringToFront(app.id)" />
                     </div>
 
-                    <!-- Taskbar -->
                     <div class="taskbar">
                         <div class="taskbar-left">
                             <button class="start-button" @click="exitLaptop">
@@ -47,10 +45,6 @@
                         </div>
 
                         <div class="taskbar-right">
-                            <!-- Investigation Status - DISABLED FOR NOW (Premium feature) -->
-                            <!-- <div class="investigation-status" v-if="gameStore.currentStory">
-                <span class="status-text">{{ gameStore.investigationStatus }}</span>
-              </div> -->
 
                             <div class="system-time">
                                 {{ currentTime }}
@@ -61,7 +55,6 @@
             </div>
         </div>
 
-        <!-- ESC hint -->
         <div class="esc-hint">
             <kbd>ESC</kbd> to exit
         </div>

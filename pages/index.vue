@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div v-if="authStore.isAuthenticated" class="user-actions">
-                    <div class="agent-badge">{{ gameStore.agent.badge }}</div>
+                    <button @click="goToSettings" class="agent-badge">{{ gameStore.agent.badge }}</button>
                     <button class="logout-btn" @click="handleLogout" title="Logout">
                         🚪 Logout
                     </button>
@@ -110,7 +110,6 @@
             <LaptopScreen v-if="authStore.isAuthenticated && gameStore.isInLaptop" />
         </transition>
 
-        <!-- Briefing Modal -->
         <div v-if="showBriefingModal" class="briefing-modal" @click="closeBriefing">
             <div class="briefing-content" @click.stop>
                 <div class="briefing-header">
@@ -231,6 +230,10 @@ const handleLogout = async () => {
 
 const navigateToLogin = () => {
     navigateTo('/auth');
+};
+
+const goToSettings = () => {
+    navigateTo('/settings');
 };
 
 const startMission = () => {
@@ -364,6 +367,14 @@ const completedStories = computed(() => {
                 min-width: 90px;
                 line-height: 1;
                 text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background: rgba(0, 122, 204, 0.8);
+                    border-color: #0ea5e9;
+                    transform: translateY(-1px);
+                }
             }
         }
 
@@ -745,7 +756,6 @@ const completedStories = computed(() => {
     }
 }
 
-// Briefing Modal Styles
 .briefing-modal {
     position: fixed;
     top: 0;

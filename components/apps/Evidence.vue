@@ -9,7 +9,7 @@
     </div>
 
     <div class="evidence-content">
-      <!-- Progress Overview -->
+      
       <div class="progress-section">
         <h3>🔍 Investigation Status</h3>
         <div class="progress-items">
@@ -28,7 +28,6 @@
         </div>
       </div>
 
-      <!-- Evidence List -->
       <div class="evidence-section">
         <h3>📄 Collected Evidence</h3>
         <div class="evidence-list">
@@ -52,7 +51,6 @@
         </div>
       </div>
 
-      <!-- Clues Section -->
       <div class="clues-section" v-if="gameStore.currentProgress?.connectionsDiscovered?.length">
         <h3>💡 Key Discoveries</h3>
         <div class="clues-list">
@@ -63,7 +61,6 @@
         </div>
       </div>
 
-      <!-- Final Report -->
       <div class="report-section" v-if="gameStore.currentProgress?.suspectsIdentified?.length">
         <h3>📝 Investigation Report</h3>
         <div class="report-content">

@@ -1,6 +1,6 @@
 <template>
   <div class="app-email">
-    <!-- Email Sidebar -->
+    
     <div class="email-sidebar">
       <div class="folders">
         <div v-for="folder in folders" :key="folder.id" class="folder" :class="{ active: activeFolder === folder.id }"
@@ -12,7 +12,6 @@
       </div>
     </div>
 
-    <!-- Email List -->
     <div class="email-list">
       <div class="email-header">
         <h3>{{ getCurrentFolder()?.name || 'Inbox' }}</h3>
@@ -34,14 +33,12 @@
           <div v-if="email.hasAttachment" class="attachment-indicator">📎</div>
         </div>
 
-        <!-- Empty State -->
         <div v-if="currentEmails.length === 0" class="no-email-selected">
           <p>No emails in this folder</p>
         </div>
       </div>
     </div>
 
-    <!-- Email Content -->
     <div class="email-content">
       <div v-if="selectedEmailData" class="email-view">
         <div class="email-headers">
@@ -475,8 +472,6 @@ const formatDateTime = (date: Date) => {
         }
       }
     }
-
-
 
     .email-attachments {
       margin-top: 2rem;

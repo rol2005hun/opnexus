@@ -1,11 +1,29 @@
 <template>
     <div class="auth-page">
+        
+        <div class="background-floating-elements">
+            <div class="bg-element bg-dot-1"></div>
+            <div class="bg-element bg-dot-2"></div>
+            <div class="bg-element bg-dot-3"></div>
+            <div class="bg-element bg-dot-4"></div>
+            <div class="bg-element bg-dot-5"></div>
+            <div class="bg-element bg-line-1"></div>
+            <div class="bg-element bg-line-2"></div>
+            <div class="bg-element bg-hex-1"></div>
+            <div class="bg-element bg-hex-2"></div>
+        </div>
+        
         <div class="auth-container">
-            <!-- Animated Background Elements -->
+            
             <div class="floating-elements">
-                <div class="element element-1"></div>
-                <div class="element element-2"></div>
-                <div class="element element-3"></div>
+                <div class="element dot-1"></div>
+                <div class="element dot-2"></div>
+                <div class="element dot-3"></div>
+                <div class="element dot-4"></div>
+                <div class="element line-1"></div>
+                <div class="element line-2"></div>
+                <div class="element hex-1"></div>
+                <div class="element hex-2"></div>
             </div>
 
             <div class="auth-header">
@@ -37,7 +55,6 @@
                 </div>
             </div>
 
-            <!-- Login Form -->
             <Transition name="form-slide" mode="out-in">
                 <div v-if="mode === 'login'" key="login" class="auth-form">
                     <div class="form-header">
@@ -83,7 +100,6 @@
                     </form>
                 </div>
 
-                <!-- Register Form -->
                 <div v-else key="register" class="auth-form">
                     <div class="form-header">
                         <h2>📋 Agent Recruitment Portal</h2>
@@ -150,7 +166,6 @@
                 </div>
             </Transition>
 
-            <!-- Enhanced Messages -->
             <Transition name="message-slide">
                 <div v-if="message.text" :class="['message', message.type]">
                     <span class="message-icon">
@@ -162,7 +177,7 @@
 
             <div class="auth-footer">
                 <div class="security-notice">
-                    <span class="security-icon">�</span>
+                    <span class="security-icon">🔒</span>
                     <span class="security-text">Encrypted Federal System • Authorized Personnel Only</span>
                 </div>
                 <div class="classification-level">
@@ -299,6 +314,254 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
     justify-content: center;
     position: relative;
     overflow: hidden;
+    
+    // Professional FBI/investigation background - harmonizes with blue form
+    background: 
+        // Subtle blue accent spots to complement the form
+        radial-gradient(ellipse at 15% 25%, rgba(0, 122, 204, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 75%, rgba(0, 122, 204, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 10%, rgba(59, 130, 246, 0.04) 0%, transparent 70%),
+        radial-gradient(ellipse at 30% 90%, rgba(0, 122, 204, 0.05) 0%, transparent 60%),
+        // Professional dark gradient base
+        linear-gradient(145deg, 
+            #0a0e1a 0%,
+            #1a1f2e 25%, 
+            #141826 50%, 
+            #0f1419 75%, 
+            #0d1117 100%
+        );
+    
+    // Subtle surveillance/investigation grid pattern
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            linear-gradient(rgba(0, 122, 204, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 122, 204, 0.02) 1px, transparent 1px);
+        background-size: 80px 80px;
+        pointer-events: none;
+        opacity: 0.3;
+    }
+    
+    // Gentle blue glow effect around the center (where form is)
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 600px;
+        height: 600px;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(circle, rgba(0, 122, 204, 0.03) 0%, transparent 70%);
+        pointer-events: none;
+        animation: gentleGlow 8s ease-in-out infinite alternate;
+    }
+}
+
+// Background floating elements (outside the form)
+.background-floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+
+    .bg-element {
+        position: absolute;
+        opacity: 0.4;
+
+        &.bg-dot-1 {
+            top: 10%;
+            left: 15%;
+            width: 6px;
+            height: 6px;
+            background: rgba(0, 122, 204, 0.6);
+            border-radius: 50%;
+            animation: bgFloatDot1 16s ease-in-out infinite;
+        }
+
+        &.bg-dot-2 {
+            top: 20%;
+            right: 20%;
+            width: 4px;
+            height: 4px;
+            background: rgba(59, 130, 246, 0.7);
+            border-radius: 50%;
+            animation: bgFloatDot2 14s ease-in-out infinite reverse;
+        }
+
+        &.bg-dot-3 {
+            bottom: 25%;
+            left: 25%;
+            width: 5px;
+            height: 5px;
+            background: rgba(0, 122, 204, 0.5);
+            border-radius: 50%;
+            animation: bgFloatDot3 18s ease-in-out infinite;
+        }
+
+        &.bg-dot-4 {
+            bottom: 15%;
+            right: 30%;
+            width: 7px;
+            height: 7px;
+            background: rgba(59, 130, 246, 0.4);
+            border-radius: 50%;
+            animation: bgFloatDot4 12s ease-in-out infinite reverse;
+        }
+
+        &.bg-dot-5 {
+            top: 50%;
+            left: 5%;
+            width: 3px;
+            height: 3px;
+            background: rgba(0, 122, 204, 0.8);
+            border-radius: 50%;
+            animation: bgFloatDot5 20s ease-in-out infinite;
+        }
+
+        &.bg-line-1 {
+            top: 30%;
+            left: 5%;
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 122, 204, 0.3), transparent);
+            animation: bgFloatLine1 22s ease-in-out infinite;
+        }
+
+        &.bg-line-2 {
+            bottom: 40%;
+            right: 8%;
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.25), transparent);
+            animation: bgFloatLine2 19s ease-in-out infinite reverse;
+        }
+
+        &.bg-hex-1 {
+            top: 60%;
+            right: 10%;
+            width: 10px;
+            height: 10px;
+            background: transparent;
+            border: 1px solid rgba(0, 122, 204, 0.3);
+            transform: rotate(45deg);
+            animation: bgFloatHex1 25s ease-in-out infinite;
+        }
+
+        &.bg-hex-2 {
+            top: 8%;
+            left: 70%;
+            width: 8px;
+            height: 8px;
+            background: transparent;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            transform: rotate(45deg);
+            animation: bgFloatHex2 21s ease-in-out infinite reverse;
+        }
+    }
+}
+
+// Floating elements for investigation theme (inside form)
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: -1;
+
+    .element {
+        position: absolute;
+        opacity: 0.6;
+
+        &.dot-1 {
+            top: 15%;
+            left: 10%;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 122, 204, 0.7);
+            border-radius: 50%;
+            animation: floatDot1 12s ease-in-out infinite;
+        }
+
+        &.dot-2 {
+            top: 25%;
+            right: 15%;
+            width: 6px;
+            height: 6px;
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            animation: floatDot2 15s ease-in-out infinite reverse;
+        }
+
+        &.dot-3 {
+            bottom: 20%;
+            left: 20%;
+            width: 3px;
+            height: 3px;
+            background: rgba(0, 122, 204, 0.8);
+            border-radius: 50%;
+            animation: floatDot3 18s ease-in-out infinite;
+        }
+
+        &.dot-4 {
+            bottom: 30%;
+            right: 12%;
+            width: 5px;
+            height: 5px;
+            background: rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            animation: floatDot4 14s ease-in-out infinite reverse;
+        }
+
+        &.line-1 {
+            top: 40%;
+            left: 8%;
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 122, 204, 0.4), transparent);
+            animation: floatLine1 20s ease-in-out infinite;
+        }
+
+        &.line-2 {
+            top: 60%;
+            right: 10%;
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+            animation: floatLine2 16s ease-in-out infinite reverse;
+        }
+
+        &.hex-1 {
+            top: 70%;
+            left: 85%;
+            width: 8px;
+            height: 8px;
+            background: transparent;
+            border: 1px solid rgba(0, 122, 204, 0.4);
+            transform: rotate(45deg);
+            animation: floatHex1 22s ease-in-out infinite;
+        }
+
+        &.hex-2 {
+            top: 12%;
+            left: 75%;
+            width: 6px;
+            height: 6px;
+            background: transparent;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transform: rotate(45deg);
+            animation: floatHex2 19s ease-in-out infinite reverse;
+        }
+    }
 }
 
 // Enhanced background
@@ -660,11 +923,6 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
                 box-shadow: 
                     0 0 0 3px rgba(59, 130, 246, 0.1),
                     0 0 20px rgba(59, 130, 246, 0.2);
-
-                + .input-border {
-                    opacity: 1;
-                    transform: scaleX(1);
-                }
             }
 
             &::placeholder {
@@ -879,8 +1137,9 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
         margin: 0;
         padding: 1.5rem;
         max-width: none;
+        height: 100vh;
         max-height: 100vh;
-        min-height: 100vh;
+        min-height: fit-content;
         border-radius: 0;
         border: none;
         background: rgba(17, 25, 40, 0.95);
@@ -964,11 +1223,9 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
 
 @media (max-height: 700px) {
     .auth-container {
-        max-height: 100vh;
         margin: 0;
         border-radius: 0;
         border: none;
-        min-height: 100vh;
         justify-content: center;
         overflow-y: auto;
     }
@@ -1039,5 +1296,129 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
     .form-group {
         margin-bottom: 0.8rem;
     }
+}
+
+// Professional investigation background animation
+@keyframes gentleGlow {
+    0% { 
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% { 
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+// Floating elements animations
+@keyframes floatDot1 {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(20px, -15px); }
+    50% { transform: translate(-10px, -25px); }
+    75% { transform: translate(15px, 10px); }
+}
+
+@keyframes floatDot2 {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(-25px, 20px); }
+    66% { transform: translate(30px, -10px); }
+}
+
+@keyframes floatDot3 {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(15px, -20px); }
+    40% { transform: translate(-20px, -15px); }
+    60% { transform: translate(25px, 15px); }
+    80% { transform: translate(-15px, 25px); }
+}
+
+@keyframes floatDot4 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-30px, -20px); }
+}
+
+@keyframes floatLine1 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.4; }
+    25% { transform: translate(10px, -15px) rotate(5deg); opacity: 0.7; }
+    50% { transform: translate(-15px, -10px) rotate(-3deg); opacity: 0.5; }
+    75% { transform: translate(20px, 5px) rotate(8deg); opacity: 0.6; }
+}
+
+@keyframes floatLine2 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+    30% { transform: translate(-20px, 10px) rotate(-5deg); opacity: 0.6; }
+    70% { transform: translate(15px, -12px) rotate(4deg); opacity: 0.4; }
+}
+
+@keyframes floatHex1 {
+    0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.4; }
+    25% { transform: rotate(55deg) translate(-10px, 15px); opacity: 0.7; }
+    50% { transform: rotate(35deg) translate(20px, -10px); opacity: 0.5; }
+    75% { transform: rotate(60deg) translate(-15px, -20px); opacity: 0.6; }
+}
+
+@keyframes floatHex2 {
+    0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.3; }
+    40% { transform: rotate(30deg) translate(25px, 20px); opacity: 0.6; }
+    80% { transform: rotate(70deg) translate(-18px, 12px); opacity: 0.4; }
+}
+
+// Background floating elements animations
+@keyframes bgFloatDot1 {
+    0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+    25% { transform: translate(30px, -25px); opacity: 0.7; }
+    50% { transform: translate(-20px, -35px); opacity: 0.5; }
+    75% { transform: translate(25px, 15px); opacity: 0.6; }
+}
+
+@keyframes bgFloatDot2 {
+    0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+    33% { transform: translate(-35px, 30px); opacity: 0.8; }
+    66% { transform: translate(40px, -15px); opacity: 0.3; }
+}
+
+@keyframes bgFloatDot3 {
+    0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+    20% { transform: translate(25px, -30px); opacity: 0.6; }
+    40% { transform: translate(-30px, -25px); opacity: 0.8; }
+    60% { transform: translate(35px, 20px); opacity: 0.5; }
+    80% { transform: translate(-25px, 35px); opacity: 0.7; }
+}
+
+@keyframes bgFloatDot4 {
+    0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+    50% { transform: translate(-40px, -30px); opacity: 0.6; }
+}
+
+@keyframes bgFloatDot5 {
+    0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+    30% { transform: translate(20px, 25px); opacity: 0.9; }
+    70% { transform: translate(-15px, -20px); opacity: 0.5; }
+}
+
+@keyframes bgFloatLine1 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+    25% { transform: translate(15px, -20px) rotate(8deg); opacity: 0.6; }
+    50% { transform: translate(-25px, -15px) rotate(-5deg); opacity: 0.4; }
+    75% { transform: translate(30px, 10px) rotate(12deg); opacity: 0.7; }
+}
+
+@keyframes bgFloatLine2 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.25; }
+    30% { transform: translate(-30px, 15px) rotate(-8deg); opacity: 0.5; }
+    70% { transform: translate(25px, -18px) rotate(6deg); opacity: 0.35; }
+}
+
+@keyframes bgFloatHex1 {
+    0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.3; }
+    25% { transform: rotate(60deg) translate(-15px, 25px); opacity: 0.6; }
+    50% { transform: rotate(30deg) translate(30px, -20px); opacity: 0.4; }
+    75% { transform: rotate(75deg) translate(-25px, -30px); opacity: 0.7; }
+}
+
+@keyframes bgFloatHex2 {
+    0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.25; }
+    40% { transform: rotate(20deg) translate(35px, 30px); opacity: 0.5; }
+    80% { transform: rotate(80deg) translate(-28px, 18px); opacity: 0.35; }
 }
 </style>
