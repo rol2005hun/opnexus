@@ -9,7 +9,7 @@
 
       <div class="chats">
         <div v-for="chat in chats" :key="chat.id" class="chat-item" :class="{ active: activeChat === chat.id }"
-          @click="activeChat = chat.id">
+          @click="viewChat(chat.id)">
           <div class="chat-avatar">{{ chat.avatar }}</div>
           <div class="chat-info">
             <div class="chat-name">{{ chat.name }}</div>
@@ -29,7 +29,11 @@
             <div class="contact-avatar">{{ activeChatData.avatar }}</div>
             <div class="contact-details">
               <div class="contact-name">{{ activeChatData.name }}</div>
-              <div class="contact-status" :class="getStatusClass(activeChatData.status)">{{ activeChatData.status }}
+              <div class="contact-participants" v-if="activeChatData.isGroupChat">
+                {{ activeChatData.participants.join(', ') }}
+              </div>
+              <div class="contact-status" :class="getStatusClass(activeChatData.status)">
+                {{ activeChatData.platform }} • {{ activeChatData.status }}
               </div>
             </div>
           </div>
@@ -38,6 +42,9 @@
         <div class="messages" ref="messagesContainer">
           <div v-for="message in activeChatData.messages" :key="message.id" class="message"
             :class="{ sent: message.sent, received: !message.sent }">
+            <div v-if="activeChatData.isGroupChat && !message.sent" class="message-sender">
+              {{ message.sender }}
+            </div>
             <div class="message-content">
               {{ message.content }}
             </div>
@@ -59,7 +66,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, nextTick } from 'vue';
 import { useGameStore } from '@/stores/game';
+import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
 
 const gameStore = useGameStore();
 
@@ -68,151 +77,72 @@ interface Message {
   content: string
   timestamp: Date
   sent: boolean
+  sender: string
 }
 
 interface Chat {
   id: string
   name: string
+  participants: string[]
+  platform: string
   avatar: string
   status: string
   lastMessage: string
   lastMessageTime: Date
   unreadCount: number
   messages: Message[]
+  isGroupChat: boolean
 }
 
-const activeChat = ref<string | null>('chat1');
+const activeChat = ref<string | null>(null);
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement>();
 
-const chats: Chat[] = [
-  {
-    id: 'chat1',
-    name: 'John Smith',
-    avatar: '👤',
-    status: 'Online',
-    lastMessage: 'Thanks for the files',
-    lastMessageTime: new Date('2025-01-15T16:50:00'),
-    unreadCount: 2,
-    messages: [
-      {
-        id: 'm1',
-        content: 'Hi Peter, we agreed you\'d send me something today',
-        timestamp: new Date('2025-01-15T14:20:00'),
-        sent: false
-      },
-      {
-        id: 'm2',
-        content: 'Yes, I\'ll send the documents by email',
-        timestamp: new Date('2025-01-15T14:25:00'),
-        sent: true
-      },
-      {
-        id: 'm3',
-        content: 'Are you sure it\'s safe?',
-        timestamp: new Date('2025-01-15T14:26:00'),
-        sent: false
-      },
-      {
-        id: 'm4',
-        content: 'Yes, no one will find out. I\'ll send it to the usual email address',
-        timestamp: new Date('2025-01-15T14:30:00'),
-        sent: true
-      },
-      {
-        id: 'm5',
-        content: 'Alright, and the money?',
-        timestamp: new Date('2025-01-15T16:45:00'),
-        sent: false
-      },
-      {
-        id: 'm6',
-        content: 'Thanks for the files',
-        timestamp: new Date('2025-01-15T16:50:00'),
-        sent: false
-      }
-    ]
-  },
-  {
-    id: 'chat2',
-    name: 'Anna Williams',
-    avatar: '👩',
-    status: 'Away',
-    lastMessage: 'Shall we meet tomorrow?',
-    lastMessageTime: new Date('2025-01-14T18:30:00'),
-    unreadCount: 0,
-    messages: [
-      {
-        id: 'm7',
-        content: 'Hi Peter, is everything okay?',
-        timestamp: new Date('2025-01-14T17:00:00'),
-        sent: false
-      },
-      {
-        id: 'm8',
-        content: 'Yes, just a lot of work lately',
-        timestamp: new Date('2025-01-14T17:15:00'),
-        sent: true
-      },
-      {
-        id: 'm9',
-        content: 'Shall we meet tomorrow?',
-        timestamp: new Date('2025-01-14T18:30:00'),
-        sent: false
-      }
-    ]
-  },
-  {
-    id: 'chat3',
-    name: 'IT Support',
-    avatar: '🔧',
-    status: 'Online',
-    lastMessage: 'Password changed',
-    lastMessageTime: new Date('2025-01-13T11:15:00'),
-    unreadCount: 0,
-    messages: [
-      {
-        id: 'm10',
-        content: 'I have an issue with my access',
-        timestamp: new Date('2025-01-13T10:30:00'),
-        sent: true
-      },
-      {
-        id: 'm11',
-        content: 'What kind of issue? Can\'t log in?',
-        timestamp: new Date('2025-01-13T10:45:00'),
-        sent: false
-      },
-      {
-        id: 'm12',
-        content: 'Yes, I forgot my password',
-        timestamp: new Date('2025-01-13T11:00:00'),
-        sent: true
-      },
-      {
-        id: 'm13',
-        content: 'Password changed',
-        timestamp: new Date('2025-01-13T11:15:00'),
-        sent: false
-      }
-    ]
+// Convert story chat conversations to Chat interface format
+const chats: Chat[] = nexusCorpLeakStory.chatMessages.map(conversation => {
+  const messages: Message[] = conversation.messages.map(msg => ({
+    id: msg.id,
+    content: msg.content,
+    timestamp: new Date(msg.timestamp),
+    sent: msg.sender === 'Aaron Cole', // Aaron Cole's messages are "sent" (our perspective)
+    sender: msg.sender
+  }));
+
+  const lastMessage = messages[messages.length - 1];
+  const isGroupChat = conversation.participants.length > 2;
+  
+  // Generate chat name based on participants
+  let chatName = '';
+  if (isGroupChat) {
+    chatName = conversation.title;
+  } else {
+    // For 1-on-1 chats, show the other person's name
+    chatName = conversation.participants.find(p => p !== 'Aaron Cole') || conversation.participants[0] || 'Unknown';
   }
-]
+  
+  return {
+    id: conversation.id,
+    name: chatName,
+    participants: conversation.participants,
+    platform: conversation.platform,
+    avatar: isGroupChat ? '👥' : 
+            conversation.participants.includes('Unknown Contact') ? '🕵️' : 
+            conversation.participants.includes('Irene Walker') ? '👩‍💼' :
+            conversation.participants.includes('Sophie Tanaka') ? '👩‍' :
+            conversation.participants.includes('Chloe Miller') ? '👩‍💻' : '👤',
+    status: conversation.platform === 'SecureChat' ? 'Encrypted' : 
+            conversation.platform === 'Teams' ? 'Group Chat' : 'Online',
+    lastMessage: lastMessage?.content || 'No messages',
+    lastMessageTime: lastMessage?.timestamp || new Date(),
+    unreadCount: conversation.isEvidence ? 2 : 0,
+    messages,
+    isGroupChat
+  };
+});
 
 const activeChatData = computed(() => {
   if (!activeChat.value) return null;
-  const chat = chats.find(chat => chat.id === activeChat.value);
-
-  if (chat && chat.unreadCount > 0 && gameStore.currentStory) {
-    chat.unreadCount = 0;
-    gameStore.markMessageRead(gameStore.currentStory, activeChat.value);
-
-    if (activeChat.value === 'chat1') {
-      gameStore.addEvidence(gameStore.currentStory, 'john_smith_conspiracy_chat');
-    }
-  }
-
-  return chat;
+  return chats.find(chat => chat.id === activeChat.value);
 });
 
 const sendMessage = () => {
@@ -222,7 +152,8 @@ const sendMessage = () => {
     id: 'msg_' + Date.now(),
     content: newMessage.value.trim(),
     timestamp: new Date(),
-    sent: true
+    sent: true,
+    sender: 'Aaron Cole' // Our perspective is Aaron Cole
   };
 
   activeChatData.value.messages.push(message);
@@ -231,6 +162,26 @@ const sendMessage = () => {
 
   newMessage.value = '';
 
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    }
+  });
+};
+
+// Mark chat as evidence and read when viewed
+const viewChat = (chatId: string) => {
+  activeChat.value = chatId;
+  const chat = chats.find(c => c.id === chatId);
+  
+  if (chat && chat.unreadCount > 0 && gameStore.currentStory) {
+    chat.unreadCount = 0;
+    gameStore.markMessageRead(gameStore.currentStory, chatId);
+    
+    // Mark as evidence for investigation
+    gameStore.addEvidence(gameStore.currentStory, `chat_evidence_${chatId}`);
+  }
+  
   nextTick(() => {
     if (messagesContainer.value) {
       messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
@@ -255,6 +206,8 @@ const getStatusClass = (status: string) => {
       return 'status-offline';
     case 'busy':
       return 'status-busy';
+    case 'encrypted':
+      return 'status-encrypted';
     default:
       return 'status-default';
   }
@@ -262,6 +215,7 @@ const getStatusClass = (status: string) => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/variables" as *;
 @use "sass:color";
 
 .app-messages {
@@ -305,6 +259,10 @@ const getStatusClass = (status: string) => {
       display: flex;
       align-items: center;
       justify-content: center;
+
+      &:hover {
+        background: color.adjust($accent-blue, $lightness: 10%);
+      }
     }
   }
 
@@ -442,6 +400,13 @@ const getStatusClass = (status: string) => {
           margin-bottom: 2px;
         }
 
+        .contact-participants {
+          font-size: 0.8rem;
+          color: $text-secondary;
+          margin-bottom: 2px;
+          font-style: italic;
+        }
+
         .contact-status {
           font-size: 0.8rem;
           color: $text-primary;
@@ -460,6 +425,10 @@ const getStatusClass = (status: string) => {
 
           &.status-busy {
             color: $accent-red;
+          }
+
+          &.status-encrypted {
+            color: $accent-blue;
           }
         }
       }
@@ -525,6 +494,14 @@ const getStatusClass = (status: string) => {
       .message-time {
         text-align: left;
       }
+    }
+
+    .message-sender {
+      font-size: 0.75rem;
+      color: $accent-blue;
+      font-weight: 600;
+      margin-bottom: 2px;
+      padding: 0 4px;
     }
 
     .message-content {

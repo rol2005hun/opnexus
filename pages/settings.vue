@@ -25,15 +25,16 @@
             </div>
 
             <div class="settings-header">
-                <button @click="goBack" class="back-button">
-                    <span class="back-icon">←</span>
-                </button>
-
                 <div class="logo-container">
                     <div class="logo-icon">
-                        <span class="logo-text">N</span>
+                        <span class="logo-text">
+                            <span class="logo-o">O</span><span class="logo-n">N</span>
+                        </span>
                     </div>
-                    <div class="logo-title">NEXUS</div>
+                    <div class="logo-title-container">
+                        <span class="logo-operation">Operation:</span>
+                        <span class="logo-nexus">NEXUS</span>
+                    </div>
                 </div>
                 <div class="agency-subtitle">Agent Settings Portal</div>
                 <div class="security-badge">
@@ -126,32 +127,45 @@
                     </div>
 
                     <div class="form-actions">
-                        <button @click="saveProfile" class="save-button">
-                            <div class="button-content">
-                                <span class="normal-state">
-                                    <span class="button-icon">💾</span>
-                                    Save Profile
-                                </span>
-                            </div>
-                        </button>
+                        <div class="action-row primary-actions">
+                            <button @click="saveProfile" class="save-button">
+                                <div class="button-content">
+                                    <span class="normal-state">
+                                        <span class="button-icon">💾</span>
+                                        Save Profile
+                                    </span>
+                                </div>
+                            </button>
 
-                        <button @click="changePassword" class="password-button">
-                            <div class="button-content">
-                                <span class="normal-state">
-                                    <span class="button-icon">🔒</span>
-                                    Change Password
-                                </span>
-                            </div>
-                        </button>
+                            <button @click="changePassword" class="password-button">
+                                <div class="button-content">
+                                    <span class="normal-state">
+                                        <span class="button-icon">🔒</span>
+                                        Change Password
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
 
-                        <button @click="logout" class="logout-button">
-                            <div class="button-content">
-                                <span class="normal-state">
-                                    <span class="button-icon">🚪</span>
-                                    Logout
-                                </span>
-                            </div>
-                        </button>
+                        <div class="action-row secondary-actions">
+                            <button @click="goBack" class="back-button">
+                                <div class="button-content">
+                                    <span class="normal-state">
+                                        <span class="button-icon">←</span>
+                                        Back to System
+                                    </span>
+                                </div>
+                            </button>
+
+                            <button @click="logout" class="logout-button">
+                                <div class="button-content">
+                                    <span class="normal-state">
+                                        <span class="button-icon">🚪</span>
+                                        Logout
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -628,7 +642,7 @@ onMounted(async () => {
     border-radius: 20px;
     padding: 2rem;
     width: 100%;
-    max-width: 450px;
+    max-width: 500px;
     max-height: 95vh;
     overflow-y: auto;
     backdrop-filter: blur(20px);
@@ -661,34 +675,6 @@ onMounted(async () => {
     text-align: center;
     margin-bottom: 2rem;
     position: relative;
-
-    .back-button {
-        position: absolute;
-        top: -1rem;
-        left: -1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        padding: 0.6rem 1rem;
-        border-radius: 12px;
-        color: #3b82f6;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 0.9rem;
-        font-weight: 500;
-
-        &:hover {
-            background: rgba(59, 130, 246, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
-        }
-
-        .back-icon {
-            font-size: 1.1rem;
-        }
-    }
 }
 
 .logo-container {
@@ -713,19 +699,42 @@ onMounted(async () => {
         0 0 0 1px rgba(59, 130, 246, 0.2) inset;
 
     .logo-text {
-        color: white;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         font-weight: 700;
         font-family: 'JetBrains Mono', monospace;
+
+        .logo-o {
+            color: #22c55e;
+        }
+
+        .logo-n {
+            color: white;
+        }
     }
 }
 
-.logo-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #f1f5f9;
-    letter-spacing: 0.1em;
-    font-family: 'Inter', sans-serif;
+.logo-title-container {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+
+    .logo-operation {
+        color: #22c55e;
+        font-size: 2rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        font-family: 'Inter', sans-serif;
+        text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+    }
+
+    .logo-nexus {
+        color: #f1f5f9;
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        font-family: 'Inter', sans-serif;
+        text-shadow: 0 0 20px rgba(241, 245, 249, 0.5);
+    }
 }
 
 .agency-subtitle {
@@ -866,12 +875,26 @@ onMounted(async () => {
         flex-direction: column;
         gap: 1rem;
         margin-top: 2.5rem;
+
+        .action-row {
+            display: flex;
+            gap: 1rem;
+
+            &.primary-actions {
+                margin-bottom: 0.5rem;
+            }
+
+            &.secondary-actions {
+                margin-top: 0.5rem;
+            }
+        }
     }
 }
 
 .save-button,
 .password-button,
-.logout-button {
+.logout-button,
+.back-button {
     position: relative;
     display: flex;
     align-items: center;
@@ -932,6 +955,16 @@ onMounted(async () => {
 
     &:hover {
         box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+    }
+}
+
+.back-button {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.2);
+
+    &:hover {
+        box-shadow: 0 8px 25px rgba(107, 114, 128, 0.3);
     }
 }
 
@@ -1233,14 +1266,6 @@ onMounted(async () => {
         justify-content: center;
     }
 
-    .settings-header .back-button {
-        position: relative;
-        top: 0;
-        left: 0;
-        margin-bottom: 1.5rem;
-        align-self: flex-start;
-    }
-
     .form-group {
         margin-bottom: 1rem;
     }
@@ -1256,9 +1281,19 @@ onMounted(async () => {
 
     .save-button,
     .password-button,
-    .logout-button {
+    .logout-button,
+    .back-button {
         padding: 0.9rem;
         font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 443px) {
+    .form-actions {
+        .action-row {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
     }
 }
 </style>

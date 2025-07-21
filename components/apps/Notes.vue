@@ -1,9 +1,9 @@
 <template>
   <div class="app-notes">
     <div class="notes-header">
-      <h2>📝 Case Notes - The Whistleblower Investigation</h2>
+      <h2>📝 Case Notes - {{ nexusCorpLeakStory.setting.organization }} Investigation</h2>
       <div class="notes-meta">
-        <span class="case-id">Case ID: NX-2025-001</span>
+        <span class="case-id">Case ID: {{ nexusCorpLeakStory.id.toUpperCase() }}</span>
         <span class="classification">Classification: Confidential</span>
       </div>
     </div>
@@ -12,23 +12,23 @@
       <div class="investigation-brief">
         <h3>🎯 Mission Briefing</h3>
         <p>
-          Welcome to your first case at NEXUS Digital Investigation Agency. You've been assigned to investigate
-          an internal security breach at <strong>Meridian Financial Corp</strong>.
+          Welcome to your investigation at NEXUS Digital Investigation Agency. You've been assigned to investigate
+          a security breach at <strong>{{ nexusCorpLeakStory.setting.organization }}</strong>.
         </p>
 
         <h4>📋 Case Summary</h4>
+        <p>{{ nexusCorpLeakStory.setting.backgroundInfo }}</p>
         <p>
-          Someone inside the company is leaking confidential financial documents to unknown parties.
-          The leaked information includes client data, merger plans, and sensitive trading strategies that
-          could cause significant market disruption if made public.
+          <strong>Location:</strong> {{ nexusCorpLeakStory.setting.location }}<br>
+          <strong>Department:</strong> {{ nexusCorpLeakStory.setting.department }}<br>
+          <strong>Timeframe:</strong> {{ nexusCorpLeakStory.setting.timeframe }}
         </p>
 
         <h4>🔍 Your Objectives</h4>
         <ul>
-          <li>Identify the internal source of the leak</li>
-          <li>Determine the method of data exfiltration</li>
-          <li>Gather evidence of unauthorized access</li>
-          <li>Trace communication channels used for the breach</li>
+          <li v-for="objective in nexusCorpLeakStory.objectives" :key="objective.id">
+            <strong>{{ objective.title }}:</strong> {{ objective.description }}
+          </li>
         </ul>
 
         <h4>💡 Investigation Tips</h4>
@@ -36,24 +36,32 @@
           <div class="tip">
             <span class="tip-icon">📧</span>
             <div>
-              <strong>Check Email Patterns</strong>
-              <p>Look for unusual email timing, recipients, and attachment patterns</p>
+              <strong>Email Analysis</strong>
+              <p>Check for unusual patterns, timing, and recipients in email communications</p>
             </div>
           </div>
 
           <div class="tip">
             <span class="tip-icon">💬</span>
             <div>
-              <strong>Analyze Messages</strong>
-              <p>Internal communications might reveal coordination between parties</p>
+              <strong>Message Review</strong>
+              <p>Analyze internal and external communications for suspicious activity</p>
+            </div>
+          </div>
+
+          <div class="tip">
+            <span class="tip-icon">📄</span>
+            <div>
+              <strong>File Investigation</strong>
+              <p>Examine file access logs and unauthorized document transfers</p>
             </div>
           </div>
 
           <div class="tip">
             <span class="tip-icon">🔍</span>
             <div>
-              <strong>Cross-Reference Evidence</strong>
-              <p>Use the Evidence Locker to connect different pieces of information</p>
+              <strong>Evidence Collection</strong>
+              <p>Use the Evidence Locker to track and connect different pieces of information</p>
             </div>
           </div>
         </div>
@@ -61,23 +69,46 @@
         <h4>⚠️ Warning</h4>
         <div class="warning-box">
           <p>
-            This investigation is time-sensitive. The longer the breach continues,
-            the more damage could be done to Meridian Financial and their clients.
-            Proceed with discretion and thoroughness.
+            This investigation involves classified defense contracts. Handle all evidence with discretion.
+            The breach compromises national security interests and requires immediate resolution.
           </p>
         </div>
 
-        <h4>📝 Investigation Log</h4>
-        <div class="log-entry">
-          <strong>Day 1 - Initial Assessment:</strong><br>
-          Security team detected unusual data access patterns. Multiple confidential files
-          accessed outside normal business hours. Employee badge logs show potential discrepancies.
+        <h4>📝 Investigation Timeline</h4>
+        <div v-for="event in nexusCorpLeakStory.timeline" :key="event.id" class="log-entry">
+          <strong>{{ formatDate(event.timestamp) }} - {{ event.title }}:</strong><br>
+          {{ event.description }}
+          <div v-if="event.location" class="log-location">
+            📍 Location: {{ event.location }}
+          </div>
         </div>
 
-        <div class="log-entry">
+        <div class="log-entry current-status">
           <strong>Current Status:</strong><br>
           You have access to employee email accounts, internal messaging systems, and file access logs.
           Begin your investigation by examining communication patterns and identifying suspicious activities.
+          Focus on after-hours activities and unusual data transfers.
+        </div>
+
+        <h4>🕵️ Persons of Interest</h4>
+        <div class="suspects-grid">
+          <div v-for="suspect in nexusCorpLeakStory.suspects" :key="suspect.id" class="suspect-card">
+            <div class="suspect-header">
+              <span class="suspect-name">{{ suspect.name }}</span>
+              <span class="suspicion-badge" :class="getSuspicionClass(suspect.suspicionLevel)">
+                {{ suspect.suspicionLevel }}/10
+              </span>
+            </div>
+            <div class="suspect-details">
+              <div class="suspect-role">{{ suspect.role }}</div>
+              <div class="suspect-motive">
+                <strong>Motive:</strong> {{ suspect.motive }}
+              </div>
+              <div class="suspect-alibi">
+                <strong>Alibi:</strong> {{ suspect.alibi }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -85,9 +116,27 @@
 </template>
 
 <script setup lang="ts">
+import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
+
+const formatDate = (timestamp: string) => {
+  const date = new Date(timestamp);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+const getSuspicionClass = (level: number) => {
+  if (level >= 8) return 'high';
+  if (level >= 5) return 'medium';
+  return 'low';
+};
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/variables" as *;
 @use "sass:color";
 
 .app-notes {
@@ -231,8 +280,89 @@
     color: $accent-orange;
   }
 
-  br+text {
-    color: $text-secondary;
+  .log-location {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: $text-muted;
+  }
+
+  &.current-status {
+    border-left-color: $accent-blue;
+    background: color.adjust($accent-blue, $alpha: -0.9);
+  }
+}
+
+.suspects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+
+  .suspect-card {
+    background: $bg-secondary;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #444;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $accent-blue;
+      background: color.adjust($bg-secondary, $lightness: 2%);
+    }
+
+    .suspect-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      .suspect-name {
+        font-weight: 600;
+        color: $text-primary;
+        font-size: 1rem;
+      }
+
+      .suspicion-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+
+        &.high {
+          background: rgba(244, 67, 54, 0.2);
+          color: #f44336;
+        }
+
+        &.medium {
+          background: rgba(255, 193, 7, 0.2);
+          color: #ffc107;
+        }
+
+        &.low {
+          background: rgba(76, 175, 80, 0.2);
+          color: #4caf50;
+        }
+      }
+    }
+
+    .suspect-details {
+      .suspect-role {
+        color: $text-secondary;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .suspect-motive,
+      .suspect-alibi {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: $text-secondary;
+
+        strong {
+          color: $text-primary;
+        }
+      }
+    }
   }
 }
 </style>

@@ -29,9 +29,14 @@
             <div class="auth-header">
                 <div class="logo-container">
                     <div class="logo-icon">
-                        <span class="logo-text">N</span>
+                        <span class="logo-text">
+                            <span class="logo-o">O</span><span class="logo-n">N</span>
+                        </span>
                     </div>
-                    <div class="logo-title">NEXUS</div>
+                    <div class="logo-title-container">
+                        <span class="logo-operation">Operation:</span>
+                        <span class="logo-nexus">NEXUS</span>
+                    </div>
                 </div>
                 <div class="agency-subtitle">Digital Investigation Agency</div>
                 <div class="security-badge">
@@ -737,19 +742,42 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
         0 0 0 1px rgba(59, 130, 246, 0.2) inset;
 
     .logo-text {
-        color: white;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         font-weight: 700;
         font-family: 'JetBrains Mono', monospace;
+
+        .logo-o {
+            color: #22c55e;
+        }
+
+        .logo-n {
+            color: white;
+        }
     }
 }
 
-.logo-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #f1f5f9;
-    letter-spacing: 0.1em;
-    font-family: 'Inter', sans-serif;
+.logo-title-container {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+
+    .logo-operation {
+        color: #22c55e;
+        font-size: 2rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        font-family: 'Inter', sans-serif;
+        text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+    }
+
+    .logo-nexus {
+        color: #f1f5f9;
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        font-family: 'Inter', sans-serif;
+        text-shadow: 0 0 20px rgba(241, 245, 249, 0.5);
+    }
 }
 
 .agency-subtitle {
@@ -1149,6 +1177,32 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
         }
 
         .logo-text {
+            font-size: 1.4rem;
+        }
+    }
+
+    .logo-container {
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+
+        .logo-text {
+            font-size: 1rem;
+        }
+    }
+
+    .logo-title-container {
+        gap: 0.3rem;
+
+        .logo-operation {
+            font-size: 1.2rem;
+        }
+
+        .logo-nexus {
             font-size: 1.4rem;
         }
     }

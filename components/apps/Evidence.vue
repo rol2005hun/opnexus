@@ -3,7 +3,7 @@
     <div class="evidence-header">
       <h2>📋 Evidence Storage</h2>
       <div class="case-info" v-if="gameStore.currentStoryData">
-        <span class="case-name">{{ gameStore.currentStoryData.title }}</span>
+        <span class="case-name">{{ nexusCorpLeakStory.setting.organization }} Investigation</span>
         <span class="case-status" :class="statusClass">{{ statusText }}</span>
       </div>
     </div>
@@ -65,17 +65,19 @@
         <h3>📝 Investigation Report</h3>
         <div class="report-content">
           <div class="suspect-info">
-            <h4>🎯 Identified Suspect</h4>
-            <div class="suspect-details">
-              <strong>Peter Martinez</strong> - internal employee
-              <p>Leaks confidential documents to John Smith for financial compensation.</p>
+            <h4>🎯 Primary Suspect</h4>
+            <div v-for="suspect in nexusCorpLeakStory.suspects.filter(s => s.suspicionLevel >= 8)" :key="suspect.id" class="suspect-details">
+              <strong>{{ suspect.name }}</strong> - {{ suspect.role }}
+              <p>{{ suspect.motive }}</p>
+              <div class="suspicion-level">
+                Suspicion Level: {{ suspect.suspicionLevel }}/10
+              </div>
             </div>
           </div>
 
           <div class="case-conclusion" v-if="gameStore.currentProgress?.caseStatus === 'completed'">
-            <h4>✅ Case Closed</h4>
-            <p>You have successfully identified the source of the internal leak and collected the necessary evidence.
-            </p>
+            <h4>✅ Case Status</h4>
+            <p>Investigation complete. All evidence has been collected and analyzed. The perpetrator has been identified.</p>
           </div>
         </div>
       </div>
@@ -84,7 +86,8 @@
 </template>
 
 <script setup lang="ts">
-import { useGameStore } from '~/stores/game';
+import { useGameStore } from '@/stores/game';
+import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
 
 const gameStore = useGameStore();
 
@@ -107,9 +110,9 @@ const emailsRead = computed(() => gameStore.currentProgress?.emailsRead.length |
 const messagesRead = computed(() => gameStore.currentProgress?.messagesRead.length || 0);
 const evidenceCount = computed(() => gameStore.currentProgress?.evidenceFound.length || 0);
 
-const totalEmails = 3;
-const totalChats = 1;
-const requiredEvidence = 3;
+const totalEmails = nexusCorpLeakStory.emails.length;
+const totalChats = nexusCorpLeakStory.chatMessages.length;
+const requiredEvidence = nexusCorpLeakStory.objectives.reduce((total, obj) => total + obj.requiredEvidence.length, 0);
 
 const statusClass = computed(() => {
   if (!gameStore.currentProgress) return 'investigating';
@@ -129,35 +132,52 @@ const statusText = computed(() => {
 const evidenceItems = computed((): EvidenceItem[] => {
   if (!gameStore.currentProgress?.evidenceFound) return [];
 
-  const evidenceMap: Record<string, EvidenceItem> = {
-    'secret_documents_email': {
-      id: 'secret_documents_email',
-      title: 'Confidential Documents Email',
-      description: 'Peter Martinez sends an email to John Smith with confidential documents and file attachments.',
-      type: 'Email Evidence',
-      icon: '📧',
-      important: true,
-      discoveredAt: new Date()
-    },
-    'payment_confirmation_email': {
-      id: 'payment_confirmation_email',
-      title: 'Payment Confirmation',
-      description: 'John Smith confirms the transfer of the "agreed amount" to Peter Martinez.',
-      type: 'Email Evidence',
-      icon: '💰',
-      important: true,
-      discoveredAt: new Date()
-    },
-    'john_smith_conspiracy_chat': {
-      id: 'john_smith_conspiracy_chat',
-      title: 'Conspiracy Chat',
-      description: 'Detailed chat conversation between Peter Martinez and John Smith about document handover.',
-      type: 'Message Evidence',
-      icon: '💬',
-      important: true,
-      discoveredAt: new Date()
+  const evidenceMap: Record<string, EvidenceItem> = {};
+  
+  // Add email evidence
+  nexusCorpLeakStory.emails.forEach(email => {
+    if (email.isEvidence) {
+      evidenceMap[`email_evidence_${email.id}`] = {
+        id: `email_evidence_${email.id}`,
+        title: `Email: ${email.subject}`,
+        description: `From ${email.from} to ${email.to.join(', ')} - ${email.body.substring(0, 100)}...`,
+        type: 'Email Evidence',
+        icon: '📧',
+        important: email.from.includes('unknown') || email.subject.toLowerCase().includes('urgent') || email.importance === 'high',
+        discoveredAt: new Date(email.timestamp)
+      };
     }
-  };
+  });
+
+  // Add chat evidence
+  nexusCorpLeakStory.chatMessages.forEach(chat => {
+    if (chat.isEvidence) {
+      evidenceMap[`chat_evidence_${chat.id}`] = {
+        id: `chat_evidence_${chat.id}`,
+        title: `Chat: ${chat.title}`,
+        description: `Conversation on ${chat.platform} between ${chat.participants.join(' and ')}`,
+        type: 'Message Evidence',
+        icon: '💬',
+        important: chat.participants.includes('Unknown Contact'),
+        discoveredAt: new Date(chat.messages[0]?.timestamp || Date.now())
+      };
+    }
+  });
+
+  // Add file evidence
+  nexusCorpLeakStory.files.forEach(file => {
+    if (file.isEvidence) {
+      evidenceMap[`file_evidence_${file.id}`] = {
+        id: `file_evidence_${file.id}`,
+        title: `File: ${file.name}`,
+        description: `${file.type.toUpperCase()} file (${file.size}) - ${file.content.substring(0, 100)}...`,
+        type: 'File Evidence',
+        icon: file.encrypted ? '🔒' : '📄',
+        important: file.encrypted || file.accessLevel >= 8,
+        discoveredAt: new Date(file.lastModified)
+      };
+    }
+  });
 
   return gameStore.currentProgress.evidenceFound
     .map(id => evidenceMap[id])
@@ -168,9 +188,17 @@ const clueItems = computed((): ClueItem[] => {
   if (!gameStore.currentProgress?.connectionsDiscovered) return [];
 
   const clueMap: Record<string, ClueItem> = {
-    'martinez_peter_leak': {
-      id: 'martinez_peter_leak',
-      description: 'Peter Martinez is the source of the internal leak - motivated by financial gain, he shares confidential information with external parties.'
+    'suspect_aaron_cole': {
+      id: 'suspect_aaron_cole',
+      description: 'Aaron Cole has suspicious access patterns and financial motivations for leaking classified documents.'
+    },
+    'payment_trail': {
+      id: 'payment_trail',
+      description: 'Financial transactions indicate payment for confidential information transfer to external parties.'
+    },
+    'after_hours_access': {
+      id: 'after_hours_access',
+      description: 'Unauthorized building access and file transfers occurred during non-business hours.'
     }
   };
 
@@ -188,6 +216,7 @@ const formatTime = (date: Date) => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/variables" as *;
 @use "sass:color";
 
 .app-evidence {
@@ -198,14 +227,14 @@ const formatTime = (date: Date) => {
 }
 
 .evidence-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #444;
   background: $bg-secondary;
+  padding: 1rem;
+  border-bottom: 1px solid #444;
 
   h2 {
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.5rem 0;
     color: $text-primary;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   .case-info {
@@ -214,19 +243,19 @@ const formatTime = (date: Date) => {
     align-items: center;
 
     .case-name {
-      font-weight: 600;
-      color: $text-primary;
+      color: $text-secondary;
+      font-weight: 500;
     }
 
     .case-status {
-      padding: 4px 12px;
-      border-radius: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
       font-size: 0.8rem;
       font-weight: 600;
 
       &.investigating {
-        background: rgba(255, 136, 0, 0.2);
-        color: $accent-orange;
+        background: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
       }
 
       &.analyzing {
@@ -234,19 +263,9 @@ const formatTime = (date: Date) => {
         color: $accent-blue;
       }
 
-      &.building_case {
-        background: rgba(156, 39, 176, 0.2);
-        color: #9c27b0;
-      }
-
-      &.arrest_warrant {
-        background: rgba(244, 67, 54, 0.2);
-        color: #f44336;
-      }
-
       &.completed {
-        background: rgba(0, 170, 68, 0.2);
-        color: $accent-green;
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
       }
     }
   }
@@ -254,162 +273,201 @@ const formatTime = (date: Date) => {
 
 .evidence-content {
   flex: 1;
+  padding: 1rem;
   overflow-y: auto;
-  padding: 1.5rem;
 }
 
-.progress-section,
-.evidence-section,
-.clues-section,
-.report-section {
+.progress-section {
   margin-bottom: 2rem;
 
   h3 {
-    color: $accent-blue;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-  }
-}
-
-.progress-items {
-  display: grid;
-  gap: 1rem;
-
-  .progress-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
-    background: $bg-secondary;
-    border-radius: 8px;
-
-    .progress-label {
-      color: $text-secondary;
-    }
-
-    .progress-value {
-      color: $accent-blue;
-      font-weight: 600;
-      font-family: $font-mono;
-    }
-  }
-}
-
-.evidence-list,
-.clues-list {
-  display: grid;
-  gap: 1rem;
-}
-
-.no-evidence {
-  text-align: center;
-  padding: 2rem;
-  color: $text-secondary;
-  font-style: italic;
-}
-
-.evidence-item {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  background: $bg-secondary;
-  border-radius: 8px;
-  border-left: 4px solid $border-color;
-
-  &.important {
-    border-left-color: $accent-orange;
-  }
-
-  .evidence-icon {
-    font-size: 2rem;
-    display: flex;
-    align-items: center;
-  }
-
-  .evidence-details {
-    flex: 1;
-
-    h4 {
-      margin: 0 0 0.5rem 0;
-      color: $text-primary;
-    }
-
-    p {
-      margin: 0 0 0.75rem 0;
-      color: $text-secondary;
-      line-height: 1.4;
-    }
-
-    .evidence-meta {
-      display: flex;
-      gap: 1rem;
-      font-size: 0.8rem;
-
-      .evidence-type {
-        color: $accent-blue;
-        font-weight: 600;
-      }
-
-      .evidence-time {
-        color: $text-muted;
-        font-family: $font-mono;
-      }
-    }
-  }
-}
-
-.clue-item {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  background: rgba(0, 122, 204, 0.1);
-  border-radius: 8px;
-  border: 1px solid $accent-blue;
-
-  .clue-icon {
-    font-size: 1.5rem;
-  }
-
-  .clue-text {
     color: $text-primary;
-    line-height: 1.4;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  .progress-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+
+    .progress-item {
+      background: $bg-secondary;
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid $accent-blue;
+
+      .progress-label {
+        display: block;
+        color: $text-secondary;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .progress-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: $text-primary;
+      }
+    }
   }
 }
 
-.report-content {
-  display: grid;
-  gap: 1.5rem;
+.evidence-section, .clues-section, .report-section {
+  margin-bottom: 2rem;
 
-  .suspect-info,
-  .case-conclusion {
-    padding: 1.5rem;
+  h3 {
+    color: $text-primary;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+}
+
+.evidence-list {
+  .no-evidence {
+    text-align: center;
+    padding: 2rem;
+    color: $text-secondary;
     background: $bg-secondary;
     border-radius: 8px;
+    border: 2px dashed #444;
+  }
 
-    h4 {
-      margin: 0 0 1rem 0;
-      color: $text-primary;
+  .evidence-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: $bg-secondary;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid #444;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $accent-blue;
+      background: color.adjust($bg-secondary, $lightness: 2%);
     }
 
-    .suspect-details {
-      strong {
+    &.important {
+      border-left: 4px solid $accent-red;
+      
+      .evidence-icon {
         color: $accent-red;
-        font-size: 1.1rem;
+      }
+    }
+
+    .evidence-icon {
+      font-size: 2rem;
+      color: $accent-blue;
+    }
+
+    .evidence-details {
+      flex: 1;
+
+      h4 {
+        margin: 0 0 0.5rem 0;
+        color: $text-primary;
+        font-size: 1rem;
       }
 
       p {
-        margin: 0.5rem 0 0 0;
+        margin: 0 0 0.5rem 0;
         color: $text-secondary;
         line-height: 1.4;
       }
+
+      .evidence-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.8rem;
+
+        .evidence-type {
+          color: $accent-blue;
+          font-weight: 600;
+        }
+
+        .evidence-time {
+          color: $text-muted;
+        }
+      }
     }
   }
+}
 
-  .case-conclusion {
-    border: 2px solid $accent-green;
+.clues-list {
+  .clue-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: rgba(0, 122, 204, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid $accent-blue;
 
-    h4 {
-      color: $accent-green;
+    .clue-icon {
+      font-size: 1.5rem;
+      color: $accent-blue;
+    }
+
+    .clue-text {
+      color: $text-primary;
+      line-height: 1.4;
+    }
+  }
+}
+
+.report-section {
+  .report-content {
+    background: $bg-secondary;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+
+    .suspect-info {
+      margin-bottom: 1.5rem;
+
+      h4 {
+        color: $text-primary;
+        margin-bottom: 1rem;
+      }
+
+      .suspect-details {
+        background: rgba(255, 193, 7, 0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #ffc107;
+        margin-bottom: 1rem;
+
+        strong {
+          color: $text-primary;
+          font-size: 1.1rem;
+        }
+
+        p {
+          margin: 0.5rem 0;
+          color: $text-secondary;
+        }
+
+        .suspicion-level {
+          font-size: 0.9rem;
+          color: #ffc107;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .case-conclusion {
+      h4 {
+        color: #4caf50;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        color: $text-primary;
+        line-height: 1.4;
+      }
     }
   }
 }

@@ -6,7 +6,10 @@
 
         <header class="header">
             <div class="logo">
-                <h1>NEXUS</h1>
+                <div class="logo-title-container">
+                    <span class="logo-operation">Operation:</span>
+                    <span class="logo-nexus">NEXUS</span>
+                </div>
                 <p>Digital Investigation Agency</p>
             </div>
             <div class="user-info">
@@ -294,12 +297,28 @@ const completedStories = computed(() => {
     align-items: center;
 
     .logo {
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: $accent-blue;
+        .logo-title-container {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
             margin-bottom: 0.5rem;
-            text-shadow: 0 0 20px rgba(0, 122, 204, 0.5);
+
+            .logo-operation {
+                color: #22c55e;
+                font-size: 2.5rem;
+                font-weight: 500;
+                letter-spacing: 0.05em;
+                text-shadow: 0 0 20px rgb(0 255 94 / 50%);
+            }
+
+            .logo-nexus {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: $text-primary;
+                margin: 0;
+                text-shadow: 0 0 20px rgb(255 255 255 / 50%);
+                letter-spacing: 0.1em;
+            }
         }
 
         p {

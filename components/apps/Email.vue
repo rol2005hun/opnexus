@@ -2,6 +2,9 @@
   <div class="app-email">
     
     <div class="email-sidebar">
+      <div class="compose-section">
+        <button class="compose-btn" @click="openCompose">✏️ Compose</button>
+      </div>
       <div class="folders">
         <div v-for="folder in folders" :key="folder.id" class="folder" :class="{ active: activeFolder === folder.id }"
           @click="activeFolder = folder.id">
@@ -20,7 +23,7 @@
         </div>
       </div>
 
-      <div class="emails">
+      <div class="emails-container">
         <div v-for="email in currentEmails" :key="email.id" class="email-item" :class="{
           selected: selectedEmail === email.id,
           unread: !email.read,
@@ -31,9 +34,15 @@
           <div class="email-preview">{{ email.preview }}</div>
           <div class="email-time">{{ formatTime(email.timestamp) }}</div>
           <div v-if="email.hasAttachment" class="attachment-indicator">📎</div>
+          <div class="email-item-actions">
+            <button v-if="activeFolder !== 'trash'" class="action-btn trash" @click.stop="moveToTrash(email.id)" title="Move to Trash">🗑️</button>
+            <button v-if="activeFolder === 'trash'" class="action-btn restore" @click.stop="restoreFromTrash(email.id)" title="Restore">↶</button>
+            <button v-if="activeFolder === 'trash'" class="action-btn delete" @click.stop="permanentDelete(email.id)" title="Delete Forever">❌</button>
+            <button class="action-btn important" @click.stop="toggleImportant(email.id)" :class="{ active: email.important }" title="Toggle Important">⭐</button>
+          </div>
         </div>
 
-        <div v-if="currentEmails.length === 0" class="no-email-selected">
+        <div v-if="currentEmails.length === 0" class="no-emails">
           <p>No emails in this folder</p>
         </div>
       </div>
@@ -67,174 +76,277 @@
         <p>Select an email to read</p>
       </div>
     </div>
+
+    <!-- Compose Email Modal -->
+    <div v-if="showCompose" class="compose-modal">
+      <div class="compose-content">
+        <div class="compose-header">
+          <h3>Compose Email</h3>
+          <button class="close-btn" @click="closeCompose">✕</button>
+        </div>
+        <form @submit.prevent="sendEmail" class="compose-form">
+          <div class="form-row">
+            <label>To:</label>
+            <input v-model="composeForm.to" type="email" required placeholder="recipient@nexus-corp.com">
+          </div>
+          <div class="form-row">
+            <label>CC:</label>
+            <input v-model="composeForm.cc" type="email" placeholder="cc@nexus-corp.com">
+          </div>
+          <div class="form-row">
+            <label>Subject:</label>
+            <input v-model="composeForm.subject" type="text" required placeholder="Email subject">
+          </div>
+          <div class="form-row">
+            <label>Message:</label>
+            <textarea v-model="composeForm.body" required placeholder="Type your message here..." rows="10"></textarea>
+          </div>
+          <div class="compose-actions">
+            <button type="submit" class="send-btn">Send</button>
+            <button type="button" class="cancel-btn" @click="closeCompose">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import { useGameStore } from '@/stores/game';
+import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
+import type { EmailMessage, EmailAttachment, ProcessedEmail, EmailFolder } from '@/types/email';
 
 const gameStore = useGameStore();
 
-interface EmailAttachment {
-  name: string
-  size: string
-  type: string
-  content?: string
-}
-
-interface Email {
-  id: string
-  sender: string
-  recipient: string
-  subject: string
-  preview: string
-  content: string
-  timestamp: Date
-  read: boolean
-  important: boolean
-  hasAttachment: boolean
-  attachments?: EmailAttachment[]
-  folder: string
-}
-
-interface Folder {
-  id: string
-  name: string
-  icon: string
-  unread: number
-}
-
 const activeFolder = ref('inbox');
 const selectedEmail = ref<string | null>(null);
+const showCompose = ref(false);
+const composeForm = ref({
+  to: '',
+  cc: '',
+  subject: '',
+  body: ''
+});
 
-const folders: Folder[] = [
-  { id: 'inbox', name: 'Inbox', icon: '📥', unread: 3 },
+const folders: EmailFolder[] = [
+  { id: 'inbox', name: 'Inbox', icon: '📥', unread: 0 },
   { id: 'sent', name: 'Sent', icon: '📤', unread: 0 },
   { id: 'drafts', name: 'Drafts', icon: '📝', unread: 0 },
-  { id: 'important', name: 'Important', icon: '⭐', unread: 2 },
+  { id: 'important', name: 'Important', icon: '⭐', unread: 0 },
+  { id: 'allmails', name: 'All Mails', icon: '📧', unread: 0 },
   { id: 'trash', name: 'Trash', icon: '🗑️', unread: 0 }
 ];
 
-const emails: Email[] = [
-  {
-    id: '1',
-    sender: 'martinez.peter@nexus-corp.com',
-    recipient: 'smith.john@nexus-corp.com',
-    subject: 'Confidential: Project documents',
-    preview: 'John, I\'m sending the requested documents...',
-    content: `
-      <p>John,</p>
-      <p>I'm sending the requested documents regarding the project. Please <strong>keep everything confidential</strong>.</p>
-      <p>The files contain:</p>
-      <ul>
-        <li>Development plans</li>
-        <li>Budget information</li>
-        <li>Client lists</li>
-      </ul>
-      <p>If you tell anyone about this, I would be in big trouble.</p>
-      <p>Best,<br>Peter</p>
-    `,
-    timestamp: new Date('2025-01-15T14:30:00'),
-    read: false,
-    important: true,
-    hasAttachment: true,
-    attachments: [
-      { name: 'project_plans.pdf', size: '2.4 MB', type: 'pdf' },
-      { name: 'budget_overview.xlsx', size: '1.1 MB', type: 'excel' }
-    ],
-    folder: 'inbox'
-  },
-  {
-    id: '2',
-    sender: 'admin@nexus-corp.com',
-    recipient: 'martinez.peter@nexus-corp.com',
-    subject: 'WARNING: Data Security Policy',
-    preview: 'We remind you that all employees...',
-    content: `
-      <p>Dear Colleagues!</p>
-      <p><strong>We remind you</strong> that all employees are required to comply with the data security policy.</p>
-      <p>Strictly prohibited:</p>
-      <ul>
-        <li>Sharing internal documents with external parties</li>
-        <li>Using corporate email accounts for personal purposes</li>
-        <li>Sharing passwords</li>
-      </ul>
-      <p>Violation of the policy may result in immediate termination.</p>
-      <p>IT Security Department</p>
-    `,
-    timestamp: new Date('2025-01-14T09:00:00'),
-    read: true,
-    important: true,
-    hasAttachment: false,
-    folder: 'inbox'
-  },
-  {
-    id: '3',
-    sender: 'smith.john@competitor.com',
-    recipient: 'martinez.peter@nexus-corp.com',
-    subject: 'RE: That thing we talked about',
-    preview: 'Peter, I received the files. Thank you...',
-    content: `
-      <p>Peter,</p>
-      <p>I received the files. <strong>Thank you</strong>, this is exactly what I needed.</p>
-      <p>The agreed amount is already on its way to you. I still count on you.</p>
-      <p>I hope no one suspects anything...</p>
-      <p>J.</p>
-    `,
-    timestamp: new Date('2025-01-15T16:45:00'),
-    read: false,
-    important: false,
-    hasAttachment: false,
-    folder: 'inbox'
+// Get emails from current story data
+const getStoryEmails = (): EmailMessage[] => {
+  // Return emails directly from the imported story data
+  return nexusCorpLeakStory.emails || [];
+};
+
+// Format email content with HTML support and common formatting
+const formatEmailContent = (content: string): string => {
+  let formatted = content;
+  
+  // Replace double newlines with paragraph breaks
+  formatted = formatted.replace(/\n\n+/g, '</p><p>');
+  
+  // Replace single newlines with line breaks
+  formatted = formatted.replace(/\n/g, '<br>');
+  
+  // Format bold text (**text**)
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  // Format numbered lists
+  formatted = formatted.replace(/^(\d+\.\s.+)$/gm, '<li>$1</li>');
+  
+  // Format bullet points
+  formatted = formatted.replace(/^[\-\*]\s(.+)$/gm, '<li>$1</li>');
+  
+  // Wrap consecutive list items in ul tags
+  formatted = formatted.replace(/(<li>.*?<\/li>)(\s*<li>.*?<\/li>)*/gs, '<ul>$&</ul>');
+  
+  // Wrap content in paragraphs if not already
+  if (!formatted.includes('<p>')) {
+    formatted = `<p>${formatted}</p>`;
   }
-]
+  
+  // Clean up any malformed paragraph tags
+  formatted = formatted.replace(/<p><\/p>/g, '');
+  formatted = formatted.replace(/<p>\s*<br>\s*<\/p>/g, '');
+  
+  return formatted;
+};
+
+// Convert raw email data to processed format
+const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
+  return rawEmails.map(email => {
+    const processedAttachments: EmailAttachment[] = email.attachments || [];
+
+    return {
+      id: email.id,
+      sender: email.from,
+      recipient: email.to[0] || 'me@nexus-corp.com',
+      subject: email.subject,
+      preview: email.body.substring(0, 100) + '...',
+      content: formatEmailContent(email.body),
+      timestamp: new Date(email.timestamp),
+      read: false,
+      important: email.importance === 'high',
+      hasAttachment: (email.attachments?.length || 0) > 0,
+      attachments: processedAttachments,
+      folder: email.folder || (email.from === 'me@nexus-corp.com' ? 'sent' : 'inbox')
+    };
+  });
+};
+
+const emails = ref<ProcessedEmail[]>([]);
+
+// Initialize emails from story
+const initializeEmails = () => {
+  const storyEmails = getStoryEmails();
+  emails.value = processEmails(storyEmails);
+  updateFolderCounts();
+};
+
+// Update folder counts based on email status
+const updateFolderCounts = () => {
+  folders.forEach(folder => {
+    if (folder.id === 'important') {
+      folder.unread = emails.value.filter(email => email.important && !email.read).length;
+    } else {
+      folder.unread = emails.value.filter(email => 
+        email.folder === folder.id && !email.read
+      ).length;
+    }
+  });
+};
 
 const getCurrentFolder = () => {
   return folders.find(f => f.id === activeFolder.value);
 };
 
 const currentEmails = computed(() => {
-  return emails.filter(email => {
-    if (activeFolder.value === 'important') {
-      return email.important;
-    }
-    return email.folder === activeFolder.value;
-  });
-});;
+  if (activeFolder.value === 'important') {
+    return emails.value.filter(email => email.important && email.folder !== 'trash');
+  }
+  if (activeFolder.value === 'allmails') {
+    return emails.value.filter(email => email.folder !== 'trash');
+  }
+  if (activeFolder.value === 'inbox') {
+    // Inbox csak az nekem címzett emailek (nem sent)
+    return emails.value.filter(email => 
+      email.folder === 'inbox' || 
+      (email.folder !== 'sent' && email.folder !== 'trash' && email.folder !== 'drafts')
+    );
+  }
+  return emails.value.filter(email => email.folder === activeFolder.value);
+});
 
 const selectedEmailData = computed(() => {
   if (!selectedEmail.value) return null;
-  return emails.find(email => email.id === selectedEmail.value);
+  return emails.value.find(email => email.id === selectedEmail.value);
 });
 
 const selectEmail = (emailId: string) => {
   selectedEmail.value = emailId;
-  const email = emails.find(e => e.id === emailId);
+  const email = emails.value.find(e => e.id === emailId);
   if (email && !email.read) {
     email.read = true;
-    const folder = folders.find(f => f.id === email.folder);
-    if (folder && folder.unread > 0) {
-      folder.unread--;
-    }
+    updateFolderCounts();
 
     if (gameStore.currentStory) {
       gameStore.markEmailRead(gameStore.currentStory, emailId);
-
-      if (emailId === '1') {
-        gameStore.addEvidence(gameStore.currentStory, 'secret_documents_email');
-      } else if (emailId === '3') {
-        gameStore.addEvidence(gameStore.currentStory, 'payment_confirmation_email');
+      
+      // Mark as evidence if it's important
+      if (email.important) {
+        gameStore.addEvidence(gameStore.currentStory, `email_evidence_${emailId}`);
       }
     }
   }
 };
 
 const refreshEmails = () => {
-  console.log('Refreshing emails...');
+  initializeEmails();
+};
+
+// Email actions
+const moveToTrash = (emailId: string) => {
+  const email = emails.value.find(e => e.id === emailId);
+  if (email) {
+    email.folder = 'trash';
+    updateFolderCounts();
+    if (selectedEmail.value === emailId) {
+      selectedEmail.value = null;
+    }
+  }
+};
+
+const toggleImportant = (emailId: string) => {
+  const email = emails.value.find(e => e.id === emailId);
+  if (email) {
+    email.important = !email.important;
+    updateFolderCounts();
+  }
+};
+
+const restoreFromTrash = (emailId: string) => {
+  const email = emails.value.find(e => e.id === emailId);
+  if (email) {
+    email.folder = 'inbox';
+    updateFolderCounts();
+  }
+};
+
+const permanentDelete = (emailId: string) => {
+  const index = emails.value.findIndex(e => e.id === emailId);
+  if (index !== -1) {
+    emails.value.splice(index, 1);
+    updateFolderCounts();
+    if (selectedEmail.value === emailId) {
+      selectedEmail.value = null;
+    }
+  }
 };
 
 const openAttachment = (attachment: EmailAttachment) => {
   console.log('Opening attachment:', attachment.name);
+};
+
+// Compose email functions
+const openCompose = () => {
+  showCompose.value = true;
+  composeForm.value = {
+    to: '',
+    cc: '',
+    subject: '',
+    body: ''
+  };
+};
+
+const closeCompose = () => {
+  showCompose.value = false;
+};
+
+const sendEmail = () => {
+  const newEmail: ProcessedEmail = {
+    id: `email_${Date.now()}`,
+    sender: 'me@nexus-corp.com',
+    recipient: composeForm.value.to,
+    subject: composeForm.value.subject,
+    preview: composeForm.value.body.substring(0, 100) + '...',
+    content: formatEmailContent(composeForm.value.body),
+    timestamp: new Date(),
+    read: true,
+    important: false,
+    hasAttachment: false,
+    attachments: [],
+    folder: 'sent'
+  };
+  
+  emails.value.push(newEmail);
+  updateFolderCounts();
+  showCompose.value = false;
 };
 
 const formatTime = (date: Date) => {
@@ -247,22 +359,52 @@ const formatTime = (date: Date) => {
 const formatDateTime = (date: Date) => {
   return date.toLocaleString('en-US');
 };
+
+// Initialize when component mounts
+initializeEmails();
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/scss/variables" as *;
 @use "sass:color";
 
 .app-email {
-  display: grid;
-  grid-template-columns: 200px 300px 1fr;
+  position: relative;
+  display: flex;
   height: 100%;
   background: $window-bg;
+  overflow: hidden;
 }
 
 .email-sidebar {
   background: $bg-secondary;
   border-right: 1px solid #444;
   padding: 1rem 0;
+  flex-shrink: 0;        // Ne zsugorodjon
+  width: 12rem;          // Fix szélesség
+  min-width: 10rem;      // Minimum védelem
+
+  .compose-section {
+    padding: 0 16px 16px 16px;
+    border-bottom: 1px solid #444;
+    margin-bottom: 16px;
+
+    .compose-btn {
+      width: 100%;
+      background: $accent-blue;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: color.adjust($accent-blue, $lightness: 10%);
+      }
+    }
+  }
 
   .folders {
     .folder {
@@ -304,14 +446,21 @@ const formatDateTime = (date: Date) => {
 }
 
 .email-list {
+  display: flex;
+  flex-direction: column;
   border-right: 1px solid #444;
+  flex-shrink: 0;        // Ne zsugorodjon
+  width: 20rem;          // Fix szélesség
+  min-width: 16rem;      // Minimum védelem
 
   .email-header {
+    flex-shrink: 0;
     padding: 1rem;
     border-bottom: 1px solid #444;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: $bg-secondary;
 
     h3 {
       margin: 0;
@@ -332,9 +481,10 @@ const formatDateTime = (date: Date) => {
     }
   }
 
-  .emails {
-    height: calc(100% - 70px);
+  .emails-container {
+    flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .email-item {
@@ -376,6 +526,7 @@ const formatDateTime = (date: Date) => {
       font-size: 0.9rem;
       font-weight: 600;
       margin-bottom: 4px;
+      color: $text-primary;
     }
 
     .email-subject {
@@ -404,47 +555,67 @@ const formatDateTime = (date: Date) => {
       right: 8px;
       font-size: 0.8rem;
     }
+
+    .email-item-actions {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      display: none;
+      gap: 4px;
+
+      .action-btn {
+        background: rgba(0, 0, 0, 0.7);
+        border: none;
+        color: white;
+        padding: 4px 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.9);
+        }
+
+        &.important.active {
+          color: $accent-orange;
+        }
+
+        &.trash:hover {
+          background: $accent-red;
+        }
+
+        &.restore:hover {
+          background: $accent-green;
+        }
+
+        &.delete:hover {
+          background: $accent-red;
+        }
+      }
+    }
+
+    &:hover .email-item-actions {
+      display: flex;
+    }
   }
 }
 
 .email-content {
-  padding: 1rem;
-  overflow-y: auto;
-
-  :deep(.email-body) {
-    line-height: 1.6;
-    color: $text-primary;
-
-    p {
-      margin-bottom: 1rem;
-    }
-
-    ul,
-    ol {
-      margin-bottom: 1rem;
-      margin-left: 0;
-      padding-left: 2rem;
-
-      li {
-        margin-bottom: 0.5rem;
-        color: $text-secondary;
-      }
-    }
-
-    ul {
-      list-style-type: disc;
-    }
-
-    ol {
-      list-style-type: decimal;
-    }
-
-    strong {
-      color: $accent-orange;
-    }
-  }
+  display: flex;
+  flex-direction: column;
+  flex: 1;               // Rugalmas méret - maradék helyet foglalja
+  height: 100%;
+  overflow: hidden;
+  height: 100%;
+  overflow: hidden;
 
   .email-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+
     .email-headers {
       margin-bottom: 1.5rem;
 
@@ -470,6 +641,45 @@ const formatDateTime = (date: Date) => {
             color: $text-primary;
           }
         }
+      }
+    }
+
+    .email-body {
+      line-height: 1.6;
+      color: $text-primary;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+
+      :deep(p) {
+        margin-bottom: 1rem;
+      }
+
+      :deep(ul), :deep(ol) {
+        margin-bottom: 1rem;
+        margin-left: 0;
+        padding-left: 2rem;
+
+        li {
+          margin-bottom: 0.5rem;
+          color: $text-secondary;
+        }
+      }
+
+      :deep(ul) {
+        list-style-type: disc;
+      }
+
+      :deep(ol) {
+        list-style-type: decimal;
+      }
+
+      :deep(strong) {
+        color: $accent-orange;
+        font-weight: 600;
+      }
+
+      :deep(br) {
+        margin-bottom: 0.5rem;
       }
     }
 
@@ -518,8 +728,137 @@ const formatDateTime = (date: Date) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  flex: 1;
+  padding: 2rem;
   color: $text-secondary;
   font-style: italic;
+  text-align: center;
+}
+
+.no-emails {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: $text-secondary;
+  font-style: italic;
+}
+
+// Compose Modal Styles
+.compose-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .compose-content {
+    background: $bg-primary;
+    border: 1px solid #444;
+    border-radius: 8px;
+    width: 600px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow: hidden;
+
+    .compose-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #444;
+      background: $bg-secondary;
+
+      h3 {
+        margin: 0;
+        color: $text-primary;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        color: $text-secondary;
+        font-size: 1.2rem;
+        cursor: pointer;
+        
+        &:hover {
+          color: $text-primary;
+        }
+      }
+    }
+
+    .compose-form {
+      padding: 20px;
+
+      .form-row {
+        margin-bottom: 16px;
+
+        label {
+          display: block;
+          margin-bottom: 4px;
+          color: $text-primary;
+          font-weight: 600;
+        }
+
+        input, textarea {
+          width: 100%;
+          padding: 8px 12px;
+          background: $bg-secondary;
+          border: 1px solid #444;
+          border-radius: 4px;
+          color: $text-primary;
+          font-family: inherit;
+
+          &:focus {
+            outline: none;
+            border-color: $accent-blue;
+          }
+        }
+
+        textarea {
+          resize: vertical;
+          min-height: 200px;
+        }
+      }
+
+      .compose-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+
+        .send-btn {
+          background: $accent-blue;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 600;
+
+          &:hover {
+            background: color.adjust($accent-blue, $lightness: 10%);
+          }
+        }
+
+        .cancel-btn {
+          background: $bg-secondary;
+          color: $text-primary;
+          border: 1px solid #444;
+          padding: 10px 20px;
+          border-radius: 4px;
+          cursor: pointer;
+
+          &:hover {
+            background: color.adjust($bg-secondary, $lightness: 5%);
+          }
+        }
+      }
+    }
+  }
 }
 </style>
