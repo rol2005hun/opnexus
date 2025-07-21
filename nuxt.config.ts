@@ -3,15 +3,9 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
 
-  // nitro: {
-  //   preset: 'netlify'
-  // },
-
-  // ssr: true,
-  
-  // experimental: {
-  //   payloadExtraction: false
-  // },
+  experimental: {
+    payloadExtraction: false
+  },
 
   app: {
     head: {

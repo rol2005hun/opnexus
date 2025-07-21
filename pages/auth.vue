@@ -28,16 +28,12 @@
 
             <div class="auth-header">
                 <div class="logo-container">
-                    <div class="logo-hexagon">
-                        <div class="logo-inner">
-                            <span class="logo-text">N</span>
-                        </div>
+                    <div class="logo-icon">
+                        <span class="logo-text">N</span>
                     </div>
+                    <div class="logo-title">NEXUS</div>
                 </div>
-                <h1 class="main-title">
-                    <span class="title-line">NEXUS</span>
-                    <span class="title-subtitle">Digital Investigation Agency</span>
-                </h1>
+                <div class="agency-subtitle">Digital Investigation Agency</div>
                 <div class="security-badge">
                     <span class="badge-icon">🛡️</span>
                     <span class="badge-text">CLASSIFIED SYSTEM</span>
@@ -720,59 +716,49 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
 }
 
 .logo-container {
-    margin-bottom: 1rem;
-}
-
-.logo-hexagon {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto 0.8rem;
-    position: relative;
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: glow 3s ease-in-out infinite;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
 
-    .logo-inner {
-        width: 52px;
-        height: 52px;
-        background: rgba(17, 25, 40, 0.9);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 
+        0 4px 20px rgba(59, 130, 246, 0.4),
+        0 0 0 1px rgba(59, 130, 246, 0.2) inset;
 
     .logo-text {
-        font-size: 1.6rem;
-        font-weight: 900;
-        color: #3b82f6;
-        text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
     }
 }
 
-.main-title {
+.logo-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: 0.1em;
+    font-family: 'Inter', sans-serif;
+}
+
+.agency-subtitle {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 400;
     margin-bottom: 0.8rem;
-
-    .title-line {
-        display: block;
-        font-size: 2.2rem;
-        font-weight: 900;
-        color: #f1f5f9;
-        text-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
-        letter-spacing: 0.1em;
-    }
-
-    .title-subtitle {
-        display: block;
-        font-size: 0.85rem;
-        color: #94a3b8;
-        font-weight: 400;
-        margin-top: 0.3rem;
-        letter-spacing: 0.05em;
-    }
+    letter-spacing: 0.05em;
 }
 
 .security-badge {
@@ -923,6 +909,10 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
                 box-shadow: 
                     0 0 0 3px rgba(59, 130, 246, 0.1),
                     0 0 20px rgba(59, 130, 246, 0.2);
+
+                + .input-border {
+                    width: 100%;
+                }
             }
 
             &::placeholder {
@@ -934,14 +924,14 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
         .input-border {
             position: absolute;
             bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
+            left: 50%;
+            width: 0%;
+            height: 20px;
             background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-            border-radius: 0 0 10px 10px;
-            opacity: 0;
-            transform: scaleX(0);
-            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+            border-radius: 50px;
+            clip-path: inset(85% 0 0 0);
         }
     }
 }
@@ -1163,14 +1153,6 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
         }
     }
 
-    .main-title .title-line {
-        font-size: 1.8rem;
-    }
-
-    .main-title .title-subtitle {
-        font-size: 0.8rem;
-    }
-
     .auth-tabs .tab-button {
         padding: 0.7rem;
         font-size: 0.8rem;
@@ -1206,10 +1188,6 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
 @media (max-width: 480px) {
     .auth-container {
         padding: 1rem;
-    }
-
-    .main-title .title-line {
-        font-size: 1.6rem;
     }
 
     .form-group .input-wrapper .form-input {
@@ -1274,10 +1252,6 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
         .logo-text {
             font-size: 1.2rem;
         }
-    }
-
-    .main-title .title-line {
-        font-size: 1.4rem;
     }
 
     .security-badge {

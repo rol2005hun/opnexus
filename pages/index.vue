@@ -96,7 +96,7 @@
                 </div>
                 <div class="stat">
                     <span class="stat-value">{{ authStore.isAuthenticated ? gameStore.availableStories.length : '0'
-                    }}</span>
+                        }}</span>
                     <span class="stat-label">Available Cases</span>
                 </div>
                 <div class="stat">
@@ -122,7 +122,7 @@
                         <h3>{{ selectedStory.title }}</h3>
                         <div class="clearance-info">
                             <span class="clearance-level">Security Clearance: {{ selectedStory.securityClearance
-                                }}</span>
+                            }}</span>
                             <span class="difficulty">{{ selectedStory.difficulty }}</span>
                         </div>
                     </div>
@@ -172,7 +172,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { useGameStore } from '@/stores/game';
 import { useAuthStore } from '@/stores/auth';
 import type { Story } from '@/stores/game';
