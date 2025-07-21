@@ -1,10 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
   nitro: {
-    preset: 'netlify'
+    preset: 'netlify',
+    experimental: {
+      wasm: false
+    }
+  },
+
+  ssr: true,
+  
+  experimental: {
+    payloadExtraction: false
   },
 
   app: {
@@ -109,10 +118,21 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    define: {
+      global: 'globalThis'
+    },
     css: {
       preprocessorOptions: {
         scss: {
           additionalData: '@use "@/assets/scss/variables.scss" as *;'
+        }
+      }
+    },
+    build: {
+      rollupOptions: {
+        external: [],
+        output: {
+          manualChunks: undefined
         }
       }
     }

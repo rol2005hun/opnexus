@@ -34,6 +34,10 @@ Someone within the organization is leaking confidential documents. Your mission:
 
 ## 🚀 Quick Start
 
+### Prerequisites
+- Node.js 20+ and npm 8+
+- MongoDB (local) or MongoDB Atlas (production)
+
 ### Local Development
 ```bash
 # Install dependencies
