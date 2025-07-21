@@ -1,11 +1,9 @@
 [build]
   publish = ".output/public"
-  command = "NITRO_PRESET=netlify npm run build && echo 'Build completed' && find .output -type d -name 'public' -exec ls -la {} \\;"
+  command = "npm run build:debug"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--production=false"
-  NITRO_PRESET = "netlify"
 
 [[redirects]]
   from = "/*"
