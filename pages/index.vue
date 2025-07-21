@@ -49,9 +49,9 @@
                         <div class="story-icon">{{ story.icon }}</div>
                         <div v-if="story.completed" class="completed-badge">✓</div>
                         <div v-if="!story.available" class="locked-badge">🔒</div>
-                        <div v-if="!authStore.isAuthenticated && story.id !== 'internal-leak'"
+                        <div v-if="!authStore.isAuthenticated && story.id !== 'the-internal-leak'"
                             class="auth-required-badge">🔐</div>
-                        <div v-if="!authStore.isAuthenticated && story.id === 'internal-leak'" class="preview-badge">👁️
+                        <div v-if="!authStore.isAuthenticated && story.id === 'the-internal-leak'" class="preview-badge">👁️
                         </div>
                         <div v-else-if="authStore.isAuthenticated && story.securityClearance > gameStore.agent.clearanceLevel"
                             class="clearance-badge">
@@ -78,7 +78,7 @@
                                 class="story-briefing">
                                 <button class="briefing-btn" @click.stop="showBriefing(story)">📋 View Briefing</button>
                             </div>
-                            <div v-else-if="!authStore.isAuthenticated && story.id === 'internal-leak'"
+                            <div v-else-if="!authStore.isAuthenticated && story.id === 'the-internal-leak'"
                                 class="story-briefing">
                                 <button class="preview-briefing-btn" @click.stop="showBriefing(story)">👁️ Preview
                                     Briefing</button>
@@ -198,7 +198,7 @@ const canAccessStory = (story: Story): boolean => {
 
 const getStoryDescription = (story: Story): string => {
     if (!authStore.isAuthenticated) {
-        if (story.id === 'internal-leak') {
+        if (story.id === 'the-internal-leak') {
             return 'Someone within our organization is leaking confidential documents to external parties. Investigate emails, messages, and file access logs to identify the mole.';
         }
         return 'Sign in to access this classified case.';

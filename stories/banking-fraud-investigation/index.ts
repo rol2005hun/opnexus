@@ -149,8 +149,8 @@ const objectives: Objective[] = [
 ];
 
 export const bankingFraudStory: StoryContent = {
-    id: 'banking-fraud',
-    storyId: 'banking-fraud',
+    id: 'banking-fraud-investigation',
+    storyId: 'banking-fraud-investigation',
     setting,
     characters,
     suspects,

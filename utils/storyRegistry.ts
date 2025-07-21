@@ -1,12 +1,14 @@
 import type { StoryContent } from '@/types/content';
-import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
 
-export type StoryId = 'nexus-corp-leak' | 'banking-fraud';
+export type StoryId = 'the-internal-leak' | 'banking-fraud-investigation';
 
 export const storyRegistry: Record<StoryId, () => Promise<StoryContent>> = {
-    'nexus-corp-leak': async () => nexusCorpLeakStory,
-    'banking-fraud': async () => {
-        const { bankingFraudStory } = await import('@/stories/banking-fraud');
+    'the-internal-leak': async () => {
+        const { nexusCorpLeakStory } = await import('@/stories/the-internal-leak');
+        return nexusCorpLeakStory;
+    },
+    'banking-fraud-investigation': async () => {
+        const { bankingFraudStory } = await import('@/stories/banking-fraud-investigation');
         return bankingFraudStory;
     }
 };

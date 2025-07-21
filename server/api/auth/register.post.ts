@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
             },
             gameProgress: {
                 completedStories: [],
-                purchasedStories: ['internal-leak'], // First story is free
+                purchasedStories: ['the-internal-leak'], // First story is free
                 currentStory: null,
                 totalPlaytime: 0,
                 achievements: ['new-recruit']

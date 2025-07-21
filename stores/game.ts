@@ -72,7 +72,7 @@ export const useGameStore = defineStore('game', {
         evidence: {},
         stories: [
             {
-                id: 'internal-leak',
+                id: 'the-internal-leak',
                 title: 'The Internal Leak',
                 description: 'Someone within our organization is leaking confidential documents to external parties. Investigate emails, messages, and file access logs to identify the mole.',
                 briefing: 'At 14:32 yesterday, our security monitoring detected unauthorized downloads of classified Project Neptune files. Initial analysis suggests the breach originated from someone with legitimate access to these documents. Three employees had access during the timeframe: a project manager, a systems administrator, and a security consultant. Your mission: analyze digital communications, file access patterns, and financial records to identify which employee is the leak.',
@@ -85,6 +85,21 @@ export const useGameStore = defineStore('game', {
                 icon: '🕵️‍♂️',
                 price: 0,
                 isPaid: false
+            },
+            {
+                id: 'banking-fraud-investigation',
+                title: 'Banking Fraud Investigation',
+                description: 'Sophisticated fraud scheme detected at City National Bank involving unauthorized transfers totaling $2.3M with cryptocurrency laundering.',
+                briefing: 'At 09:30 this morning, our compliance officer Jennifer Kim flagged suspicious transaction patterns involving multiple large transfers during system maintenance windows. The transactions bypass standard approval workflows and appear to involve cryptocurrency conversion. Evidence suggests insider involvement with potential external coordination. Your mission: identify the perpetrator, trace the money flow, and uncover all accomplices in this fraud scheme.',
+                thumbnail: '/stories/banking.jpg',
+                difficulty: 'Agent',
+                estimatedTime: '75-105 mins',
+                completed: false,
+                available: true,
+                securityClearance: 2,
+                icon: '🏦',
+                price: 1,
+                isPaid: true
             },
             {
                 id: 'operation-blackout',
@@ -130,21 +145,6 @@ export const useGameStore = defineStore('game', {
                 icon: '👻',
                 price: 1,
                 isPaid: true
-            },
-            {
-                id: 'banking-fraud',
-                title: 'Banking Fraud Investigation',
-                description: 'Sophisticated fraud scheme detected at City National Bank involving unauthorized transfers totaling $2.3M with cryptocurrency laundering.',
-                briefing: 'At 09:30 this morning, our compliance officer Jennifer Kim flagged suspicious transaction patterns involving multiple large transfers during system maintenance windows. The transactions bypass standard approval workflows and appear to involve cryptocurrency conversion. Evidence suggests insider involvement with potential external coordination. Your mission: identify the perpetrator, trace the money flow, and uncover all accomplices in this fraud scheme.',
-                thumbnail: '/stories/banking.jpg',
-                difficulty: 'Agent',
-                estimatedTime: '75-105 mins',
-                completed: false,
-                available: true,
-                securityClearance: 1,
-                icon: '🏦',
-                price: 0,
-                isPaid: false
             }
         ]
     }),
@@ -340,6 +340,13 @@ export const useGameStore = defineStore('game', {
                     }
                 }
             }
+        },
+
+        async getCurrentStoryContent() {
+            if (!this.currentStory) return null;
+            
+            const { getStoryContent } = await import('@/utils/storyRegistry');
+            return await getStoryContent(this.currentStory);
         }
     },
 

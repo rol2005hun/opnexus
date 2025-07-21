@@ -29,13 +29,27 @@ This is a Nuxt 3 TypeScript project for creating an FBI-style investigation game
 5. **File Exploration**: Document and evidence management
 6. **Window Management**: Draggable, resizable windows like a real OS
 
-## Current Story: "The Internal Leak"
+## Current Stories
 
-The first investigation involves finding an internal employee who is leaking confidential documents to external parties. Evidence includes:
-- Suspicious emails between employees and external contacts
-- Chat messages coordinating document transfers
-- File access logs showing unauthorized downloads
-- Financial transactions indicating payments
+### Available Stories:
+- **the-internal-leak**: Corporate espionage investigation at defense contractor (Nexus-Corp Industries)
+- **banking-fraud-investigation**: Sophisticated fraud scheme at City National Bank involving cryptocurrency laundering
+
+### Story Development:
+- **Story Documentation**: Complete story creation guide available in `stories/README.md`
+- **Story Structure**: Each story has its own folder with characters.ts, emails.ts, chats.ts, files.ts, and index.ts
+- **Story Registry**: All stories must be registered in `utils/storyRegistry.ts` for dynamic loading
+- **Story IDs**: Must match between game store, story registry, and story content files
+
+## Application Names
+
+### Current Laptop Applications:
+- **Email**: Standard email client
+- **CipherChat**: Encrypted messaging application (formerly Chat)
+- **File Explorer**: Document and file management
+- **Browser**: Nexium web browser
+- **JobDescription**: Investigation briefing and case details (formerly Notes)
+- **EvidenceLocker**: Evidence collection and analysis (formerly Evidence)
 
 ## Component Guidelines
 

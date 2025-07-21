@@ -1,32 +1,32 @@
 <template>
-  <div class="app-notes">
-    <div class="notes-header">
-      <h2>📝 Case Notes - {{ nexusCorpLeakStory.setting.organization }} Investigation</h2>
-      <div class="notes-meta">
-        <span class="case-id">Case ID: {{ nexusCorpLeakStory.id.toUpperCase() }}</span>
+  <div class="app-job-description">
+    <div class="job-description-header" v-if="currentStoryContent">
+      <h2>💼 Job Description - {{ currentStoryContent.setting.organization }} Investigation</h2>
+      <div class="job-description-meta">
+        <span class="case-id">Case ID: {{ currentStoryContent.id.toUpperCase() }}</span>
         <span class="classification">Classification: Confidential</span>
       </div>
     </div>
 
-    <div class="notes-content">
+    <div class="job-description-content" v-if="currentStoryContent">
       <div class="investigation-brief">
         <h3>🎯 Mission Briefing</h3>
         <p>
           Welcome to your investigation at NEXUS Digital Investigation Agency. You've been assigned to investigate
-          a security breach at <strong>{{ nexusCorpLeakStory.setting.organization }}</strong>.
+          a security breach at <strong>{{ currentStoryContent.setting.organization }}</strong>.
         </p>
 
         <h4>📋 Case Summary</h4>
-        <p>{{ nexusCorpLeakStory.setting.backgroundInfo }}</p>
+        <p>{{ currentStoryContent.setting.backgroundInfo }}</p>
         <p>
-          <strong>Location:</strong> {{ nexusCorpLeakStory.setting.location }}<br>
-          <strong>Department:</strong> {{ nexusCorpLeakStory.setting.department }}<br>
-          <strong>Timeframe:</strong> {{ nexusCorpLeakStory.setting.timeframe }}
+          <strong>Location:</strong> {{ currentStoryContent.setting.location }}<br>
+          <strong>Department:</strong> {{ currentStoryContent.setting.department }}<br>
+          <strong>Timeframe:</strong> {{ currentStoryContent.setting.timeframe }}
         </p>
 
         <h4>🔍 Your Objectives</h4>
         <ul>
-          <li v-for="objective in nexusCorpLeakStory.objectives" :key="objective.id">
+          <li v-for="objective in currentStoryContent.objectives" :key="objective.id">
             <strong>{{ objective.title }}:</strong> {{ objective.description }}
           </li>
         </ul>
@@ -75,7 +75,7 @@
         </div>
 
         <h4>📝 Investigation Timeline</h4>
-        <div v-for="event in nexusCorpLeakStory.timeline" :key="event.id" class="log-entry">
+        <div v-for="event in currentStoryContent.timeline" :key="event.id" class="log-entry">
           <strong>{{ formatDate(event.timestamp) }} - {{ event.title }}:</strong><br>
           {{ event.description }}
           <div v-if="event.location" class="log-location">
@@ -92,7 +92,7 @@
 
         <h4>🕵️ Persons of Interest</h4>
         <div class="suspects-grid">
-          <div v-for="suspect in nexusCorpLeakStory.suspects" :key="suspect.id" class="suspect-card">
+          <div v-for="suspect in currentStoryContent.suspects" :key="suspect.id" class="suspect-card">
             <div class="suspect-header">
               <span class="suspect-name">{{ suspect.name }}</span>
               <span class="suspicion-badge" :class="getSuspicionClass(suspect.suspicionLevel)">
@@ -116,7 +116,32 @@
 </template>
 
 <script setup lang="ts">
-import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
+import { ref, onMounted, watch } from 'vue';
+import { useGameStore } from '@/stores/game';
+import type { StoryContent } from '@/types/content';
+
+const gameStore = useGameStore();
+
+const currentStoryContent = ref<StoryContent | null>(null);
+
+const initializeJobDescription = async () => {
+  try {
+    currentStoryContent.value = await gameStore.getCurrentStoryContent();
+    if (!currentStoryContent.value) {
+      console.log('JobDescription: No current story content available');
+    }
+  } catch (error) {
+    console.error('JobDescription: Error loading story content:', error);
+  }
+};
+
+onMounted(() => {
+  initializeJobDescription();
+});
+
+watch(() => gameStore.currentStory, () => {
+  initializeJobDescription();
+});
 
 const formatDate = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -139,13 +164,13 @@ const getSuspicionClass = (level: number) => {
 @use "@/assets/scss/variables" as *;
 @use "sass:color";
 
-.app-notes {
+.app-job-description {
   height: 100%;
   background: $window-bg;
   overflow-y: auto;
 }
 
-.notes-header {
+.job-description-header {
   background: $bg-secondary;
   padding: 1.5rem;
   border-bottom: 2px solid $accent-blue;
@@ -156,7 +181,7 @@ const getSuspicionClass = (level: number) => {
     font-size: 1.4rem;
   }
 
-  .notes-meta {
+  .job-description-meta {
     display: flex;
     gap: 2rem;
     font-size: 0.9rem;
@@ -174,7 +199,7 @@ const getSuspicionClass = (level: number) => {
   }
 }
 
-.notes-content {
+.job-description-content {
   padding: 2rem;
 }
 

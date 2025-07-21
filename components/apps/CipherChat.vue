@@ -1,14 +1,13 @@
 <template>
-  <div class="app-chat">
+  <div class="app-cipher-chat">
     
     <div class="chat-list">
       <div class="chat-header">
-        <h3>Messages</h3>
+        <h3>Cipher Messages</h3>
         <div class="chat-controls">
           <select v-model="chatFilter" class="filter-select">
-            <option value="own">My Chats</option>
             <option value="all">All Accessible</option>
-            <option value="evidence">Evidence Only</option>
+            <option value="own">My Chats</option>
           </select>
           <button class="new-chat-btn" @click="showNewChatDialog = true">+</button>
         </div>
@@ -135,11 +134,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, nextTick, onMounted, watch } from 'vue';
 import { useGameStore } from '@/stores/game';
 import type { Chat, ChatMessage, ChatFilter, NewChatRequest } from '@/types/chat';
-import type { Character, StoryContent } from '@/types/content';
-import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
+import type { Character, StoryContent, EvidenceConversation } from '@/types/content';
 
 const gameStore = useGameStore();
 
@@ -148,213 +146,108 @@ const activeChat = ref<string | null>(null);
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement>();
 const showNewChatDialog = ref(false);
-const chatFilter = ref<'own' | 'all' | 'evidence'>('own');
+const chatFilter = ref<'own' | 'all'>('all');
+const currentStoryContent = ref<StoryContent | null>(null);
 
 // New chat dialog state
 const newChatType = ref<'private' | 'group'>('private');
 const newChatName = ref('');
 const selectedCharacters = ref<string[]>([]);
 
-// Get current story data
-const currentStory = computed((): StoryContent | null => {
-  if (!gameStore.currentStory) return null;
-  return nexusCorpLeakStory;
+// Load current story content
+onMounted(async () => {
+    currentStoryContent.value = await gameStore.getCurrentStoryContent();
+});
+
+// Watch for story changes
+watch(() => gameStore.currentStory, async (newStoryId) => {
+    if (newStoryId) {
+        currentStoryContent.value = await gameStore.getCurrentStoryContent();
+        // Reset active chat when story changes
+        activeChat.value = null;
+    }
 });
 
 // Get player name dynamically
 const playerName = computed(() => {
-  const playerChar = currentStory.value?.characters.find((char: Character) => char.isPlayer);
-  return playerChar?.name || 'Digital Investigator';
+    const playerChar = currentStoryContent.value?.characters.find((char: Character) => char.isPlayer);
+    return playerChar?.name || 'Digital Investigator';
 });
 
 // Available characters for new chats (excluding player)
 const availableCharacters = computed(() => {
-  if (!currentStory.value) return [];
-  return currentStory.value.characters.filter((char: Character) => 
-    !char.isPlayer && 
-    !char.name.includes('Unknown') && 
-    !char.name.includes('External')
-  );
+    if (!currentStoryContent.value) return [];
+    return currentStoryContent.value.characters.filter((char: Character) => 
+        !char.isPlayer && 
+        !char.name.includes('Unknown') && 
+        !char.name.includes('External')
+    );
 });
 
 // Helper function to get character avatar
 const getCharacterAvatar = (name: string): string => {
-  if (!currentStory.value) return '👤';
-  
-  const character = currentStory.value.characters.find((char: Character) => char.name === name);
-  if (character?.avatar) return character.avatar;
-  
-  // Generate avatar based on name
-  if (name.includes('Unknown') || name.includes('External')) return '🕵️';
-  if (name.toLowerCase().includes('group') || name.toLowerCase().includes('team')) return '👥';
-  
-  const femaleNames = ['irene', 'sophie', 'chloe', 'sarah', 'lisa', 'anna', 'maria'];
-  const firstName = name.split(' ')[0]?.toLowerCase() || '';
-  return femaleNames.includes(firstName) ? '👩‍💼' : '👨‍💼';
+    if (!currentStoryContent.value) return '👤';
+    
+    const character = currentStoryContent.value.characters.find((char: Character) => char.name === name);
+    if (character?.avatar) return character.avatar;
+    
+    // Generate avatar based on name
+    if (name.includes('Unknown') || name.includes('External')) return '🕵️';
+    if (name.toLowerCase().includes('group') || name.toLowerCase().includes('team')) return '👥';
+    
+    const femaleNames = ['irene', 'sophie', 'chloe', 'sarah', 'lisa', 'anna', 'maria'];
+    const firstName = name.split(' ')[0]?.toLowerCase() || '';
+    return femaleNames.includes(firstName) ? '👩‍💼' : '👨‍💼';
 };
 
-// Convert story chat data to Chat format
+// Convert evidence conversations to Chat format
+const convertEvidenceToChats = (evidenceConversations: EvidenceConversation[]): Chat[] => {
+    return evidenceConversations.map(conv => {
+        const lastMessage = conv.messages[conv.messages.length - 1];
+        
+        return {
+            id: conv.id,
+            name: conv.title || conv.groupName || conv.participants.join(', '),
+            avatar: getCharacterAvatar(conv.participants[0] || ''),
+            participants: conv.participants,
+            type: conv.participants.length > 2 ? 'group' : 'private' as 'private' | 'group',
+            status: 'offline' as 'online' | 'offline' | 'away' | 'busy',
+            lastMessage: lastMessage?.content || '',
+            lastMessageTime: new Date(lastMessage?.timestamp || Date.now()),
+            unreadCount: 0,
+            messages: conv.messages.map(msg => ({
+                id: msg.id,
+                sender: msg.sender,
+                content: msg.content,
+                timestamp: new Date(msg.timestamp),
+                sent: msg.sender === playerName.value,
+                isPlayerMessage: msg.sender === playerName.value
+            })),
+            isOwnChat: conv.participants.includes(playerName.value),
+            canSendMessage: false,
+            canView: true,
+            isEvidence: conv.isEvidence,
+            platform: conv.platform
+        };
+    });
+};
+
+// Convert story evidence conversations to Chat format
 const allChats = computed((): Chat[] => {
-  // Demo data for now - ezt később a story adatokból fogjuk betölteni
-  return [
-    {
-      id: 'chat1',
-      name: 'John Smith',
-      avatar: '👨‍💼',
-      participants: ['Digital Investigator', 'John Smith'],
-      type: 'private',
-      status: 'online',
-      lastMessage: 'Thanks for the files',
-      lastMessageTime: new Date('2025-01-15T16:50:00'),
-      unreadCount: 2,
-      isOwnChat: true,
-      canSendMessage: true,
-      canView: true,
-      isEvidence: true,
-      platform: 'Internal Chat',
-      messages: [
-        {
-          id: 'm1',
-          content: 'Hi, we agreed you\'d send me something today',
-          timestamp: new Date('2025-01-15T14:20:00'),
-          sender: 'John Smith',
-          sent: false
-        },
-        {
-          id: 'm2',
-          content: 'Yes, I\'ll send the documents by email',
-          timestamp: new Date('2025-01-15T14:25:00'),
-          sender: 'Digital Investigator',
-          sent: true
-        },
-        {
-          id: 'm3',
-          content: 'Are you sure it\'s safe?',
-          timestamp: new Date('2025-01-15T14:26:00'),
-          sender: 'John Smith',
-          sent: false
-        },
-        {
-          id: 'm4',
-          content: 'Yes, no one will find out. I\'ll send it to the usual email address',
-          timestamp: new Date('2025-01-15T14:30:00'),
-          sender: 'Digital Investigator',
-          sent: true
-        },
-        {
-          id: 'm5',
-          content: 'Alright, and the money?',
-          timestamp: new Date('2025-01-15T16:45:00'),
-          sender: 'John Smith',
-          sent: false
-        },
-        {
-          id: 'm6',
-          content: 'Thanks for the files',
-          timestamp: new Date('2025-01-15T16:50:00'),
-          sender: 'John Smith',
-          sent: false
-        }
-      ]
-    },
-    {
-      id: 'chat2',
-      name: 'Marketing Team',
-      avatar: '👥',
-      participants: ['Digital Investigator', 'Anna Williams', 'Mike Johnson'],
-      type: 'group',
-      status: 'online',
-      lastMessage: 'Meeting at 3 PM',
-      lastMessageTime: new Date('2025-01-14T18:30:00'),
-      unreadCount: 0,
-      isOwnChat: true,
-      canSendMessage: true,
-      canView: true,
-      platform: 'Teams',
-      messages: [
-        {
-          id: 'm7',
-          content: 'Hi everyone, quarterly review meeting tomorrow',
-          timestamp: new Date('2025-01-14T17:00:00'),
-          sender: 'Anna Williams',
-          sent: false
-        },
-        {
-          id: 'm8',
-          content: 'What time?',
-          timestamp: new Date('2025-01-14T17:15:00'),
-          sender: 'Digital Investigator',
-          sent: true
-        },
-        {
-          id: 'm9',
-          content: 'Meeting at 3 PM',
-          timestamp: new Date('2025-01-14T18:30:00'),
-          sender: 'Mike Johnson',
-          sent: false
-        }
-      ]
-    },
-    {
-      id: 'chat3',
-      name: 'Suspicious Private Chat',
-      avatar: '🕵️',
-      participants: ['John Smith', 'Unknown Contact'],
-      type: 'private',
-      status: 'offline',
-      lastMessage: 'Payment confirmed',
-      lastMessageTime: new Date('2025-01-13T11:15:00'),
-      unreadCount: 0,
-      isOwnChat: false,
-      canSendMessage: false,
-      canView: true,
-      isEvidence: true,
-      platform: 'Encrypted Chat',
-      messages: [
-        {
-          id: 'm10',
-          content: 'The files are ready',
-          timestamp: new Date('2025-01-13T10:30:00'),
-          sender: 'John Smith',
-          sent: false
-        },
-        {
-          id: 'm11',
-          content: 'Good, how much?',
-          timestamp: new Date('2025-01-13T10:45:00'),
-          sender: 'Unknown Contact',
-          sent: false
-        },
-        {
-          id: 'm12',
-          content: '$5000 as agreed',
-          timestamp: new Date('2025-01-13T11:00:00'),
-          sender: 'John Smith',
-          sent: false
-        },
-        {
-          id: 'm13',
-          content: 'Payment confirmed',
-          timestamp: new Date('2025-01-13T11:15:00'),
-          sender: 'Unknown Contact',
-          sent: false
-        }
-      ]
-    }
-  ];
+    if (!currentStoryContent.value) return [];
+    
+    return convertEvidenceToChats(currentStoryContent.value.chatMessages);
 });
 
 // Filtered chats based on current filter
 const filteredChats = computed(() => {
-  switch (chatFilter.value) {
-    case 'own':
-      return allChats.value.filter(chat => chat.isOwnChat);
-    case 'evidence':
-      return allChats.value.filter(chat => chat.isEvidence);
-    case 'all':
-    default:
-      return allChats.value.filter(chat => chat.canView);
-  }
+    switch (chatFilter.value) {
+        case 'own':
+            return allChats.value.filter(chat => chat.isOwnChat);
+        case 'all':
+        default:
+            return allChats.value.filter(chat => chat.canView);
+    }
 });
 
 // Active chat data
@@ -502,7 +395,7 @@ const createNewChat = () => {
 @use "@/assets/scss/variables" as *;
 @use "sass:color";
 
-.app-chat {
+.app-cipher-chat {
     position: relative;
   display: grid;
   grid-template-columns: 320px 1fr;

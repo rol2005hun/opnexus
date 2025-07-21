@@ -74,8 +74,8 @@ export const useLaptopStore = defineStore('laptop', {
             },
             {
                 id: 'notes',
-                name: 'Nexuspad',
-                icon: '📝',
+                name: 'Job Description',
+                icon: '💼',
                 isOpen: false,
                 zIndex: 100,
                 position: { x: 300, y: 300 },

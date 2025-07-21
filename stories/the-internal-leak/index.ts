@@ -258,8 +258,8 @@ const timeline: StoryEvent[] = [
 ];
 
 export const nexusCorpLeakStory: StoryContent = {
-    id: 'nexus-corp-leak',
-    storyId: 'nexus-corp-leak',
+    id: 'the-internal-leak',
+    storyId: 'the-internal-leak',
     setting,
     characters,
     suspects,

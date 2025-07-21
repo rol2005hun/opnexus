@@ -1,9 +1,9 @@
 <template>
-  <div class="app-evidence">
-    <div class="evidence-header">
-      <h2>📋 Evidence Storage</h2>
+  <div class="app-evidence-locker">
+    <div class="evidence-locker-header">
+      <h2>� Evidence Locker</h2>
       <div class="case-info" v-if="gameStore.currentStoryData">
-        <span class="case-name">{{ nexusCorpLeakStory.setting.organization }} Investigation</span>
+        <span class="case-name">{{ gameStore.currentStoryData.title }}</span>
         <span class="case-status" :class="statusClass">{{ statusText }}</span>
       </div>
     </div>
@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game';
-import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
+import { nexusCorpLeakStory } from '@/stories/the-internal-leak';
 
 const gameStore = useGameStore();
 
@@ -219,14 +219,14 @@ const formatTime = (date: Date) => {
 @use "@/assets/scss/variables" as *;
 @use "sass:color";
 
-.app-evidence {
+.app-evidence-locker {
   height: 100%;
   background: $window-bg;
   display: flex;
   flex-direction: column;
 }
 
-.evidence-header {
+.evidence-locker-header {
   background: $bg-secondary;
   padding: 1rem;
   border-bottom: 1px solid #444;

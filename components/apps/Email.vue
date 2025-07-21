@@ -112,21 +112,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useGameStore } from '@/stores/game';
-import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
 import type { EmailMessage, EmailAttachment, ProcessedEmail, EmailFolder } from '@/types/email';
+import type { StoryContent } from '@/types/content';
 
 const gameStore = useGameStore();
 
 const activeFolder = ref('inbox');
 const selectedEmail = ref<string | null>(null);
 const showCompose = ref(false);
+const currentStoryContent = ref<StoryContent | null>(null);
 const composeForm = ref({
   to: '',
   cc: '',
   subject: '',
   body: ''
+});
+
+// Load current story content
+onMounted(async () => {
+    currentStoryContent.value = await gameStore.getCurrentStoryContent();
+    initializeEmails();
+});
+
+// Watch for story changes
+watch(() => gameStore.currentStory, async (newStoryId) => {
+    if (newStoryId) {
+        currentStoryContent.value = await gameStore.getCurrentStoryContent();
+        // Reset active email when story changes
+        selectedEmail.value = null;
+        activeFolder.value = 'inbox';
+        initializeEmails();
+    }
 });
 
 const folders: EmailFolder[] = [
@@ -140,8 +158,7 @@ const folders: EmailFolder[] = [
 
 // Get emails from current story data
 const getStoryEmails = (): EmailMessage[] => {
-  // Return emails directly from the imported story data
-  return nexusCorpLeakStory.emails || [];
+  return currentStoryContent.value?.emails || [];
 };
 
 // Format email content with HTML support and common formatting

@@ -7,12 +7,12 @@
             'is-dragging': isDragging,
             'is-resizing': isResizing
         }" :style="{
-        left: app.position.x + 'px',
-        top: app.position.y + 'px',
-        width: app.size.width + 'px',
-        height: app.size.height + 'px',
-        zIndex: app.zIndex
-    }" @mousedown="handleFocus">
+            left: app.position.x + 'px',
+            top: app.position.y + 'px',
+            width: app.size.width + 'px',
+            height: app.size.height + 'px',
+            zIndex: app.zIndex
+        }" @mousedown="handleFocus">
             <div class="title-bar" @mousedown="startDrag">
                 <div class="title-left">
                     <span class="app-icon">{{ app.icon }}</span>
@@ -43,9 +43,9 @@
 
 <script setup lang="ts">
 import Email from './apps/Email.vue';
-import Chat from './apps/Chat.vue';
-import Evidence from './apps/Evidence.vue';
-import Notes from './apps/Notes.vue';
+import CipherChat from './apps/CipherChat.vue';
+import EvidenceLocker from './apps/EvidenceLocker.vue';
+import JobDescription from './apps/JobDescription.vue';
 import Default from './apps/Default.vue';
 
 interface Props {
@@ -91,11 +91,11 @@ const transitionName = computed(() => {
 const getAppComponent = () => {
     const componentMap: Record<string, any> = {
         email: Email,
-        chat: Chat,
+        chat: CipherChat,
         files: Default,
         browser: Default,
-        notes: Notes,
-        evidence: Evidence
+        notes: JobDescription,
+        evidence: EvidenceLocker
     };
 
     return componentMap[props.app.id] || Default;
