@@ -1,146 +1,151 @@
-# Operation: Nexus - Digital Investigation Agency 🕵️‍♂️
+# NEXUS - Digital Investigation Agency 🕵️‍♂️
 
-An immersive FBI-style digital forensics investigation game where you solve cyber crimes through email analysis, file exploration, and evidence gathering. Step into the shoes of a digital detective and uncover conspiracies in realistic investigation scenarios.
+An immersive FBI-style digital forensics investigation game built with Nuxt 3. Solve cyber crimes through email analysis, file exploration, and evidence gathering in realistic investigation scenarios.
 
-## 🎯 About Operation: Nexus
+## 🎯 What is NEXUS?
 
-**Operation: Nexus** is a cutting-edge web-based investigation simulation that puts you in control of digital forensics cases. Using realistic tools and methodologies, players must:
+**NEXUS** is a web-based investigation simulation where you play as a digital detective. Using realistic tools and methodologies, investigate cyber crimes, analyze digital evidence, and uncover conspiracies.
 
-- 🔍 **Investigate Cyber Crimes**: Analyze digital evidence like a real FBI agent
-- 💻 **Use Professional Tools**: Email clients, file explorers, and chat analyzers
-- 🕵️ **Solve Complex Cases**: Uncover internal leaks, cyber espionage, and digital heists
-- 📊 **Follow Digital Trails**: Track communications, file access, and financial transactions
-- 🧩 **Connect the Dots**: Piece together evidence to solve intricate conspiracies
-
-## ✨ Key Features
-
-- 🎮 **Interactive Story Selection**: Choose from different investigation cases
-- 💻 **Full Laptop Simulation**: Realistic desktop environment with applications
+### Current Features
+- � **User Authentication**: Secure JWT-based login system
+- 👤 **Agent Profiles**: Customizable agent badges and credentials  
+- 💻 **Full Laptop Simulation**: Realistic desktop environment
 - 📧 **Email Investigation**: Analyze suspicious communications
 - 💬 **Message Analysis**: Track chat conversations
 - 📁 **File Exploration**: Document and evidence management
-- 🪟 **Window Management**: Draggable, resizable windows
+- 🪟 **Advanced Window Management**: Draggable, resizable, minimizable windows
+- ⚙️ **Settings Management**: Profile editing and password changes
+
+### First Investigation: "The Internal Leak"
+Someone within the organization is leaking confidential documents. Your mission:
+1. Review suspicious emails between employees and external contacts
+2. Analyze chat messages coordinating document transfers  
+3. Examine file access logs showing unauthorized downloads
+4. Track financial transactions indicating payments
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Nuxt 3 + TypeScript
-- **Styling**: SCSS with custom variables
-- **State Management**: Pinia
-- **Fonts**: Inter (UI) + JetBrains Mono (code)
+- **Frontend**: Nuxt 3 + TypeScript + Vue 3 Composition API
+- **Backend**: Nitro server with MongoDB + Mongoose
+- **Authentication**: JWT tokens with bcrypt password hashing
+- **Styling**: SCSS with custom variables and responsive design
+- **State Management**: Pinia stores
+- **Typography**: Inter (UI) + JetBrains Mono (code/terminal)
 
-## 🚀 Installation
+## 🚀 Quick Start
 
-Install dependencies:
-
+### Local Development
 ```bash
+# Install dependencies
 npm install
-```
 
-## 📱 Development
-
-Start the development server:
-
-```bash
+# Start development server
 npm run dev
 ```
 
-The game will be available at `http://localhost:3000`.
+Visit `http://localhost:3000` to start investigating!
 
-## 🕵️ First Story: "The Internal Leak"
-
-Someone within the organization is leaking confidential documents to external parties. Your mission:
-
-1. 📧 **Review Emails**: Search for suspicious communications
-2. 💬 **Analyze Messages**: Monitor chat conversations
-3. 📄 **Examine Documents**: Review file access logs
-4. 💰 **Follow Money Trail**: Track suspicious transactions
-
-## 🎯 Gameplay
-
-1. **Select a case** from the main menu
-2. **Open the laptop** - full desktop environment awaits
-3. **Explore applications**:
-   - 📧 SecureMail - email client
-   - 💬 InstantMsg - messaging app
-   - 📁 FileExplorer - file manager
-   - 🌐 WebBrowser - web browser
-   - 📝 Notepad - note taking
-   - 🔍 Evidence Locker - evidence storage
-
-## ⌨️ Controls
-
-- **ESC**: Exit laptop
-- **Double click**: Open application
-- **Drag windows**: Grab title bar
-- **Resize**: Drag bottom-right corner
-
-## 🏗️ Project Structure
-
-```
-opnexus/
-├── assets/scss/          # Global styles
-├── components/           # Vue components
-│   ├── apps/             # Application components
-│   │   ├── Email.vue     # Email application
-│   │   ├── Messages.vue  # Messages application
-│   │   ├── Evidence.vue  # Evidence management
-│   │   ├── Notes.vue     # Notes application
-│   │   └── Default.vue   # Default/placeholder app
-│   ├── LaptopScreen.vue  # Laptop simulation
-│   └── Window.vue        # Window manager
-├── pages/               # Pages
-├── stores/              # Pinia stores
-│   ├── game.ts          # Game state
-│   └── laptop.ts        # Laptop simulation
-└── nuxt.config.ts       # Nuxt configuration
+### Building for Production
+```bash
+npm run build
 ```
 
-## 🎨 Design
+## 🌐 Netlify Deployment
+
+### 1. Environment Variables
+Set these in Netlify dashboard (Site settings > Environment variables):
+
+```bash
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/nexus
+JWT_SECRET=your_super_secret_jwt_key_at_least_32_characters_long
+JWT_EXPIRES_IN=7d
+NODE_ENV=production
+```
+
+### 2. MongoDB Atlas Setup
+1. Create MongoDB Atlas cluster
+2. Create database user with read/write access
+3. Whitelist Netlify IPs (0.0.0.0/0 for simplicity)
+4. Copy connection string to MONGODB_URI
+
+### 3. Deploy
+1. Connect GitHub repository to Netlify
+2. Build settings auto-detect:
+   - **Build command**: `npm run build`
+   - **Publish directory**: `.output/public`
+3. Add environment variables
+4. Deploy and investigate! 🕵️
+
+## 🏗️ Project Architecture
+
+```
+nexus/
+├── server/
+│   ├── api/
+│   │   ├── auth/           # Authentication endpoints
+│   │   └── user/           # User management endpoints
+│   └── utils/              # Database & JWT utilities
+├── pages/
+│   ├── index.vue           # Main dashboard
+│   ├── auth.vue            # Login/register
+│   └── settings.vue        # User profile management
+├── components/
+│   ├── apps/               # Investigation applications
+│   │   ├── Email.vue       # Email forensics
+│   │   ├── Messages.vue    # Chat analysis
+│   │   ├── Evidence.vue    # Evidence management
+│   │   └── Notes.vue       # Case notes
+│   ├── LaptopScreen.vue    # Desktop simulation
+│   └── Window.vue          # Window management system
+├── stores/
+│   ├── auth.ts             # Authentication state
+│   ├── game.ts             # Game progression
+│   └── laptop.ts           # Desktop applications
+└── assets/scss/            # Styling and variables
+```
+
+## 🎮 How to Play
+
+1. **Register/Login** with your agent credentials
+2. **Select an investigation** from the main dashboard
+3. **Open the laptop** to access investigation tools
+4. **Use applications** to analyze evidence:
+   - 📧 **Email**: Review suspicious communications
+   - 💬 **Messages**: Track chat conversations
+   - 📁 **Files**: Examine documents and logs
+   - 📝 **Notes**: Document your findings
+5. **Solve the case** by connecting the evidence
+
+## 🔒 Security Features
+
+- JWT authentication with HTTP-only cookies
+- bcrypt password hashing (12 rounds)
+- Protected routes via global middleware
+- Input validation and sanitization
+- CORS protection and security headers
+
+## 🎨 Design Philosophy
 
 - **Dark Theme**: Professional investigation agency aesthetics
-- **Blue Accents**: #007acc primary color
-- **Responsive**: Playable on mobile devices
-- **Animations**: Smooth transitions and effects
+- **FBI-Inspired UI**: Realistic government interfaces
+- **Responsive Design**: Works on desktop, tablet, and mobile
+- **Smooth Animations**: Enhanced user experience
+- **Accessibility**: Proper contrast and navigation
 
-## 🔮 Planned Features
+## 🔮 Roadmap
 
-- 🌐 **Stripe Integration**: Premium story packages
-- 📊 **Analytics**: Performance tracking
-- 🏆 **Achievements**: Scoring and leaderboards
-- 🎵 **Sound Effects**: Enhanced atmosphere
-- 🌍 **Internationalization**: Additional language support
+- � **Multiple Stories**: Additional investigation scenarios
+- 🏆 **Achievement System**: Progress tracking and rewards
+- 📊 **Analytics Dashboard**: Case completion statistics
+- 🎵 **Audio Integration**: Ambient sounds and effects
+- 🌍 **Internationalization**: Multi-language support
+- 💳 **Premium Content**: Advanced cases and tools
 
 ---
 
-**Developed by**: NEXUS Development Team  
-**Version**: 1.0.0  
-**License**: MIT
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
+**Developed by**: rol2005hun  
+**License**: MIT  
+**Version**: 1.0.0
 
 # pnpm
 pnpm build
