@@ -2,13 +2,8 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=8.0.0"
-  },
   "scripts": {
     "build": "nuxt build",
-    "build:debug": "nuxt build && echo 'Build completed' && ls -la .output/",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
