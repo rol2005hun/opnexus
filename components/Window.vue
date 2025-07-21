@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import Email from './apps/Email.vue';
-import Messages from './apps/Messages.vue';
+import Chat from './apps/Chat.vue';
 import Evidence from './apps/Evidence.vue';
 import Notes from './apps/Notes.vue';
 import Default from './apps/Default.vue';
@@ -91,7 +91,7 @@ const transitionName = computed(() => {
 const getAppComponent = () => {
     const componentMap: Record<string, any> = {
         email: Email,
-        messages: Messages,
+        chat: Chat,
         files: Default,
         browser: Default,
         notes: Notes,

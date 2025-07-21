@@ -1,5 +1,5 @@
 // Nexus-Corp Leak Investigation - Characters
-import type { Character } from '@/utils/storyContent';
+import type { Character } from '@/types/content';
 
 export const characters: Character[] = [
     {
@@ -10,6 +10,8 @@ export const characters: Character[] = [
         background: 'Expert digital forensics investigator assigned to investigate the internal data leak at Nexus-Corp. Specialized in corporate espionage cases and cybersecurity incidents.',
         personality: 'Methodical, detail-oriented, skilled at uncovering digital evidence and connecting patterns.',
         avatar: '🕵️',
+        accessLevel: 10,
+        suspicious: false,
         isSuspect: false,
         isPlayer: true
     },
@@ -21,26 +23,32 @@ export const characters: Character[] = [
         background: 'Visionary tech leader with 12 years at Nexus-Corp. Built the cybersecurity division from ground up. Known for her paranoia about data protection and her ability to spot security threats before anyone else. Recently discovered suspicious network activity.',
         personality: 'Highly analytical, security-focused, tends to be suspicious of everyone. Has a reputation for being the "canary in the coal mine" for security issues.',
         avatar: '👩‍💼',
-        isSuspect: false // She reported the breach
+        accessLevel: 9,
+        suspicious: false,
+        isSuspect: false
     },
     {
-        id: 'senior_dev_002', 
+        id: 'aaron_cole',
         name: 'Aaron Cole',
         role: 'Senior Software Developer',
         department: 'Sentinel-X Development Team',
-        background: 'Brilliant coder with questionable ethics. 8 years at Nexus-Corp, known for cutting corners and bending rules to meet deadlines. Recently divorced, paying hefty alimony. Has admin access to development systems and knows how to cover digital tracks.',
-        personality: 'Pragmatic rule-bender, under financial pressure, excellent at technical workarounds. Often helps others bypass security protocols "for efficiency".',
+        background: 'Brilliant coder who joined Nexus-Corp 3 years ago. Recently going through a messy divorce and facing significant financial pressures. Has been working late nights and weekends on Sentinel-X features.',
+        personality: 'Introverted, methodical, but increasingly stressed and irritable. Shows signs of financial strain.',
         avatar: '👨‍💻',
+        accessLevel: 7,
+        suspicious: true,
         isSuspect: true
     },
     {
-        id: 'junior_dev_003',
+        id: 'chloe_miller',
         name: 'Chloe Miller',
         role: 'Junior Software Developer',
         department: 'Sentinel-X Development Team',
-        background: 'Ambitious recent graduate, eager to prove herself. Only 18 months at Nexus-Corp but already showing exceptional talent. Feels undervalued and underpaid. Has been bypassing file tracking systems, possibly at Aaron\'s direction.',
-        personality: 'Eager to please, technically curious, sometimes naive about corporate policies. Wants to advance quickly and impress senior colleagues.',
+        background: 'Ambitious recent computer science graduate, eager to prove herself. Started 8 months ago as an intern, now full-time junior developer. Has been asking lots of questions about system architecture and access controls.',
+        personality: 'Enthusiastic, curious, sometimes overly eager. Can be naive about security protocols.',
         avatar: '👩‍💻',
+        accessLevel: 4,
+        suspicious: true,
         isSuspect: true
     },
     {
@@ -48,19 +56,23 @@ export const characters: Character[] = [
         name: 'Liam Rivera',
         role: 'Cybersecurity Specialist',
         department: 'Information Security',
-        background: 'Former NSA contractor with deep knowledge of surveillance and data forensics. 3 years at Nexus-Corp. Discovered the Thursday morning USB data transfer through his monitoring systems. Cynical about corporate security practices.',
-        personality: 'Methodical investigator, cynical about company security, excellent at digital forensics. Sometimes makes sarcastic comments about security failures.',
-        avatar: '👨‍🔒',
-        isSuspect: false // He discovered evidence
+        background: 'Former NSA contractor with 8 years at Nexus-Corp. Discovered anomalous file access patterns that triggered the investigation. Known for his meticulous attention to detail and methodical approach.',
+        personality: 'Disciplined, detail-oriented, logical. Takes security breaches personally.',
+        avatar: '🛡️',
+        accessLevel: 8,
+        suspicious: false,
+        isSuspect: false
     },
     {
-        id: 'project_manager_005',
+        id: 'sophie_tanaka',
         name: 'Sophie Tanaka',
         role: 'Senior Project Manager',
         department: 'Sentinel-X Development Team',
-        background: 'Results-driven PM with 6 years at Nexus-Corp. Under intense pressure to deliver Sentinel-X on time for the Q4 defense contract deadline. Worth $47M to the company. Has been pushing team to work faster, sometimes overlooking security protocols.',
-        personality: 'Deadline-focused, high-pressure leadership style, prioritizes delivery over process. Sometimes encourages shortcuts to meet impossible timelines.',
-        avatar: '👩‍💼',
+        background: 'Results-driven project manager overseeing Sentinel-X development. Has access to all project documentation and timelines. Recently under pressure to accelerate the project timeline due to competitive threats.',
+        personality: 'Organized, results-driven, sometimes cutting corners to meet deadlines. Frustrated by recent setbacks.',
+        avatar: '📋',
+        accessLevel: 6,
+        suspicious: true,
         isSuspect: true
     },
     {
@@ -68,9 +80,11 @@ export const characters: Character[] = [
         name: 'Dr. Marcus Webb',
         role: 'CTO at CyberShield Industries',
         department: 'External - Competitor',
-        background: 'Chief Technology Officer at Nexus-Corp\'s main competitor. CyberShield is bidding against Nexus-Corp for the same defense contract. Recently received detailed Sentinel-X specifications through unknown channels.',
-        personality: 'Ruthless competitor, willing to use any advantage to win contracts. Known in the industry for aggressive corporate intelligence gathering.',
-        avatar: '🕴️',
-        isSuspect: false // Recipient of leaked data
+        background: 'Chief Technology Officer at CyberShield Industries, Nexus-Corp\'s main competitor. Former Nexus-Corp employee who left 2 years ago. Known to be developing a competing product to Sentinel-X.',
+        personality: 'Charming, competitive, ambitious. Maintains friendly relationships despite business rivalry.',
+        avatar: '🎯',
+        accessLevel: 0,
+        suspicious: false,
+        isSuspect: false
     }
 ];

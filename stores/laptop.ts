@@ -40,7 +40,7 @@ export const useLaptopStore = defineStore('laptop', {
                 maximized: false
             },
             {
-                id: 'messages',
+                id: 'chat',
                 name: 'Cipher Chat',
                 icon: '💬',
                 isOpen: false,

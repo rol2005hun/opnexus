@@ -1,5 +1,5 @@
 // Nexus-Corp Leak Investigation - Story Data
-import type { StoryContent, StorySetting, Suspect, ChatConversation, DatabaseRecord, StoryApp, StoryEvent } from '@/utils/storyContent';
+import type { StoryContent, StorySetting, Suspect, ChatConversation, DatabaseRecord, StoryApp, StoryEvent } from '@/types/content';
 import { characters } from './characters';
 import { emails } from './emails';
 import { chats } from './chats';
@@ -49,6 +49,7 @@ const chatConversations: ChatConversation[] = [
         id: 'conv_001',
         platform: 'SecureChat',
         participants: ['Aaron Cole', 'Unknown Contact'],
+        encrypted: true,
         messages: [
             {
                 id: 'chat_008',

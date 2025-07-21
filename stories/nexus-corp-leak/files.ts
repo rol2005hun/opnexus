@@ -1,5 +1,5 @@
 // Nexus-Corp Leak Investigation - File Documents
-import type { FileDocument } from '@/utils/storyContent';
+import type { FileDocument } from '@/types/content';
 
 export const files: FileDocument[] = [
     {

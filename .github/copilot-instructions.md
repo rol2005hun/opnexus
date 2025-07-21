@@ -71,6 +71,13 @@ The first investigation involves finding an internal employee who is leaking con
 - Avoid redundant comments that restate what the code already shows
 - Focus on self-documenting code with clear variable and function names
 
+## Testing Guidelines
+
+- **Browser Testing**: User handles all browser testing and preview responsibilities
+- **Development Server**: Use VS Code tasks to run development server
+- **Tool Usage**: Do not use `open_simple_browser` tool - user manages browser interactions
+- **Feedback Loop**: User will provide testing feedback and report any issues found during browser testing
+
 ## Code Style Guidelines
 
 - **Semicolons**: Always use semicolons (`;`) at the end of statements, except after closing braces (`}`)
