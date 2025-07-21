@@ -870,7 +870,7 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
 }
 
 // Responsive design
-@media (max-width: 520px) {
+@media (max-width: 768px) {
     .auth-page {
         padding: 0;
     }
@@ -944,7 +944,7 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
     }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 480px) {
     .auth-container {
         padding: 1rem;
     }
