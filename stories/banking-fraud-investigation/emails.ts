@@ -1,4 +1,3 @@
-// Banking Fraud Investigation - Email Messages
 import type { EmailMessage } from '@/types/email';
 
 export const emails: EmailMessage[] = [

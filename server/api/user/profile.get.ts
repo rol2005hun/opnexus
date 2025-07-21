@@ -13,7 +13,6 @@ export default defineEventHandler(async (event) => {
     try {
         await connectToDatabase();
 
-        // Extract and verify JWT token
         const authHeader = getHeader(event, 'authorization');
         const token = extractTokenFromHeader(authHeader);
 
@@ -32,7 +31,6 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Find user by ID
         const user = await User.findById(payload.userId);
 
         if (!user) {
@@ -42,7 +40,6 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Return user data (without password)
         const userResponse = {
             id: user._id,
             username: user.username,

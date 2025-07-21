@@ -1,6 +1,6 @@
 <template>
   <div class="app-email">
-    
+
     <div class="email-sidebar">
       <div class="compose-section">
         <button class="compose-btn" @click="openCompose">✏️ Compose</button>
@@ -35,10 +35,14 @@
           <div class="email-time">{{ formatTime(email.timestamp) }}</div>
           <div v-if="email.hasAttachment" class="attachment-indicator">📎</div>
           <div class="email-item-actions">
-            <button v-if="activeFolder !== 'trash'" class="action-btn trash" @click.stop="moveToTrash(email.id)" title="Move to Trash">🗑️</button>
-            <button v-if="activeFolder === 'trash'" class="action-btn restore" @click.stop="restoreFromTrash(email.id)" title="Restore">↶</button>
-            <button v-if="activeFolder === 'trash'" class="action-btn delete" @click.stop="permanentDelete(email.id)" title="Delete Forever">❌</button>
-            <button class="action-btn important" @click.stop="toggleImportant(email.id)" :class="{ active: email.important }" title="Toggle Important">⭐</button>
+            <button v-if="activeFolder !== 'trash'" class="action-btn trash" @click.stop="moveToTrash(email.id)"
+              title="Move to Trash">🗑️</button>
+            <button v-if="activeFolder === 'trash'" class="action-btn restore" @click.stop="restoreFromTrash(email.id)"
+              title="Restore">↶</button>
+            <button v-if="activeFolder === 'trash'" class="action-btn delete" @click.stop="permanentDelete(email.id)"
+              title="Delete Forever">❌</button>
+            <button class="action-btn important" @click.stop="toggleImportant(email.id)"
+              :class="{ active: email.important }" title="Toggle Important">⭐</button>
           </div>
         </div>
 
@@ -77,7 +81,6 @@
       </div>
     </div>
 
-    <!-- Compose Email Modal -->
     <div v-if="showCompose" class="compose-modal">
       <div class="compose-content">
         <div class="compose-header">
@@ -130,21 +133,18 @@ const composeForm = ref({
   body: ''
 });
 
-// Load current story content
 onMounted(async () => {
-    currentStoryContent.value = await gameStore.getCurrentStoryContent();
-    initializeEmails();
+  currentStoryContent.value = await gameStore.getCurrentStoryContent();
+  initializeEmails();
 });
 
-// Watch for story changes
 watch(() => gameStore.currentStory, async (newStoryId) => {
-    if (newStoryId) {
-        currentStoryContent.value = await gameStore.getCurrentStoryContent();
-        // Reset active email when story changes
-        selectedEmail.value = null;
-        activeFolder.value = 'inbox';
-        initializeEmails();
-    }
+  if (newStoryId) {
+    currentStoryContent.value = await gameStore.getCurrentStoryContent();
+    selectedEmail.value = null;
+    activeFolder.value = 'inbox';
+    initializeEmails();
+  }
 });
 
 const folders: EmailFolder[] = [
@@ -156,46 +156,28 @@ const folders: EmailFolder[] = [
   { id: 'trash', name: 'Trash', icon: '🗑️', unread: 0 }
 ];
 
-// Get emails from current story data
 const getStoryEmails = (): EmailMessage[] => {
   return currentStoryContent.value?.emails || [];
-};
+}
 
-// Format email content with HTML support and common formatting
 const formatEmailContent = (content: string): string => {
   let formatted = content;
-  
-  // Replace double newlines with paragraph breaks
+
   formatted = formatted.replace(/\n\n+/g, '</p><p>');
-  
-  // Replace single newlines with line breaks
   formatted = formatted.replace(/\n/g, '<br>');
-  
-  // Format bold text (**text**)
   formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  
-  // Format numbered lists
   formatted = formatted.replace(/^(\d+\.\s.+)$/gm, '<li>$1</li>');
-  
-  // Format bullet points
   formatted = formatted.replace(/^[\-\*]\s(.+)$/gm, '<li>$1</li>');
-  
-  // Wrap consecutive list items in ul tags
   formatted = formatted.replace(/(<li>.*?<\/li>)(\s*<li>.*?<\/li>)*/gs, '<ul>$&</ul>');
-  
-  // Wrap content in paragraphs if not already
   if (!formatted.includes('<p>')) {
     formatted = `<p>${formatted}</p>`;
   }
-  
-  // Clean up any malformed paragraph tags
   formatted = formatted.replace(/<p><\/p>/g, '');
   formatted = formatted.replace(/<p>\s*<br>\s*<\/p>/g, '');
-  
+
   return formatted;
 };
 
-// Convert raw email data to processed format
 const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
   return rawEmails.map(email => {
     const processedAttachments: EmailAttachment[] = email.attachments || [];
@@ -219,20 +201,18 @@ const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
 
 const emails = ref<ProcessedEmail[]>([]);
 
-// Initialize emails from story
 const initializeEmails = () => {
   const storyEmails = getStoryEmails();
   emails.value = processEmails(storyEmails);
   updateFolderCounts();
 };
 
-// Update folder counts based on email status
 const updateFolderCounts = () => {
   folders.forEach(folder => {
     if (folder.id === 'important') {
       folder.unread = emails.value.filter(email => email.important && !email.read).length;
     } else {
-      folder.unread = emails.value.filter(email => 
+      folder.unread = emails.value.filter(email =>
         email.folder === folder.id && !email.read
       ).length;
     }
@@ -251,9 +231,8 @@ const currentEmails = computed(() => {
     return emails.value.filter(email => email.folder !== 'trash');
   }
   if (activeFolder.value === 'inbox') {
-    // Inbox csak az nekem címzett emailek (nem sent)
-    return emails.value.filter(email => 
-      email.folder === 'inbox' || 
+    return emails.value.filter(email =>
+      email.folder === 'inbox' ||
       (email.folder !== 'sent' && email.folder !== 'trash' && email.folder !== 'drafts')
     );
   }
@@ -274,8 +253,7 @@ const selectEmail = (emailId: string) => {
 
     if (gameStore.currentStory) {
       gameStore.markEmailRead(gameStore.currentStory, emailId);
-      
-      // Mark as evidence if it's important
+
       if (email.important) {
         gameStore.addEvidence(gameStore.currentStory, `email_evidence_${emailId}`);
       }
@@ -287,7 +265,6 @@ const refreshEmails = () => {
   initializeEmails();
 };
 
-// Email actions
 const moveToTrash = (emailId: string) => {
   const email = emails.value.find(e => e.id === emailId);
   if (email) {
@@ -330,7 +307,6 @@ const openAttachment = (attachment: EmailAttachment) => {
   console.log('Opening attachment:', attachment.name);
 };
 
-// Compose email functions
 const openCompose = () => {
   showCompose.value = true;
   composeForm.value = {
@@ -360,7 +336,7 @@ const sendEmail = () => {
     attachments: [],
     folder: 'sent'
   };
-  
+
   emails.value.push(newEmail);
   updateFolderCounts();
   showCompose.value = false;
@@ -377,504 +353,9 @@ const formatDateTime = (date: Date) => {
   return date.toLocaleString('en-US');
 };
 
-// Initialize when component mounts
 initializeEmails();
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/scss/variables" as *;
-@use "sass:color";
-
-.app-email {
-  position: relative;
-  display: flex;
-  height: 100%;
-  background: $window-bg;
-  overflow: hidden;
-}
-
-.email-sidebar {
-  background: $bg-secondary;
-  border-right: 1px solid #444;
-  padding: 1rem 0;
-  flex-shrink: 0;        // Ne zsugorodjon
-  width: 12rem;          // Fix szélesség
-  min-width: 10rem;      // Minimum védelem
-
-  .compose-section {
-    padding: 0 16px 16px 16px;
-    border-bottom: 1px solid #444;
-    margin-bottom: 16px;
-
-    .compose-btn {
-      width: 100%;
-      background: $accent-blue;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s ease;
-
-      &:hover {
-        background: color.adjust($accent-blue, $lightness: 10%);
-      }
-    }
-  }
-
-  .folders {
-    .folder {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.1);
-      }
-
-      &.active {
-        background: $accent-blue;
-        color: white;
-      }
-
-      .folder-icon {
-        font-size: 1rem;
-      }
-
-      .folder-name {
-        flex: 1;
-        font-size: 0.9rem;
-      }
-
-      .unread-count {
-        background: $accent-red;
-        color: white;
-        border-radius: 10px;
-        padding: 2px 6px;
-        font-size: 0.7rem;
-        font-weight: bold;
-      }
-    }
-  }
-}
-
-.email-list {
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #444;
-  flex-shrink: 0;        // Ne zsugorodjon
-  width: 20rem;          // Fix szélesség
-  min-width: 16rem;      // Minimum védelem
-
-  .email-header {
-    flex-shrink: 0;
-    padding: 1rem;
-    border-bottom: 1px solid #444;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: $bg-secondary;
-
-    h3 {
-      margin: 0;
-      color: $text-primary;
-    }
-
-    .refresh-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.5rem;
-      color: $text-secondary;
-      transition: color 0.2s ease;
-
-      &:hover {
-        color: $text-primary;
-      }
-    }
-  }
-
-  .emails-container {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .email-item {
-    padding: 12px 16px;
-    border-bottom: 1px solid #333;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    position: relative;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    &.selected {
-      background: $accent-blue;
-      color: white;
-    }
-
-    &.unread {
-      background: rgba(0, 122, 204, 0.1);
-      font-weight: 600;
-
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        background: $accent-blue;
-      }
-    }
-
-    &.important {
-      border-left: 3px solid $accent-orange;
-    }
-
-    .email-sender {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: $text-primary;
-    }
-
-    .email-subject {
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-      color: $text-primary;
-    }
-
-    .email-preview {
-      font-size: 0.8rem;
-      color: $text-secondary;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .email-time {
-      font-size: 0.7rem;
-      color: $text-muted;
-    }
-
-    .attachment-indicator {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      font-size: 0.8rem;
-    }
-
-    .email-item-actions {
-      position: absolute;
-      top: 50%;
-      right: 8px;
-      transform: translateY(-50%);
-      display: none;
-      gap: 4px;
-
-      .action-btn {
-        background: rgba(0, 0, 0, 0.7);
-        border: none;
-        color: white;
-        padding: 4px 6px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        transition: background 0.2s ease;
-
-        &:hover {
-          background: rgba(0, 0, 0, 0.9);
-        }
-
-        &.important.active {
-          color: $accent-orange;
-        }
-
-        &.trash:hover {
-          background: $accent-red;
-        }
-
-        &.restore:hover {
-          background: $accent-green;
-        }
-
-        &.delete:hover {
-          background: $accent-red;
-        }
-      }
-    }
-
-    &:hover .email-item-actions {
-      display: flex;
-    }
-  }
-}
-
-.email-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;               // Rugalmas méret - maradék helyet foglalja
-  height: 100%;
-  overflow: hidden;
-  height: 100%;
-  overflow: hidden;
-
-  .email-view {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem;
-
-    .email-headers {
-      margin-bottom: 1.5rem;
-
-      h2 {
-        margin-bottom: 1rem;
-        color: $text-primary;
-      }
-
-      .email-meta {
-        background: $bg-secondary;
-        padding: 1rem;
-        border-radius: 8px;
-
-        div {
-          margin-bottom: 0.5rem;
-          font-size: 0.9rem;
-
-          &:last-child {
-            margin-bottom: 0;
-          }
-
-          strong {
-            color: $text-primary;
-          }
-        }
-      }
-    }
-
-    .email-body {
-      line-height: 1.6;
-      color: $text-primary;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-
-      :deep(p) {
-        margin-bottom: 1rem;
-      }
-
-      :deep(ul), :deep(ol) {
-        margin-bottom: 1rem;
-        margin-left: 0;
-        padding-left: 2rem;
-
-        li {
-          margin-bottom: 0.5rem;
-          color: $text-secondary;
-        }
-      }
-
-      :deep(ul) {
-        list-style-type: disc;
-      }
-
-      :deep(ol) {
-        list-style-type: decimal;
-      }
-
-      :deep(strong) {
-        color: $accent-orange;
-        font-weight: 600;
-      }
-
-      :deep(br) {
-        margin-bottom: 0.5rem;
-      }
-    }
-
-    .email-attachments {
-      margin-top: 2rem;
-
-      h4 {
-        margin-bottom: 1rem;
-        color: $text-primary;
-      }
-
-      .attachment {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px;
-        background: $bg-secondary;
-        border-radius: 6px;
-        margin-bottom: 8px;
-        cursor: pointer;
-        transition: background 0.2s ease;
-
-        &:hover {
-          background: color.adjust($bg-secondary, $lightness: 5%);
-        }
-
-        .attachment-icon {
-          font-size: 1.2rem;
-        }
-
-        .attachment-name {
-          flex: 1;
-          font-size: 0.9rem;
-        }
-
-        .attachment-size {
-          font-size: 0.8rem;
-          color: $text-muted;
-        }
-      }
-    }
-  }
-}
-
-.no-email-selected {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  padding: 2rem;
-  color: $text-secondary;
-  font-style: italic;
-  text-align: center;
-}
-
-.no-emails {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: $text-secondary;
-  font-style: italic;
-}
-
-// Compose Modal Styles
-.compose-modal {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .compose-content {
-    background: $bg-primary;
-    border: 1px solid #444;
-    border-radius: 8px;
-    width: 600px;
-    max-width: 90vw;
-    max-height: 80vh;
-    overflow: hidden;
-
-    .compose-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid #444;
-      background: $bg-secondary;
-
-      h3 {
-        margin: 0;
-        color: $text-primary;
-      }
-
-      .close-btn {
-        background: none;
-        border: none;
-        color: $text-secondary;
-        font-size: 1.2rem;
-        cursor: pointer;
-        
-        &:hover {
-          color: $text-primary;
-        }
-      }
-    }
-
-    .compose-form {
-      padding: 20px;
-
-      .form-row {
-        margin-bottom: 16px;
-
-        label {
-          display: block;
-          margin-bottom: 4px;
-          color: $text-primary;
-          font-weight: 600;
-        }
-
-        input, textarea {
-          width: 100%;
-          padding: 8px 12px;
-          background: $bg-secondary;
-          border: 1px solid #444;
-          border-radius: 4px;
-          color: $text-primary;
-          font-family: inherit;
-
-          &:focus {
-            outline: none;
-            border-color: $accent-blue;
-          }
-        }
-
-        textarea {
-          resize: vertical;
-          min-height: 200px;
-        }
-      }
-
-      .compose-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-
-        .send-btn {
-          background: $accent-blue;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-weight: 600;
-
-          &:hover {
-            background: color.adjust($accent-blue, $lightness: 10%);
-          }
-        }
-
-        .cancel-btn {
-          background: $bg-secondary;
-          color: $text-primary;
-          border: 1px solid #444;
-          padding: 10px 20px;
-          border-radius: 4px;
-          cursor: pointer;
-
-          &:hover {
-            background: color.adjust($bg-secondary, $lightness: 5%);
-          }
-        }
-      }
-    }
-  }
-}
+@use '@/assets/scss/components/apps/Email.scss';
 </style>

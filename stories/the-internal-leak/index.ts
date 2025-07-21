@@ -1,9 +1,8 @@
-// Nexus-Corp Leak Investigation - Story Data
 import type { StoryContent, StorySetting, Suspect, EvidenceConversation, DatabaseRecord, StoryApp, StoryEvent } from '@/types/content';
 import { characters } from './characters';
 import { emails } from './emails';
-import { chats } from './chats';
 import { files } from './files';
+import { storyMetadata } from './metadata';
 
 const setting: StorySetting = {
     location: 'Nexus-Corp Industries, Arlington, VA',
@@ -268,8 +267,7 @@ export const nexusCorpLeakStory: StoryContent = {
     files,
     records,
     customApps,
-    
-    // Investigation objectives
+
     objectives: [
         {
             id: 'obj_001',
@@ -317,6 +315,8 @@ export const nexusCorpLeakStory: StoryContent = {
             hints: ['Start from the competitor contact', 'Follow chronological order of communications']
         }
     ],
-    
+
     timeline
 };
+
+export { storyMetadata, nexusCorpLeakStory as storyContent };

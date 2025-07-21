@@ -1,0 +1,1 @@
+export { storyMetadata } from './metadata';

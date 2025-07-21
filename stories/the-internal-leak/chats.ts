@@ -1,4 +1,3 @@
-// Nexus-Corp Leak Investigation - Chat Messages 
 import type { EvidenceMessage } from '@/types/content';
 
 export const chats: EvidenceMessage[] = [

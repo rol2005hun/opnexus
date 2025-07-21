@@ -17,7 +17,6 @@ export default defineEventHandler(async (event) => {
         const body = await readBody(event);
         const { username, email, password, agentName } = body;
 
-        // Validation
         if (!username || !email || !password || !agentName) {
             throw createError({
                 statusCode: 400,
@@ -32,7 +31,6 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Check if user already exists
         const existingUser = await User.findOne({
             $or: [{ email }, { username }]
         });
@@ -44,11 +42,9 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Hash password
         const saltRounds = 12;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // Create new user
         const newUser = new User({
             username,
             email,
@@ -63,7 +59,7 @@ export default defineEventHandler(async (event) => {
             },
             gameProgress: {
                 completedStories: [],
-                purchasedStories: ['the-internal-leak'], // First story is free
+                purchasedStories: ['the-internal-leak'],
                 currentStory: null,
                 totalPlaytime: 0,
                 achievements: ['new-recruit']
@@ -75,14 +71,12 @@ export default defineEventHandler(async (event) => {
 
         const savedUser = await newUser.save();
 
-        // Generate JWT token
         const token = generateToken({
             userId: savedUser._id.toString(),
             email: savedUser.email,
             username: savedUser.username
         });
 
-        // Return user data (without password)
         const userResponse = {
             id: savedUser._id,
             username: savedUser.username,

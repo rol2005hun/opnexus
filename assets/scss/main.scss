@@ -4,46 +4,60 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   font-family: $font-primary;
   background: $bg-dark;
   color: $text-primary;
-  
-  // Hide scrollbar but keep functionality
-  scrollbar-width: none; // Firefox
-  -ms-overflow-style: none; // IE and Edge
-  
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
   &::-webkit-scrollbar {
-    display: none; // Chrome, Safari, Opera
+    display: none;
   }
 }
 
-// Reset button fonts to inherit from parent
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
   font-size: inherit;
 }
 
-// Global utility classes
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.flex { display: flex; }
-.flex-center { 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-}
-.flex-between { 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; 
+.text-center {
+  text-align: center;
 }
 
-.cursor-pointer { cursor: pointer; }
+.text-left {
+  text-align: left;
+}
 
-// Scrollbar styling
+.text-right {
+  text-align: right;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }

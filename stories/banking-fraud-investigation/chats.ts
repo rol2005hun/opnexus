@@ -1,4 +1,3 @@
-// Banking Fraud Investigation - Chat Messages
 import type { EvidenceConversation } from '@/types/content';
 
 export const chats: EvidenceConversation[] = [

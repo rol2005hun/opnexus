@@ -66,10 +66,10 @@ export const useAuthStore = defineStore('auth', {
                     this.user = data.user;
                     this.token = data.token;
                     this.isAuthenticated = true;
-                    
+
                     const tokenCookie = useCookie('auth-token');
                     tokenCookie.value = data.token;
-                    
+
                     return { success: true, message: data.message };
                 }
             } catch (error: any) {
@@ -95,10 +95,10 @@ export const useAuthStore = defineStore('auth', {
                     this.user = data.user;
                     this.token = data.token;
                     this.isAuthenticated = true;
-                    
+
                     const tokenCookie = useCookie('auth-token');
                     tokenCookie.value = data.token;
-                    
+
                     return { success: true, message: data.message };
                 }
             } catch (error: any) {
@@ -136,7 +136,7 @@ export const useAuthStore = defineStore('auth', {
             this.user = null;
             this.token = null;
             this.isAuthenticated = false;
-            
+
             const tokenCookie = useCookie('auth-token');
             tokenCookie.value = null;
         },
@@ -166,7 +166,6 @@ export const useAuthStore = defineStore('auth', {
             try {
                 // TODO: Implement payment logic
 
-                // For now, just add to purchased stories
                 this.user.gameProgress.purchasedStories.push(storyId);
 
                 return true;

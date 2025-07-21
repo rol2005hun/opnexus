@@ -1,4 +1,3 @@
-// Banking Fraud Investigation - Characters
 import type { Character } from '@/types/content';
 
 export const characters: Character[] = [

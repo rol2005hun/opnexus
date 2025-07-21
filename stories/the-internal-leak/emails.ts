@@ -1,4 +1,3 @@
-// Nexus-Corp Leak Investigation - Email Messages
 import type { EmailMessage } from '@/types/email';
 
 export const emails: EmailMessage[] = [

@@ -1,9 +1,9 @@
-// Banking Fraud Investigation - Story Data
 import type { StoryContent, StorySetting, Suspect, DatabaseRecord, StoryApp, StoryEvent, Objective, EvidenceConversation } from '@/types/content';
 import { characters } from './characters';
 import { emails } from './emails';
 import { chats } from './chats';
 import { files } from './files';
+import { storyMetadata } from './metadata';
 
 const setting: StorySetting = {
     location: 'City National Bank, Downtown Financial District',
@@ -162,3 +162,5 @@ export const bankingFraudStory: StoryContent = {
     objectives,
     timeline
 };
+
+export { storyMetadata, bankingFraudStory as storyContent };

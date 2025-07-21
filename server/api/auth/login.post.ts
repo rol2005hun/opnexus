@@ -17,7 +17,6 @@ export default defineEventHandler(async (event) => {
         const body = await readBody(event);
         const { identifier, password } = body;
 
-        // Validation
         if (!identifier || !password) {
             throw createError({
                 statusCode: 400,
@@ -25,7 +24,6 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Try to find user by email or username
         const user = await User.findOne({
             $or: [
                 { email: identifier.toLowerCase() },
@@ -40,7 +38,6 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Check password
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
@@ -50,14 +47,12 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Generate JWT token
         const token = generateToken({
             userId: user._id.toString(),
             email: user.email,
             username: user.username
         });
 
-        // Return user data (without password)
         const userResponse = {
             id: user._id,
             username: user.username,

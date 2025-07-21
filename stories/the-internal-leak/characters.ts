@@ -1,4 +1,3 @@
-// Nexus-Corp Leak Investigation - Characters
 import type { Character } from '@/types/content';
 
 export const characters: Character[] = [

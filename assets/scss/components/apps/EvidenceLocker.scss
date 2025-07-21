@@ -1,0 +1,257 @@
+@use '@/assets/scss/variables' as *;
+@use 'sass:color';
+
+.app-evidence-locker {
+    height: 100%;
+    background: $window-bg;
+    display: flex;
+    flex-direction: column;
+}
+
+.evidence-locker-header {
+    background: $bg-secondary;
+    padding: 1rem;
+    border-bottom: 1px solid #444;
+
+    h2 {
+        margin: 0 0 0.5rem 0;
+        color: $text-primary;
+        font-size: 1.2rem;
+    }
+
+    .case-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .case-name {
+            color: $text-secondary;
+            font-weight: 500;
+        }
+
+        .case-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+
+            &.investigating {
+                background: rgba(255, 193, 7, 0.2);
+                color: #ffc107;
+            }
+
+            &.analyzing {
+                background: rgba(0, 122, 204, 0.2);
+                color: $accent-blue;
+            }
+
+            &.completed {
+                background: rgba(76, 175, 80, 0.2);
+                color: #4caf50;
+            }
+        }
+    }
+}
+
+.evidence-content {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.progress-section {
+    margin-bottom: 2rem;
+
+    h3 {
+        color: $text-primary;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
+    .progress-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+
+        .progress-item {
+            background: $bg-secondary;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid $accent-blue;
+
+            .progress-label {
+                display: block;
+                color: $text-secondary;
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .progress-value {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: $text-primary;
+            }
+        }
+    }
+}
+
+.evidence-section,
+.clues-section,
+.report-section {
+    margin-bottom: 2rem;
+
+    h3 {
+        color: $text-primary;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+}
+
+.evidence-list {
+    .no-evidence {
+        text-align: center;
+        padding: 2rem;
+        color: $text-secondary;
+        background: $bg-secondary;
+        border-radius: 8px;
+        border: 2px dashed #444;
+    }
+
+    .evidence-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        background: $bg-secondary;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border: 1px solid #444;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: $accent-blue;
+            background: color.adjust($bg-secondary, $lightness: 2%);
+        }
+
+        &.important {
+            border-left: 4px solid $accent-red;
+
+            .evidence-icon {
+                color: $accent-red;
+            }
+        }
+
+        .evidence-icon {
+            font-size: 2rem;
+            color: $accent-blue;
+        }
+
+        .evidence-details {
+            flex: 1;
+
+            h4 {
+                margin: 0 0 0.5rem 0;
+                color: $text-primary;
+                font-size: 1rem;
+            }
+
+            p {
+                margin: 0 0 0.5rem 0;
+                color: $text-secondary;
+                line-height: 1.4;
+            }
+
+            .evidence-meta {
+                display: flex;
+                gap: 1rem;
+                font-size: 0.8rem;
+
+                .evidence-type {
+                    color: $accent-blue;
+                    font-weight: 600;
+                }
+
+                .evidence-time {
+                    color: $text-muted;
+                }
+            }
+        }
+    }
+}
+
+.clues-list {
+    .clue-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        background: rgba(0, 122, 204, 0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border-left: 4px solid $accent-blue;
+
+        .clue-icon {
+            font-size: 1.5rem;
+            color: $accent-blue;
+        }
+
+        .clue-text {
+            color: $text-primary;
+            line-height: 1.4;
+        }
+    }
+}
+
+.report-section {
+    .report-content {
+        background: $bg-secondary;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #444;
+
+        .suspect-info {
+            margin-bottom: 1.5rem;
+
+            h4 {
+                color: $text-primary;
+                margin-bottom: 1rem;
+            }
+
+            .suspect-details {
+                background: rgba(255, 193, 7, 0.1);
+                padding: 1rem;
+                border-radius: 8px;
+                border-left: 4px solid #ffc107;
+                margin-bottom: 1rem;
+
+                strong {
+                    color: $text-primary;
+                    font-size: 1.1rem;
+                }
+
+                p {
+                    margin: 0.5rem 0;
+                    color: $text-secondary;
+                }
+
+                .suspicion-level {
+                    font-size: 0.9rem;
+                    color: #ffc107;
+                    font-weight: 600;
+                }
+            }
+        }
+
+        .case-conclusion {
+            h4 {
+                color: #4caf50;
+                margin-bottom: 1rem;
+            }
+
+            p {
+                color: $text-primary;
+                line-height: 1.4;
+            }
+        }
+    }
+}
