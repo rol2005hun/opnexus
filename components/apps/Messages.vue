@@ -1,10 +1,10 @@
 <template>
   <div class="app-messages">
-    
+
     <div class="chat-list">
       <div class="chat-header">
         <h3>Messages</h3>
-        <button class="new-chat-btn">+</button>
+        <button class="new-chat-btn" @click="showNewChatDialog = true">+</button>
       </div>
 
       <div class="chats">
@@ -19,11 +19,29 @@
           <div v-if="chat.unreadCount > 0" class="unread-badge">{{ chat.unreadCount }}</div>
         </div>
       </div>
+
+      <!-- New Chat Dialog -->
+      <div v-if="showNewChatDialog" class="new-chat-dialog">
+        <div class="dialog-content">
+          <h4>Start New Chat</h4>
+          <div class="character-list">
+            <div v-for="character in availableCharacters" :key="character.id" class="character-item"
+              @click="createNewChat(character.id)">
+              <div class="character-avatar">{{ getCharacterAvatar(character.name) }}</div>
+              <div class="character-info">
+                <div class="character-name">{{ character.name }}</div>
+                <div class="character-role">{{ character.role }}</div>
+              </div>
+            </div>
+          </div>
+          <button class="cancel-btn" @click="showNewChatDialog = false">Cancel</button>
+        </div>
+      </div>
     </div>
 
     <div class="message-area">
       <div v-if="activeChatData" class="chat-view">
-        
+
         <div class="chat-header-bar">
           <div class="contact-info">
             <div class="contact-avatar">{{ activeChatData.avatar }}</div>
@@ -52,9 +70,12 @@
           </div>
         </div>
 
-        <div class="message-input">
+        <div class="message-input" v-if="activeChatData?.canSendMessage">
           <input v-model="newMessage" type="text" placeholder="Type a message..." @keyup.enter="sendMessage">
           <button @click="sendMessage" :disabled="!newMessage.trim()">📤</button>
+        </div>
+        <div v-else-if="activeChatData && !activeChatData.canSendMessage" class="message-input-disabled">
+          <div class="disabled-text">This is a read-only conversation</div>
         </div>
       </div>
 
@@ -68,6 +89,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue';
 import { useGameStore } from '@/stores/game';
+import type { ChatConversation, Character, StoryContent } from '@/utils/storyContent';
 import { nexusCorpLeakStory } from '@/stories/nexus-corp-leak';
 
 const gameStore = useGameStore();
@@ -92,68 +114,107 @@ interface Chat {
   unreadCount: number
   messages: Message[]
   isGroupChat: boolean
+  canSendMessage: boolean
 }
 
 const activeChat = ref<string | null>(null);
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement>();
+const showNewChatDialog = ref(false);
+
+// Get current story data - for now using nexusCorpLeakStory directly
+// TODO: Make this dynamic based on gameStore.currentStory
+const currentStory = computed((): StoryContent | null => {
+  if (!gameStore.currentStory) return null;
+  // For now, we only have one story
+  return nexusCorpLeakStory;
+});
+
+const playerCharacter = computed(() => {
+  if (!currentStory.value) return null;
+  return currentStory.value.characters.find((char: Character) => char.isPlayer) || currentStory.value.characters[0];
+});
+
+// Helper function to get character avatar
+const getCharacterAvatar = (name: string): string => {
+  if (!currentStory.value) return '👤';
+
+  const character = currentStory.value.characters.find((char: Character) => char.name === name);
+  if (character?.avatar) return character.avatar;
+
+  // Generate avatar based on name
+  if (name.includes('Unknown') || name.includes('External')) return '🕵️';
+  if (name.toLowerCase().includes('group') || name.toLowerCase().includes('team')) return '👥';
+
+  // Gender-based avatars (simple heuristic)
+  const femaleNames = ['irene', 'sophie', 'chloe', 'sarah', 'lisa', 'anna', 'maria'];
+  const firstName = name.split(' ')[0]?.toLowerCase() || '';
+  return femaleNames.includes(firstName) ? '👩‍💼' : '👨‍💼';
+};
 
 // Convert story chat conversations to Chat interface format
-const chats: Chat[] = nexusCorpLeakStory.chatMessages.map(conversation => {
-  const messages: Message[] = conversation.messages.map(msg => ({
-    id: msg.id,
-    content: msg.content,
-    timestamp: new Date(msg.timestamp),
-    sent: msg.sender === 'Aaron Cole', // Aaron Cole's messages are "sent" (our perspective)
-    sender: msg.sender
-  }));
+const chats = computed((): Chat[] => {
+  if (!currentStory.value?.chatMessages) return [];
 
-  const lastMessage = messages[messages.length - 1];
-  const isGroupChat = conversation.participants.length > 2;
-  
-  // Generate chat name based on participants
-  let chatName = '';
-  if (isGroupChat) {
-    chatName = conversation.title;
-  } else {
-    // For 1-on-1 chats, show the other person's name
-    chatName = conversation.participants.find(p => p !== 'Aaron Cole') || conversation.participants[0] || 'Unknown';
-  }
-  
-  return {
-    id: conversation.id,
-    name: chatName,
-    participants: conversation.participants,
-    platform: conversation.platform,
-    avatar: isGroupChat ? '👥' : 
-            conversation.participants.includes('Unknown Contact') ? '🕵️' : 
-            conversation.participants.includes('Irene Walker') ? '👩‍💼' :
-            conversation.participants.includes('Sophie Tanaka') ? '👩‍' :
-            conversation.participants.includes('Chloe Miller') ? '👩‍💻' : '👤',
-    status: conversation.platform === 'SecureChat' ? 'Encrypted' : 
-            conversation.platform === 'Teams' ? 'Group Chat' : 'Online',
-    lastMessage: lastMessage?.content || 'No messages',
-    lastMessageTime: lastMessage?.timestamp || new Date(),
-    unreadCount: conversation.isEvidence ? 2 : 0,
-    messages,
-    isGroupChat
-  };
+  return currentStory.value.chatMessages.map((conversation: ChatConversation) => {
+    const messages: Message[] = conversation.messages.map((msg: any) => ({
+      id: msg.id,
+      content: msg.content,
+      timestamp: new Date(msg.timestamp),
+      sent: msg.sender === playerCharacter.value?.name,
+      sender: msg.sender
+    }));
+
+    const lastMessage = messages[messages.length - 1];
+    const isGroupChat = conversation.participants.length > 2;
+
+    // Generate chat name based on participants
+    let chatName = '';
+    if (isGroupChat) {
+      chatName = conversation.title || 'Group Chat';
+    } else {
+      // For 1-on-1 chats, show the other person's name
+      const otherParticipant = conversation.participants.find((p: string) => p !== playerCharacter.value?.name);
+      chatName = otherParticipant || conversation.participants[0] || 'Unknown';
+    }
+
+    // Determine if user can send messages (only group chats or conversations with story characters)
+    const canSendMessage = isGroupChat || conversation.participants.some((p: string) =>
+      currentStory.value?.characters.find((char: Character) => char.name === p && !char.isPlayer)
+    );
+
+    return {
+      id: conversation.id,
+      name: chatName,
+      participants: conversation.participants,
+      platform: conversation.platform,
+      avatar: isGroupChat ? '�' : getCharacterAvatar(chatName),
+      status: conversation.platform === 'SecureChat' ? 'Encrypted' :
+        conversation.platform === 'Teams' ? 'Group Chat' : 'Online',
+      lastMessage: lastMessage?.content || 'No messages',
+      lastMessageTime: lastMessage?.timestamp || new Date(),
+      unreadCount: conversation.isEvidence ? 2 : 0,
+      messages,
+      isGroupChat,
+      canSendMessage
+    };
+  });
 });
 
 const activeChatData = computed(() => {
   if (!activeChat.value) return null;
-  return chats.find(chat => chat.id === activeChat.value);
+  return chats.value.find((chat: Chat) => chat.id === activeChat.value);
 });
 
 const sendMessage = () => {
-  if (!newMessage.value.trim() || !activeChatData.value) return;
+  if (!newMessage.value.trim() || !activeChatData.value || !activeChatData.value.canSendMessage) return;
 
   const message: Message = {
     id: 'msg_' + Date.now(),
     content: newMessage.value.trim(),
     timestamp: new Date(),
     sent: true,
-    sender: 'Aaron Cole' // Our perspective is Aaron Cole
+    sender: playerCharacter.value?.name || 'Player'
   };
 
   activeChatData.value.messages.push(message);
@@ -172,16 +233,16 @@ const sendMessage = () => {
 // Mark chat as evidence and read when viewed
 const viewChat = (chatId: string) => {
   activeChat.value = chatId;
-  const chat = chats.find(c => c.id === chatId);
-  
+  const chat = chats.value.find((c: Chat) => c.id === chatId);
+
   if (chat && chat.unreadCount > 0 && gameStore.currentStory) {
     chat.unreadCount = 0;
     gameStore.markMessageRead(gameStore.currentStory, chatId);
-    
+
     // Mark as evidence for investigation
     gameStore.addEvidence(gameStore.currentStory, `chat_evidence_${chatId}`);
   }
-  
+
   nextTick(() => {
     if (messagesContainer.value) {
       messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
@@ -211,6 +272,46 @@ const getStatusClass = (status: string) => {
     default:
       return 'status-default';
   }
+};
+
+// Available story characters for new chats
+const availableCharacters = computed(() => {
+  if (!currentStory.value) return [];
+  return currentStory.value.characters.filter((char: Character) => !char.isPlayer);
+});
+
+const createNewChat = (characterId: string) => {
+  const character = availableCharacters.value.find((char: Character) => char.id === characterId);
+  if (!character || !currentStory.value) return;
+
+  // Check if chat already exists
+  const existingChat = chats.value.find((chat: Chat) =>
+    chat.participants.length === 2 &&
+    chat.participants.includes(character.name) &&
+    chat.participants.includes(playerCharacter.value?.name || '')
+  );
+
+  if (existingChat) {
+    activeChat.value = existingChat.id;
+    showNewChatDialog.value = false;
+    return;
+  }
+
+  // Create new chat conversation
+  const newConversation: ChatConversation = {
+    id: 'new_chat_' + Date.now(),
+    platform: 'Internal Chat',
+    participants: [playerCharacter.value?.name || 'Player', character.name],
+    messages: [],
+    isEvidence: false,
+    title: `Chat with ${character.name}`
+  };
+
+  // Add to current story
+  currentStory.value.chatMessages.push(newConversation);
+
+  activeChat.value = newConversation.id;
+  showNewChatDialog.value = false;
 };
 </script>
 
@@ -298,7 +399,6 @@ const getStatusClass = (status: string) => {
     cursor: pointer;
     transition: background 0.2s ease;
     position: relative;
-    border-bottom: 1px solid #333;
 
     &:hover {
       background: rgba(255, 255, 255, 0.05);
@@ -307,10 +407,18 @@ const getStatusClass = (status: string) => {
     &.active {
       background: $accent-blue;
       color: white;
+
+      .chat-info {
+
+        .chat-last-message,
+        .chat-time {
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
     }
 
     .chat-avatar {
-      font-size: 2rem;
+      font-size: 1.5rem;
       width: 40px;
       height: 40px;
       display: flex;
@@ -318,6 +426,7 @@ const getStatusClass = (status: string) => {
       justify-content: center;
       background: $bg-tertiary;
       border-radius: 50%;
+      flex-shrink: 0;
     }
 
     .chat-info {
@@ -326,12 +435,15 @@ const getStatusClass = (status: string) => {
 
       .chat-name {
         font-weight: 600;
-        margin-bottom: 4px;
         color: $text-primary;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .chat-last-message {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         color: $text-secondary;
         white-space: nowrap;
         overflow: hidden;
@@ -340,7 +452,7 @@ const getStatusClass = (status: string) => {
       }
 
       .chat-time {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         color: $text-muted;
       }
     }
@@ -352,10 +464,110 @@ const getStatusClass = (status: string) => {
       padding: 2px 6px;
       font-size: 0.7rem;
       font-weight: bold;
-      min-width: 18px;
+      min-width: 16px;
       text-align: center;
     }
   }
+
+  .new-chat-dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+
+    .dialog-content {
+      background: $bg-secondary;
+      border-radius: 8px;
+      padding: 1.5rem;
+      width: 280px;
+      max-height: 400px;
+      display: flex;
+      flex-direction: column;
+
+      h4 {
+        margin: 0 0 1rem 0;
+        color: $text-primary;
+        text-align: center;
+      }
+
+      .character-list {
+        max-height: 250px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+
+        .character-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px;
+          cursor: pointer;
+          border-radius: 6px;
+          transition: background 0.2s ease;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.1);
+          }
+
+          .character-avatar {
+            font-size: 1.2rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: $bg-tertiary;
+            border-radius: 50%;
+          }
+
+          .character-info {
+            flex: 1;
+
+            .character-name {
+              font-weight: 600;
+              color: $text-primary;
+              font-size: 0.9rem;
+            }
+
+            .character-role {
+              font-size: 0.8rem;
+              color: $text-secondary;
+            }
+          }
+        }
+      }
+
+      .cancel-btn {
+        background: $bg-tertiary;
+        color: $text-primary;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+  }
+}
+
+.message-area {
+  font-size: 2rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $bg-tertiary;
+  border-radius: 50%;
 }
 
 .message-area {

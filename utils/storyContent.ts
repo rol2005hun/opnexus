@@ -47,7 +47,9 @@ export interface Character {
     background: string;
     personality: string;
     photo?: string;
+    avatar?: string;
     isSuspect: boolean;
+    isPlayer?: boolean;
 }
 
 export interface Suspect extends Character {
