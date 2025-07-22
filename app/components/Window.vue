@@ -33,7 +33,7 @@
             </div>
 
             <div class="window-content">
-                <component :is="getAppComponent()" />
+                <component :is="getAppComponent(app.id)" />
             </div>
 
             <div v-if="!app.maximized" class="resize-handle" @mousedown="startResize"></div>
@@ -42,11 +42,11 @@
 </template>
 
 <script setup lang="ts">
-import Email from './apps/Email.vue';
-import CipherChat from './apps/CipherChat.vue';
-import EvidenceLocker from './apps/EvidenceLocker.vue';
-import JobDescription from './apps/JobDescription.vue';
-import Default from './apps/Default.vue';
+import Default from '@/components/apps/Default.vue';
+import Email from '@/components/apps/Email.vue';
+import CipherChat from '@/components/apps/CipherChat.vue';
+import JobDescription from '@/components/apps/JobDescription.vue';
+import EvidenceLocker from '@/components/apps/EvidenceLocker.vue';
 
 interface Props {
     app: {
@@ -88,21 +88,19 @@ const transitionName = computed(() => {
     return 'window-open';
 });
 
-const getAppComponent = () => {
+const handleFocus = () => {
+    emit('focus');
+};
+
+const getAppComponent = (appId: string) => {
     const componentMap: Record<string, any> = {
         email: Email,
-        chat: CipherChat,
-        files: Default,
-        browser: Default,
+        cipherchat: CipherChat,
         notes: JobDescription,
         evidence: EvidenceLocker
     };
 
-    return componentMap[props.app.id] || Default;
-};
-
-const handleFocus = () => {
-    emit('focus');
+    return componentMap[appId] || Default;
 };
 
 const startDrag = (event: MouseEvent) => {

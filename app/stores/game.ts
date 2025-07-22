@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from './auth';
-import { getAllStoryMetadata } from '@/utils/storyRegistry';
+import { getAllStories } from '@/utils/registerStory';
 import type { Story, StoryProgress, GameState } from '#shared/types';
 
 export const useGameStore = defineStore('game', {
@@ -15,7 +15,7 @@ export const useGameStore = defineStore('game', {
         async initializeStories() {
             if (this.stories.length === 0) {
                 try {
-                    this.stories = await getAllStoryMetadata();
+                    this.stories = await getAllStories();
                 } catch (error) {
                     console.error('Failed to initialize stories:', error);
                 }
@@ -78,8 +78,9 @@ export const useGameStore = defineStore('game', {
         async getCurrentStoryContent() {
             if (!this.currentStory) return null;
 
-            const { getStoryContent } = await import('@/utils/storyRegistry');
-            return await getStoryContent(this.currentStory);
+            const registerStory = (await import('@/utils/registerStory')).default;
+            const story = await registerStory(this.currentStory);
+            return story?.content || null;
         }
     },
 

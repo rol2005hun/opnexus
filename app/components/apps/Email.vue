@@ -158,24 +158,6 @@ const getStoryEmails = (): EmailMessage[] => {
   return currentStoryContent.value?.emails || [];
 }
 
-const formatEmailContent = (content: string): string => {
-  let formatted = content;
-
-  formatted = formatted.replace(/\n\n+/g, '</p><p>');
-  formatted = formatted.replace(/\n/g, '<br>');
-  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  formatted = formatted.replace(/^(\d+\.\s.+)$/gm, '<li>$1</li>');
-  formatted = formatted.replace(/^[\-\*]\s(.+)$/gm, '<li>$1</li>');
-  formatted = formatted.replace(/(<li>.*?<\/li>)(\s*<li>.*?<\/li>)*/gs, '<ul>$&</ul>');
-  if (!formatted.includes('<p>')) {
-    formatted = `<p>${formatted}</p>`;
-  }
-  formatted = formatted.replace(/<p><\/p>/g, '');
-  formatted = formatted.replace(/<p>\s*<br>\s*<\/p>/g, '');
-
-  return formatted;
-};
-
 const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
   return rawEmails.map(email => {
     const processedAttachments: EmailAttachment[] = email.attachments || [];
@@ -340,15 +322,15 @@ const sendEmail = () => {
   showCompose.value = false;
 };
 
-const formatTime = (date: Date) => {
-  return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
-
 const formatDateTime = (date: Date) => {
   return date.toLocaleString('en-US');
+};
+
+const formatEmailContent = (content: string): string => {
+  return content
+    .replace(/\n/g, '<br>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.*?)__/g, '<em>$1</em>');
 };
 
 initializeEmails();

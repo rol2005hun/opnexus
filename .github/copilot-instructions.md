@@ -105,3 +105,47 @@ This is a Nuxt 3 TypeScript project for creating an FBI-style investigation game
   - ❌ `const x = 5` (missing semicolon)
   - ❌ `import { useGameStore } from '@/stores/game';` (use ~/ instead)
   - ❌ `}; // after closing brace` (unnecessary semicolon)
+
+## Programming Principles & Design Guidelines
+
+### Clean Code Principles
+- **Meaningful Names**: Use descriptive, intention-revealing names for variables, functions, and classes
+- **Functions**: Keep functions small, focused on single responsibility, and avoid side effects
+- **Comments**: Minimize comments by writing self-documenting code; only comment complex business logic
+- **Formatting**: Maintain consistent horizontal and vertical formatting (newspaper metaphor)
+- **Error Handling**: Use proper exception handling, avoid null returns and null parameters
+
+### Object-Oriented Design Principles
+- **DRY (Don't Repeat Yourself)**: Eliminate code duplication through abstraction and reusable components
+- **KISS (Keep It Simple, Stupid)**: Prefer simple, straightforward solutions over complex ones
+- **YAGNI (You Aren't Gonna Need It)**: Don't implement features until they are actually needed
+- **Loose Coupling**: Minimize dependencies between components and modules
+- **High Cohesion**: Group related functionality together in well-defined modules
+
+### SOLID Principles
+- **Single Responsibility Principle (SRP)**: Each class/component should have only one reason to change
+- **Open/Closed Principle (OCP)**: Software entities should be open for extension, closed for modification
+- **Liskov Substitution Principle (LSP)**: Objects should be replaceable with instances of their subtypes
+- **Interface Segregation Principle (ISP)**: Many client-specific interfaces are better than one general-purpose interface
+- **Dependency Inversion Principle (DIP)**: Depend on abstractions, not concretions
+
+### Design Patterns & Architecture
+- **MVC Pattern**: Separate concerns with Model-View-Controller architecture (Nuxt follows this pattern)
+- **Observer Pattern**: Use reactive programming patterns (Vue's reactivity system)
+- **Factory Pattern**: Use factory functions for object creation when appropriate
+- **Decorator Pattern**: Enhance functionality without modifying original classes
+- **Composition over Inheritance**: Prefer component composition over class inheritance
+
+### Code Quality & Anti-patterns
+- **Avoid God Objects**: Prevent classes that know/do too much
+- **Avoid Spaghetti Code**: Maintain clear structure and logical flow
+- **Avoid Magic Numbers**: Use named constants instead of hardcoded values
+- **Avoid Long Parameter Lists**: Use configuration objects or builder patterns
+- **Avoid Deep Nesting**: Use early returns and guard clauses to reduce complexity
+
+### TypeScript Best Practices
+- **Strong Typing**: Use explicit types, avoid `any` type
+- **Interface Segregation**: Create specific interfaces for different use cases
+- **Type Guards**: Use type guards for runtime type checking
+- **Generic Types**: Use generics for reusable type-safe components
+- **Null Safety**: Handle undefined/null cases explicitly
