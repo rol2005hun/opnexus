@@ -1,7 +1,7 @@
 <template>
   <div class="app-evidence-locker">
     <div class="evidence-locker-header">
-      <h2>� Evidence Locker</h2>
+      <h2>🔍 Evidence Locker</h2>
       <div class="case-info" v-if="gameStore.currentStoryData">
         <span class="case-name">{{ gameStore.currentStoryData.title }}</span>
         <span class="case-status" :class="statusClass">{{ statusText }}</span>
@@ -25,6 +25,44 @@
             <span class="progress-label">Evidence collected:</span>
             <span class="progress-value">{{ evidenceCount }}/{{ requiredEvidence }}</span>
           </div>
+          <div class="progress-item">
+            <span class="progress-label">Investigation Score:</span>
+            <span class="progress-value">{{ gameStore.currentProgress?.investigationScore || 0 }}</span>
+          </div>
+        </div>
+
+        <!-- Complete Investigation Button -->
+        <div class="complete-investigation" v-if="canCompleteInvestigation">
+          <button 
+            class="complete-btn" 
+            @click="completeInvestigation"
+            :disabled="!canCompleteInvestigation"
+          >
+            🏆 Complete Investigation
+          </button>
+          <p class="complete-hint">
+            You've gathered enough evidence to close this case!
+          </p>
+        </div>
+        
+        <div class="investigation-hints" v-else-if="!isInvestigationComplete">
+          <p class="hint-text">
+            <strong>Investigation Requirements:</strong>
+          </p>
+          <ul class="requirements-list">
+            <li :class="{ completed: emailsRead >= 5 }">
+              📧 Read at least 5 emails ({{ emailsRead }}/5)
+            </li>
+            <li :class="{ completed: messagesRead >= 3 }">
+              💬 Analyze at least 3 conversations ({{ messagesRead }}/3)
+            </li>
+            <li :class="{ completed: evidenceCount >= 5 }">
+              📄 Collect at least 5 pieces of evidence ({{ evidenceCount }}/5)
+            </li>
+            <li :class="{ completed: (gameStore.currentProgress?.investigationScore || 0) >= 200 }">
+              🎯 Achieve minimum score of 200 ({{ gameStore.currentProgress?.investigationScore || 0 }}/200)
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -116,17 +154,49 @@ const totalEmails = nexusCorpLeakStory.emails.length;
 const totalChats = nexusCorpLeakStory.chatMessages.length;
 const requiredEvidence = nexusCorpLeakStory.objectives.reduce((total, obj) => total + obj.requiredEvidence.length, 0);
 
+const canCompleteInvestigation = computed(() => {
+  const progress = gameStore.currentProgress;
+  if (!progress) return false;
+  
+  return (
+    emailsRead.value >= 5 &&
+    messagesRead.value >= 3 &&
+    evidenceCount.value >= 5 &&
+    progress.investigationScore >= 200 &&
+    progress.caseStatus !== 'completed'
+  );
+});
+
+const isInvestigationComplete = computed(() => {
+  return gameStore.currentProgress?.caseStatus === 'completed';
+});
+
+const completeInvestigation = () => {
+  if (!gameStore.currentStory || !canCompleteInvestigation.value) return;
+  
+  gameStore.markSuspectConfirmed(gameStore.currentStory, 'aaron_cole');
+};
+
 const statusClass = computed(() => {
-  if (!gameStore.currentProgress) return 'investigating';
-  return gameStore.currentProgress.caseStatus;
+  const progress = gameStore.currentProgress;
+  if (!progress) return 'investigating';
+  
+  if (progress.caseStatus === 'completed') return 'completed';
+  if (progress.investigationScore >= 300) return 'building_case';
+  if (progress.evidenceFound.length >= 5) return 'analyzing';
+  return progress.caseStatus;
 });
 
 const statusText = computed(() => {
+  const progress = gameStore.currentProgress;
+  if (!progress) return 'Under Investigation';
+  
   switch (statusClass.value) {
-    case 'completed': return 'Closed';
-    case 'analyzing': return 'Analysis in Progress';
+    case 'completed': return 'Case Closed';
     case 'building_case': return 'Building Case';
+    case 'analyzing': return 'Analyzing Evidence';
     case 'arrest_warrant': return 'Preparing Arrest';
+    case 'briefing': return 'Reading Briefing';
     default: return 'Under Investigation';
   }
 });

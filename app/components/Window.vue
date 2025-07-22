@@ -43,10 +43,33 @@
 
 <script setup lang="ts">
 import Default from '@/components/apps/Default.vue';
-import Email from '@/components/apps/Email.vue';
 import CipherChat from '@/components/apps/CipherChat.vue';
 import JobDescription from '@/components/apps/JobDescription.vue';
 import EvidenceLocker from '@/components/apps/EvidenceLocker.vue';
+import SecureMail from '@/components/apps/SecureMail.vue';
+
+const TASKBAR_HEIGHT = 50;
+const TITLE_BAR_HEIGHT = 32;
+const MIN_VISIBLE_WIDTH = 100;
+const MIN_WINDOW_WIDTH = 300;
+const MIN_WINDOW_HEIGHT = 200;
+
+const validateWindowPosition = (x: number, y: number, width: number, height: number) => {
+    const windowsContainer = document.querySelector('.windows-container') as HTMLElement;
+    if (!windowsContainer) {
+        return { x, y };
+    }
+
+    const containerRect = windowsContainer.getBoundingClientRect();
+    const maxY = containerRect.height - TITLE_BAR_HEIGHT;
+    const maxX = containerRect.width - MIN_VISIBLE_WIDTH;
+    const minX = -width + MIN_VISIBLE_WIDTH;
+
+    return {
+        x: Math.max(minX, Math.min(x, maxX)),
+        y: Math.max(0, Math.min(y, maxY))
+    };
+};
 
 interface Props {
     app: {
@@ -94,10 +117,10 @@ const handleFocus = () => {
 
 const getAppComponent = (appId: string) => {
     const componentMap: Record<string, any> = {
-        email: Email,
-        cipherchat: CipherChat,
-        notes: JobDescription,
-        evidence: EvidenceLocker
+        secureMail: SecureMail,
+        cipherChat: CipherChat,
+        jobDescription: JobDescription,
+        evidenceLocker: EvidenceLocker
     };
 
     return componentMap[appId] || Default;
@@ -118,27 +141,11 @@ const startDrag = (event: MouseEvent) => {
 
 const handleDrag = (event: MouseEvent) => {
     if (isDragging.value) {
-        const minVisibleWidth = 100;
-        const titleBarHeight = 32;
-        const taskbarHeight = 50;
+        const newX = event.clientX - dragStart.value.x;
+        const newY = event.clientY - dragStart.value.y;
+        const validatedPosition = validateWindowPosition(newX, newY, props.app.size.width, props.app.size.height);
 
-        const newX = Math.max(
-            -props.app.size.width + minVisibleWidth,
-            Math.min(
-                event.clientX - dragStart.value.x,
-                window.innerWidth - minVisibleWidth
-            )
-        );
-
-        const newY = Math.max(
-            0,
-            Math.min(
-                event.clientY - dragStart.value.y,
-                window.innerHeight - titleBarHeight
-            )
-        );
-
-        Object.assign(props.app.position, { x: newX, y: newY });
+        Object.assign(props.app.position, validatedPosition);
     }
 };
 
@@ -166,8 +173,15 @@ const handleResize = (event: MouseEvent) => {
         const deltaX = event.clientX - resizeStart.value.x;
         const deltaY = event.clientY - resizeStart.value.y;
 
-        const newWidth = Math.max(300, resizeStart.value.width + deltaX);
-        const newHeight = Math.max(200, resizeStart.value.height + deltaY);
+        const windowsContainer = document.querySelector('.windows-container') as HTMLElement;
+        const containerRect = windowsContainer ? windowsContainer.getBoundingClientRect() :
+            { width: window.innerWidth, height: window.innerHeight - TASKBAR_HEIGHT };
+
+        const maxWidth = containerRect.width - props.app.position.x;
+        const maxHeight = containerRect.height - props.app.position.y;
+
+        const newWidth = Math.max(MIN_WINDOW_WIDTH, Math.min(maxWidth, resizeStart.value.width + deltaX));
+        const newHeight = Math.max(MIN_WINDOW_HEIGHT, Math.min(maxHeight, resizeStart.value.height + deltaY));
 
         Object.assign(props.app.size, { width: newWidth, height: newHeight });
     }

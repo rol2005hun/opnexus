@@ -2,6 +2,7 @@ export interface StoryProgress {
     emailsRead: string[];
     messagesRead: string[];
     evidenceFound: string[];
+    filesExamined: string[];
     suspectsIdentified: string[];
     connectionsDiscovered: string[];
     timelineBuilt: boolean;

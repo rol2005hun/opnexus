@@ -36,6 +36,7 @@ export const useGameStore = defineStore('game', {
                     emailsRead: [],
                     messagesRead: [],
                     evidenceFound: [],
+                    filesExamined: [],
                     suspectsIdentified: [],
                     connectionsDiscovered: [],
                     timelineBuilt: false,
@@ -56,6 +57,7 @@ export const useGameStore = defineStore('game', {
             if (!this.progress[storyId].emailsRead.includes(emailId)) {
                 this.progress[storyId].emailsRead.push(emailId);
                 this.progress[storyId].investigationScore += 10;
+                this.checkStoryCompletion(storyId);
             }
         },
 
@@ -64,6 +66,7 @@ export const useGameStore = defineStore('game', {
             if (!this.progress[storyId].messagesRead.includes(chatId)) {
                 this.progress[storyId].messagesRead.push(chatId);
                 this.progress[storyId].investigationScore += 15;
+                this.checkStoryCompletion(storyId);
             }
         },
 
@@ -72,6 +75,52 @@ export const useGameStore = defineStore('game', {
             if (!this.progress[storyId].evidenceFound.includes(evidenceId)) {
                 this.progress[storyId].evidenceFound.push(evidenceId);
                 this.progress[storyId].investigationScore += 25;
+                this.checkStoryCompletion(storyId);
+            }
+        },
+
+        markSuspectConfirmed(storyId: string, suspectId: string) {
+            if (!this.progress[storyId]) return;
+            this.progress[storyId].primarySuspectConfirmed = true;
+            this.progress[storyId].suspectsIdentified.push(suspectId);
+            this.progress[storyId].investigationScore += 50;
+            this.checkStoryCompletion(storyId);
+        },
+
+        markFileExamined(storyId: string, fileId: string) {
+            if (!this.progress[storyId]) return;
+            if (!this.progress[storyId].filesExamined.includes(fileId)) {
+                this.progress[storyId].filesExamined.push(fileId);
+                this.progress[storyId].investigationScore += 20;
+                this.checkStoryCompletion(storyId);
+            }
+        },
+
+        async checkStoryCompletion(storyId: string) {
+            const story = await this.getCurrentStoryContent();
+            if (!story || !this.progress[storyId]) return;
+
+            const progress = this.progress[storyId];
+            const objectives = story.objectives || [];
+
+            // Check if all objectives are completed
+            const allObjectivesCompleted = objectives.every(objective => {
+                const hasRequiredEvidence = objective.requiredEvidence?.every(evidenceId => 
+                    progress.evidenceFound.includes(evidenceId)
+                ) ?? true;
+                return hasRequiredEvidence;
+            });
+
+            // Check minimum completion criteria
+            const hasMinimumEvidence = progress.evidenceFound.length >= 5;
+            const hasPrimarySuspect = progress.primarySuspectConfirmed;
+            const hasMinimumScore = progress.investigationScore >= 200;
+
+            if (allObjectivesCompleted && hasMinimumEvidence && hasPrimarySuspect && hasMinimumScore) {
+                progress.caseStatus = 'completed';
+                // Trigger completion modal
+                const { showCompletionModal } = await import('@/composables/useStoryCompletion');
+                showCompletionModal(storyId, progress.investigationScore);
             }
         },
 

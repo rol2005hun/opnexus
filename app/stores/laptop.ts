@@ -7,8 +7,8 @@ export const useLaptopStore = defineStore('laptop', {
         wallpaper: '',
         apps: [
             {
-                id: 'email',
-                name: 'Mail',
+                id: 'secureMail',
+                name: 'Secure Mail',
                 icon: '📧',
                 isOpen: false,
                 zIndex: 100,
@@ -18,7 +18,7 @@ export const useLaptopStore = defineStore('laptop', {
                 maximized: false
             },
             {
-                id: 'chat',
+                id: 'cipherChat',
                 name: 'Cipher Chat',
                 icon: '💬',
                 isOpen: false,
@@ -29,7 +29,7 @@ export const useLaptopStore = defineStore('laptop', {
                 maximized: false
             },
             {
-                id: 'files',
+                id: 'fileExplorer',
                 name: 'File Explorer',
                 icon: '📁',
                 isOpen: false,
@@ -40,7 +40,7 @@ export const useLaptopStore = defineStore('laptop', {
                 maximized: false
             },
             {
-                id: 'browser',
+                id: 'nexium',
                 name: 'Nexium',
                 icon: '🌐',
                 isOpen: false,
@@ -51,7 +51,7 @@ export const useLaptopStore = defineStore('laptop', {
                 maximized: false
             },
             {
-                id: 'notes',
+                id: 'jobDescription',
                 name: 'Job Description',
                 icon: '💼',
                 isOpen: false,
@@ -62,7 +62,7 @@ export const useLaptopStore = defineStore('laptop', {
                 maximized: false
             },
             {
-                id: 'evidence',
+                id: 'evidenceLocker',
                 name: 'Evidence Locker',
                 icon: '🔍',
                 isOpen: false,

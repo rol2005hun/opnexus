@@ -9,7 +9,7 @@ export const storyMetadata: Story = {
     difficulty: 'Director',
     estimatedTime: '75-105 mins',
     completed: false,
-    available: true,
+    available: false,
     securityClearance: 2,
     icon: '🏦',
     price: 1,

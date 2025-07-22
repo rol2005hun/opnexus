@@ -7,7 +7,7 @@ An immersive FBI-style digital forensics investigation game built with Nuxt 3. S
 **NEXUS** is a web-based investigation simulation where you play as a digital detective. Using realistic tools and methodologies, investigate cyber crimes, analyze digital evidence, and uncover conspiracies.
 
 ### Current Features
-- � **User Authentication**: Secure JWT-based login system
+- 🔒 **User Authentication**: Secure JWT-based login system
 - 👤 **Agent Profiles**: Customizable agent badges and credentials  
 - 💻 **Full Laptop Simulation**: Realistic desktop environment
 - 📧 **Email Investigation**: Analyze suspicious communications
@@ -138,7 +138,7 @@ nexus/
 
 ## 🔮 Roadmap
 
-- � **Multiple Stories**: Additional investigation scenarios
+- 📚 **Multiple Stories**: Additional investigation scenarios
 - 🏆 **Achievement System**: Progress tracking and rewards
 - 📊 **Analytics Dashboard**: Case completion statistics
 - 🎵 **Audio Integration**: Ambient sounds and effects

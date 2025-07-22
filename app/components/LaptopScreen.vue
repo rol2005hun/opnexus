@@ -55,6 +55,8 @@
         <div class="esc-hint">
             <kbd>ESC</kbd> to exit
         </div>
+
+        <StoryCompletionModal />
     </div>
 </template>
 
