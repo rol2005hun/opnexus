@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
             createdAt: user.createdAt
         };
 
-        await success(`[LOGIN] User logged in: ID: ${user._id} Username: ${user.username}.`);
+        await success(`[LOGIN] User logged in: ID: ${user._id}, username: ${user.username}.`);
 
         return {
             success: true,

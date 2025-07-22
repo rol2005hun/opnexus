@@ -5,7 +5,7 @@ export const storyMetadata: Story = {
     briefing: 'At 14:32 yesterday, our security monitoring detected unauthorized downloads of classified Project Neptune files. Initial analysis suggests the breach originated from someone with legitimate access to these documents. Three employees had access during the timeframe: a project manager, a systems administrator, and a security consultant. Your mission: analyze digital communications, file access patterns, and financial records to identify which employee is the leak.',
     thumbnail: '/stories/leak.jpg',
     difficulty: 'Rookie',
-    estimatedTime: '60-90 mins',
+    estimatedTime: '30-50 mins',
     completed: false,
     available: true,
     securityClearance: 1,

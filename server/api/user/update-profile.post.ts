@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        await success(`[UPDATE-PROFILE] Profile updated successfully for user: ID: ${updatedUser._id} Username: ${updatedUser.username} Agent: ${updatedUser.agent.name}.`);
+        await success(`[UPDATE-PROFILE] Profile updated successfully for user: ID: ${updatedUser._id}, username: ${updatedUser.username} Agent: ${updatedUser.agent.name}.`);
 
         return {
             success: true,

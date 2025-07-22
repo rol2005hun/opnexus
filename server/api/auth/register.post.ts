@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
 
         const savedUser = await newUser.save();
         
-        await success(`[REGISTER] New user registered: ID: ${savedUser._id} Username: ${username} Email: ${email} Agent: ${agentName} Badge: ${newUser.agent.badge}.`);
+        await success(`[REGISTER] New user registered: ID: ${savedUser._id}, username: ${username} Email: ${email} Agent: ${agentName} Badge: ${newUser.agent.badge}.`);
 
         const token = generateToken({
             userId: savedUser._id.toString(),

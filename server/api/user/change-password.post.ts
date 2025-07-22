@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
 
         const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
         if (!isCurrentPasswordValid) {
-            await warn(`[CHANGE-PASSWORD] Incorrect current password for user: ID: ${user._id} Username: ${user.username}.`);
+            await warn(`[CHANGE-PASSWORD] Incorrect current password for user: ID: ${user._id}, username: ${user.username}.`);
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Current password is incorrect'
@@ -82,7 +82,7 @@ export default defineEventHandler(async (event) => {
             { runValidators: true }
         );
 
-        await success(`[CHANGE-PASSWORD] Password changed successfully for user: ID: ${user._id} Username: ${user.username}.`);
+        await success(`[CHANGE-PASSWORD] Password changed successfully for user: ID: ${user._id}, username: ${user.username}.`);
 
         return {
             success: true,

@@ -88,16 +88,16 @@ export default defineEventHandler(async (event) => {
         if (points === -10) {
             user.gameProgress.storyScores.set(storyId, currentStoryScore + points);
             message = `Wrong guess. Score decreased by 10. New score: ${user.gameProgress.storyScores.get(storyId)}`;
-            await info(`[UPDATE-SCORE] Score decreased for user: ID: ${user._id} Username: ${user.username}, story: ${storyId}, new score: ${user.gameProgress.storyScores.get(storyId)}.`);
+            await info(`[UPDATE-SCORE] Score decreased for user: ID: ${user._id}, username: ${user.username}, story: ${storyId}, new score: ${user.gameProgress.storyScores.get(storyId)}.`);
         } else if (points === 100) {
             if (!isStoryCompleted) {
                 user.gameProgress.storyScores.set(storyId, currentStoryScore + points);
                 user.gameProgress.completedStories.push(storyId);
                 message = `Story completed. Points added: 100. New score: ${user.gameProgress.storyScores.get(storyId)}`;
-                await success(`[UPDATE-SCORE] Story completed by user: ID: ${user._id} Username: ${user.username}, story: ${storyId}, new score: ${user.gameProgress.storyScores.get(storyId)}.`);
+                await success(`[UPDATE-SCORE] Story completed by user: ID: ${user._id}, username: ${user.username}, story: ${storyId}, new score: ${user.gameProgress.storyScores.get(storyId)}.`);
             } else {
                 message = 'Story already completed. Score not updated.';
-                await info(`[UPDATE-SCORE] Attempt to complete already finished story by user: ID: ${user._id} Username: ${user.username}, story: ${storyId}.`);
+                await info(`[UPDATE-SCORE] Attempt to complete already finished story by user: ID: ${user._id}, username: ${user.username}, story: ${storyId}.`);
             }
         }
         

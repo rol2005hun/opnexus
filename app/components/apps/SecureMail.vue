@@ -64,7 +64,7 @@
           </div>
           <div class="email-meta">
             <div><strong>From:</strong> {{ displayEmailAddress(selectedEmailData.sender) }}</div>
-            <div><strong>To:</strong> {{ displayEmailAddress(selectedEmailData.recipient) }}</div>
+            <div><strong>To:</strong> {{ displayRecipients(selectedEmailData) }}</div>
             <div><strong>Date:</strong> {{ formatDateTime(selectedEmailData.timestamp) }}</div>
           </div>
         </div>
@@ -157,11 +157,15 @@ const getStoryEmails = (): EmailMessage[] => {
 const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
   return rawEmails.map(email => {
     const processedAttachments: EmailAttachment[] = email.attachments || [];
+    
+    // Store all recipients, but use the first one as primary for compatibility
+    const allRecipients = email.to || ['me@nexus-corp.com'];
+    const primaryRecipient = allRecipients[0] || 'me@nexus-corp.com';
 
     return {
       id: email.id,
       sender: email.from,
-      recipient: email.to[0] || 'me@nexus-corp.com',
+      recipient: primaryRecipient,
       subject: email.subject,
       preview: email.body.substring(0, 100) + '...',
       content: formatEmailContent(email.body),
@@ -372,6 +376,29 @@ function displayEmailAddress(address: string): string {
     return playerEmail.value;
   }
   return address;
+}
+
+function displayRecipients(email: ProcessedEmail): string {
+  // Get the original email from story content to access all recipients
+  const storyEmail = getStoryEmails().find(e => e.id === email.id);
+  if (storyEmail) {
+    const recipients: string[] = [];
+    
+    // Add TO recipients
+    if (storyEmail.to && storyEmail.to.length > 0) {
+      recipients.push(...storyEmail.to.map(recipient => displayEmailAddress(recipient)));
+    }
+    
+    // Add CC recipients with (CC) indicator
+    if (storyEmail.cc && storyEmail.cc.length > 0) {
+      recipients.push(...storyEmail.cc.map(recipient => `${displayEmailAddress(recipient)} (CC)`));
+    }
+    
+    return recipients.length > 0 ? recipients.join(', ') : displayEmailAddress(email.recipient);
+  }
+  
+  // Fallback to the processed email recipient
+  return displayEmailAddress(email.recipient);
 }
 
 function displaySender(email: ProcessedEmail): string {
