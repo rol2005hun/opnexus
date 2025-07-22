@@ -1,5 +1,3 @@
-import type { FileDocument } from '#shared/types';
-
 export const files: FileDocument[] = [
   {
     id: 'file_bank_001',

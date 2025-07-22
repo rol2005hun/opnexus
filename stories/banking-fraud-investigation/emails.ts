@@ -1,5 +1,3 @@
-import type { EmailMessage } from '#shared/types';
-
 export const emails: EmailMessage[] = [
     {
         id: 'email_bank_001',

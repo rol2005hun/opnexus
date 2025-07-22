@@ -116,7 +116,6 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game';
-import type { EmailMessage, EmailAttachment, ProcessedEmail, EmailFolder, StoryContent } from '#shared/types';
 
 const gameStore = useGameStore();
 

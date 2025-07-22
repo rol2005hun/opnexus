@@ -6,8 +6,9 @@
         <h3>Cipher Messages</h3>
         <div class="chat-controls">
           <select v-model="chatFilter" class="filter-select">
-            <option value="all">All Accessible</option>
+            <option value="all">All Chats</option>
             <option value="own">My Chats</option>
+            <option value="observed">Agent Accessible Chats</option>
           </select>
           <button class="new-chat-btn" @click="showNewChatDialog = true">+</button>
         </div>
@@ -23,9 +24,7 @@
               <span v-if="chat.type === 'group'" class="group-indicator">👥</span>
               <span v-if="chat.isEvidence" class="evidence-indicator">🔍</span>
             </div>
-            <div class="chat-participants" v-if="chat.type === 'group'">
-              {{ getParticipantsDisplay(chat) }}
-            </div>
+            <div class="chat-type-label">{{ getChatTypeLabel(chat) }}</div>
             <div class="chat-last-message">{{ chat.lastMessage }}</div>
             <div class="chat-time">{{ formatTime(chat.lastMessageTime) }}</div>
           </div>
@@ -45,9 +44,7 @@
                 {{ activeChatData.name }}
                 <span v-if="activeChatData.type === 'group'" class="group-label">(Group)</span>
               </div>
-              <div v-if="activeChatData.type === 'group'" class="contact-participants">
-                {{ getParticipantsDisplay(activeChatData) }}
-              </div>
+              <div class="chat-type-label chat-type-label-header">{{ getChatTypeLabel(activeChatData) }}</div>
               <div class="contact-status" :class="getStatusClass(activeChatData.status)">
                 {{ activeChatData.status }}
                 <span v-if="activeChatData.platform"> • {{ activeChatData.platform }}</span>
@@ -59,7 +56,7 @@
         <div class="messages" ref="messagesContainer">
           <div v-for="message in activeChatData.messages" :key="message.id" class="message"
             :class="{ sent: message.sent, received: !message.sent }">
-            <div v-if="activeChatData.type === 'group' && !message.sent" class="message-sender">
+            <div v-if="(!activeChatData.isOwnChat || activeChatData.type === 'group') && !message.sent" class="message-sender">
               {{ message.sender }}
             </div>
             <div class="message-content">
@@ -134,7 +131,6 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game';
-import type { Chat, ChatMessage, Character, StoryContent, EvidenceConversation } from '#shared/types';
 
 const gameStore = useGameStore();
 
@@ -142,7 +138,7 @@ const activeChat = ref<string | null>(null);
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement>();
 const showNewChatDialog = ref(false);
-const chatFilter = ref<'own' | 'all'>('all');
+const chatFilter = ref<'own' | 'all' | 'observed'>('all');
 const currentStoryContent = ref<StoryContent | null>(null);
 const customChats = ref<Chat[]>([]);
 const newChatType = ref<'private' | 'group'>('private');
@@ -220,6 +216,8 @@ const filteredChats = computed(() => {
   switch (chatFilter.value) {
     case 'own':
       return allChats.value.filter(chat => chat.isOwnChat);
+    case 'observed':
+      return allChats.value.filter(chat => chat.canView && !chat.isOwnChat);
     case 'all':
     default:
       return allChats.value.filter(chat => chat.canView);
@@ -276,11 +274,13 @@ const sendMessage = () => {
 };
 
 const getParticipantsDisplay = (chat: Chat): string => {
-  if (chat.type === 'private') return '';
+  const otherParticipants = chat.participants.filter(p => p !== playerName.value);
+  const isPlayer = chat.participants.includes(playerName.value);
 
-  return chat.participants
-    .filter(p => p !== playerName.value)
-    .join(', ');
+  if (isPlayer) {
+    return `You + ${otherParticipants.join(', ')}`;
+  }
+  return otherParticipants.join(', ');
 };
 
 const formatTime = (date: Date) => {
@@ -302,6 +302,17 @@ const getStatusClass = (status: string) => {
       return 'status-busy';
     default:
       return 'status-default';
+  }
+};
+
+const getChatTypeLabel = (chat: Chat): string => {
+  const isPlayerInChat = chat.participants.includes(playerName.value);
+  const participantsLabel = getParticipantsDisplay(chat);
+
+  if (chat.type === 'private') {
+    return `Private chat: ${participantsLabel}`;
+  } else {
+    return `Group chat: ${participantsLabel}`;
   }
 };
 
@@ -374,4 +385,18 @@ watch(() => gameStore.currentStory, async (newStoryId) => {
 
 <style lang="scss" scoped>
 @use '@/assets/scss/components/apps/CipherChat';
+
+.chat-type-label {
+  font-size: 0.85em;
+  color: #007acc;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.chat-type-label-header {
+  margin-top: 4px;
+  margin-bottom: 2px;
+  font-size: 0.9em;
+  display: block;
+}
 </style>

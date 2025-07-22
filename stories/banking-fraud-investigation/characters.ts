@@ -1,5 +1,3 @@
-import type { Character } from '#shared/types';
-
 export const characters: Character[] = [
     {
         id: 'lisa_martinez',

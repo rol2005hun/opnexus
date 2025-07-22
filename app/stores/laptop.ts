@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import type { LaptopApp, LaptopState } from '#shared/types';
 
 export const useLaptopStore = defineStore('laptop', {
     state: (): LaptopState => ({

@@ -117,7 +117,6 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game';
-import type { StoryContent } from '#shared/types';
 
 const gameStore = useGameStore();
 

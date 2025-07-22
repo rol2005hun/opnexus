@@ -1,5 +1,3 @@
-import type { EvidenceConversation } from '#shared/types';
-
 export const chats: EvidenceConversation[] = [
     {
         id: 'chat_bank_001',
