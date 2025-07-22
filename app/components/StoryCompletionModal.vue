@@ -84,12 +84,10 @@
 
 <script setup lang="ts">
 import { useStoryCompletion } from '@/composables/useStoryCompletion';
-
 const { isCompletionModalVisible, completionData, hideCompletionModal } = useStoryCompletion();
 const gameStore = useGameStore();
 
-const handleOverlayClick = () => {
-};
+const handleOverlayClick = () => { };
 
 const returnToMenu = async () => {
     hideCompletionModal();
@@ -104,8 +102,8 @@ const restartCase = () => {
             messagesRead: [],
             filesExamined: [],
             evidenceFound: [],
+            markedEvidence: [],
             suspectsIdentified: [],
-            connectionsDiscovered: [],
             timelineBuilt: false,
             primarySuspectConfirmed: false,
             caseStatus: 'briefing',
@@ -145,6 +143,12 @@ const restartCase = () => {
         0 0 100px rgba(0, 122, 204, 0.1);
     border: 2px solid rgba(0, 122, 204, 0.3);
     position: relative;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 
     &::before {
         content: '';

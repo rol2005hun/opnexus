@@ -2,9 +2,10 @@ import bcrypt from 'bcryptjs';
 import { connectToDatabase } from '@@/server/utils/database';
 import { User } from '@@/server/api/models/User';
 import { generateToken } from '@@/server/utils/jwt';
+import { success, error, warn, info } from '@@/server/utils/discord-logger';
 
 export default defineEventHandler(async (event) => {
-    if (getMethod(event) !== 'POST') {
+    if (event.method !== 'POST') {
         throw createError({
             statusCode: 405,
             statusMessage: 'Method Not Allowed'
@@ -18,6 +19,7 @@ export default defineEventHandler(async (event) => {
         const { username, email, password, agentName } = body;
 
         if (!username || !email || !password || !agentName) {
+            await warn(`[REGISTER] Attempt with missing fields: ${JSON.stringify({ username: !!username, email: !!email, password: !!password, agentName: !!agentName })}`);
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Missing required fields'
@@ -25,6 +27,7 @@ export default defineEventHandler(async (event) => {
         }
 
         if (password.length < 6) {
+            await warn(`[REGISTER] Attempt with weak password for user: ${username}`);
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Password must be at least 6 characters'
@@ -36,6 +39,7 @@ export default defineEventHandler(async (event) => {
         });
 
         if (existingUser) {
+            await warn(`[REGISTER] Attempt with existing credentials: ${existingUser.email === email ? 'email' : 'username'} already exists for ${username || email}`);
             throw createError({
                 statusCode: 409,
                 statusMessage: 'User with this email or username already exists'
@@ -70,6 +74,8 @@ export default defineEventHandler(async (event) => {
         });
 
         const savedUser = await newUser.save();
+        
+        await success(`[REGISTER] New user registered: ID: ${savedUser._id} Username: ${username} Email: ${email} Agent: ${agentName} Badge: ${newUser.agent.badge}.`);
 
         const token = generateToken({
             userId: savedUser._id.toString(),
@@ -87,6 +93,8 @@ export default defineEventHandler(async (event) => {
             createdAt: savedUser.createdAt
         };
 
+        await info(`[REGISTER] User ${username} successfully registered and logged in.`);
+
         return {
             success: true,
             user: userResponse,
@@ -94,11 +102,15 @@ export default defineEventHandler(async (event) => {
             message: 'Registration successful! Welcome to NEXUS, Agent!'
         };
 
-    } catch (error: any) {
-        console.error('Registration error:', error);
+    } catch (err: any) {
+        console.error('Registration error:', err);
+        
+        if (!err.statusCode) {
+            await error(`[REGISTER] ${err instanceof Error ? err.message : 'Unknown error'}.`);
+        }
 
-        if (error.statusCode) {
-            throw error;
+        if (err.statusCode) {
+            throw err;
         }
 
         throw createError({

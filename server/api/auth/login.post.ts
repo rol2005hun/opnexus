@@ -2,9 +2,10 @@ import bcrypt from 'bcryptjs';
 import { connectToDatabase } from '@@/server/utils/database';
 import { User } from '@@/server/api/models/User';
 import { generateToken } from '@@/server/utils/jwt';
+import { success, error, warn, info } from '@@/server/utils/discord-logger';
 
 export default defineEventHandler(async (event) => {
-    if (getMethod(event) !== 'POST') {
+    if (event.method !== 'POST') {
         throw createError({
             statusCode: 405,
             statusMessage: 'Method Not Allowed'
@@ -18,6 +19,7 @@ export default defineEventHandler(async (event) => {
         const { identifier, password } = body;
 
         if (!identifier || !password) {
+            await warn(`[LOGIN] Attempt with missing credentials.`);
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Email/username and password are required'
@@ -32,6 +34,7 @@ export default defineEventHandler(async (event) => {
         });
 
         if (!user) {
+            await warn(`[LOGIN] Invalid identifier: ${identifier}`);
             throw createError({
                 statusCode: 401,
                 statusMessage: 'Invalid credentials'
@@ -41,6 +44,7 @@ export default defineEventHandler(async (event) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
+            await warn(`[LOGIN] Failed login attempt for user: ID: ${user._id} Email: ${user.email}`);
             throw createError({
                 statusCode: 401,
                 statusMessage: 'Invalid credentials'
@@ -63,6 +67,8 @@ export default defineEventHandler(async (event) => {
             createdAt: user.createdAt
         };
 
+        await success(`[LOGIN] User logged in: ID: ${user._id} Username: ${user.username}.`);
+
         return {
             success: true,
             user: userResponse,
@@ -70,11 +76,15 @@ export default defineEventHandler(async (event) => {
             message: `Welcome back, Agent ${user.agent.name}!`
         };
 
-    } catch (error: any) {
-        console.error('Login error:', error);
+    } catch (err: any) {
+        console.error('Login error:', err);
+        
+        if (!err.statusCode) {
+            await error(`[LOGIN] ${err instanceof Error ? err.message : 'Unknown error'}.`);
+        }
 
-        if (error.statusCode) {
-            throw error;
+        if (err.statusCode) {
+            throw err;
         }
 
         throw createError({

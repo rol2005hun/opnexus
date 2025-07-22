@@ -1,5 +1,5 @@
 <template>
-  <div class="app-email">
+  <div class="app-secure-mail">
 
     <div class="email-sidebar">
       <div class="compose-section">
@@ -29,7 +29,7 @@
           unread: !email.read,
           important: email.important
         }" @click="selectEmail(email.id)">
-          <div class="email-sender">{{ email.sender }}</div>
+          <div class="email-sender">{{ displaySender(email) }}</div>
           <div class="email-subject">{{ email.subject }}</div>
           <div class="email-preview">{{ email.preview }}</div>
           <div class="email-time">{{ formatTime(email.timestamp) }}</div>
@@ -55,10 +55,16 @@
     <div class="email-content">
       <div v-if="selectedEmailData" class="email-view">
         <div class="email-headers">
-          <h2>{{ selectedEmailData.subject }}</h2>
+          <div class="header-main">
+            <h2>{{ selectedEmailData.subject }}</h2>
+            <button class="mark-evidence-btn" :class="{ 'marked': isMarkedAsEvidence(selectedEmailData.id) }"
+              @click="toggleEvidence(selectedEmailData.id)">
+              {{ isMarkedAsEvidence(selectedEmailData.id) ? '🔍 Evidence' : '🔍 Mark as Evidence' }}
+            </button>
+          </div>
           <div class="email-meta">
-            <div><strong>From:</strong> {{ selectedEmailData.sender }}</div>
-            <div><strong>To:</strong> {{ selectedEmailData.recipient }}</div>
+            <div><strong>From:</strong> {{ displayEmailAddress(selectedEmailData.sender) }}</div>
+            <div><strong>To:</strong> {{ displayEmailAddress(selectedEmailData.recipient) }}</div>
             <div><strong>Date:</strong> {{ formatDateTime(selectedEmailData.timestamp) }}</div>
           </div>
         </div>
@@ -105,8 +111,8 @@
             <textarea v-model="composeForm.body" required placeholder="Type your message here..." rows="10"></textarea>
           </div>
           <div class="compose-actions">
-            <button type="submit" class="send-btn">Send</button>
             <button type="button" class="cancel-btn" @click="closeCompose">Cancel</button>
+            <button type="submit" class="send-btn">Send</button>
           </div>
         </form>
       </div>
@@ -115,8 +121,10 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/auth';
 import { useGameStore } from '@/stores/game';
 
+const authStore = useAuthStore();
 const gameStore = useGameStore();
 
 const activeFolder = ref('inbox');
@@ -130,28 +138,17 @@ const composeForm = ref({
   body: ''
 });
 
-onMounted(async () => {
-  currentStoryContent.value = await gameStore.getCurrentStoryContent();
-  initializeEmails();
-});
-
-watch(() => gameStore.currentStory, async (newStoryId) => {
-  if (newStoryId) {
-    currentStoryContent.value = await gameStore.getCurrentStoryContent();
-    selectedEmail.value = null;
-    activeFolder.value = 'inbox';
-    initializeEmails();
-  }
-});
-
 const folders: EmailFolder[] = [
   { id: 'inbox', name: 'Inbox', icon: '📥', unread: 0 },
   { id: 'sent', name: 'Sent', icon: '📤', unread: 0 },
+  { id: 'direct', name: 'Direct to Me', icon: '👤', unread: 0 },
   { id: 'drafts', name: 'Drafts', icon: '📝', unread: 0 },
   { id: 'important', name: 'Important', icon: '⭐', unread: 0 },
   { id: 'allmails', name: 'All Mails', icon: '📧', unread: 0 },
   { id: 'trash', name: 'Trash', icon: '🗑️', unread: 0 }
 ];
+
+const playerEmail = computed(() => authStore.currentUser ? `${authStore.currentUser.username}@operation.nexus` : '');
 
 const getStoryEmails = (): EmailMessage[] => {
   return currentStoryContent.value?.emails || [];
@@ -190,6 +187,19 @@ const updateFolderCounts = () => {
   folders.forEach(folder => {
     if (folder.id === 'important') {
       folder.unread = emails.value.filter(email => email.important && !email.read).length;
+    } else if (folder.id === 'allmails') {
+      folder.unread = emails.value.filter(email => !email.read).length;
+    } else if (folder.id === 'direct') {
+      folder.unread = emails.value.filter(email => {
+        if (email.read || email.folder === 'trash') return false;
+
+        const storyEmail = getStoryEmails().find(e => e.id === email.id);
+        if (storyEmail) {
+          return storyEmail.to.includes('me@nexus-corp.com') ||
+            storyEmail.to.some(recipient => recipient.includes('agent'));
+        }
+        return false;
+      }).length;
     } else {
       folder.unread = emails.value.filter(email =>
         email.folder === folder.id && !email.read
@@ -203,19 +213,37 @@ const getCurrentFolder = () => {
 };
 
 const currentEmails = computed(() => {
+  let filteredEmails: ProcessedEmail[] = [];
+
   if (activeFolder.value === 'important') {
-    return emails.value.filter(email => email.important && email.folder !== 'trash');
-  }
-  if (activeFolder.value === 'allmails') {
-    return emails.value.filter(email => email.folder !== 'trash');
-  }
-  if (activeFolder.value === 'inbox') {
-    return emails.value.filter(email =>
+    filteredEmails = emails.value.filter(email => email.important && email.folder !== 'trash');
+  } else if (activeFolder.value === 'allmails') {
+    filteredEmails = emails.value;
+  } else if (activeFolder.value === 'direct') {
+    filteredEmails = emails.value.filter(email => {
+      if (email.folder === 'trash') return false;
+
+      const storyEmail = getStoryEmails().find(e => e.id === email.id);
+      if (storyEmail) {
+        return storyEmail.to.includes('me@nexus-corp.com') ||
+          storyEmail.to.some(recipient => recipient.includes('agent'));
+      }
+      return false;
+    });
+  } else if (activeFolder.value === 'inbox') {
+    filteredEmails = emails.value.filter(email =>
       email.folder === 'inbox' ||
       (email.folder !== 'sent' && email.folder !== 'trash' && email.folder !== 'drafts')
     );
+  } else {
+    filteredEmails = emails.value.filter(email => email.folder === activeFolder.value);
   }
-  return emails.value.filter(email => email.folder === activeFolder.value);
+
+  return filteredEmails.sort((a, b) => {
+    const timeA = new Date(a.timestamp).getTime();
+    const timeB = new Date(b.timestamp).getTime();
+    return timeB - timeA;
+  });
 });
 
 const selectedEmailData = computed(() => {
@@ -232,10 +260,6 @@ const selectEmail = (emailId: string) => {
 
     if (gameStore.currentStory) {
       gameStore.markEmailRead(gameStore.currentStory, emailId);
-
-      if (email.important) {
-        gameStore.addEvidence(gameStore.currentStory, `email_evidence_${emailId}`);
-      }
     }
   }
 };
@@ -286,6 +310,17 @@ const openAttachment = (attachment: EmailAttachment) => {
   // TODO: Implement attachment opening logic
 };
 
+const isMarkedAsEvidence = (emailId: string) => {
+  if (!gameStore.currentStory || !gameStore.currentProgress) return false;
+  return gameStore.currentProgress.markedEvidence.includes(emailId);
+};
+
+const toggleEvidence = (emailId: string) => {
+  if (!gameStore.currentStory) return;
+
+  gameStore.toggleEvidence(gameStore.currentStory, emailId);
+};
+
 const openCompose = () => {
   showCompose.value = true;
   composeForm.value = {
@@ -303,7 +338,7 @@ const closeCompose = () => {
 const sendEmail = () => {
   const newEmail: ProcessedEmail = {
     id: `email_${Date.now()}`,
-    sender: 'me@nexus-corp.com',
+    sender: playerEmail.value,
     recipient: composeForm.value.to,
     subject: composeForm.value.subject,
     preview: composeForm.value.body.substring(0, 100) + '...',
@@ -332,7 +367,33 @@ const formatEmailContent = (content: string): string => {
     .replace(/__(.*?)__/g, '<em>$1</em>');
 };
 
-initializeEmails();
+function displayEmailAddress(address: string): string {
+  if (address === 'me@nexus-corp.com') {
+    return playerEmail.value;
+  }
+  return address;
+}
+
+function displaySender(email: ProcessedEmail): string {
+  if (activeFolder.value === 'sent') {
+    return displayEmailAddress(email.recipient);
+  }
+  return displayEmailAddress(email.sender);
+}
+
+onMounted(async () => {
+  currentStoryContent.value = await gameStore.getCurrentStoryContent();
+  initializeEmails();
+});
+
+watch(() => gameStore.currentStory, async (newStoryId) => {
+  if (newStoryId) {
+    currentStoryContent.value = await gameStore.getCurrentStoryContent();
+    selectedEmail.value = null;
+    activeFolder.value = 'inbox';
+    initializeEmails();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

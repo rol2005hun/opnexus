@@ -18,6 +18,7 @@ export interface IUser {
         purchasedStories: string[];
         currentStory: string | null;
         totalPlaytime: number;
+        storyScores: { [key: string]: number };
         achievements: string[];
     };
     subscription: {
@@ -91,6 +92,11 @@ const userSchema = new mongoose.Schema({
         totalPlaytime: {
             type: Number,
             default: 0
+        },
+        storyScores: {
+            type: Map,
+            of: Number,
+            default: {}
         },
         achievements: [{
             type: String,

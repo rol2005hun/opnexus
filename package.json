@@ -15,6 +15,7 @@
     "@pinia/nuxt": "^0.11.2",
     "@sidebase/nuxt-auth": "^0.6.7",
     "bcryptjs": "^3.0.2",
+    "discord-webhook-node": "^1.1.8",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.4",
     "nuxt": "^4.0.0",

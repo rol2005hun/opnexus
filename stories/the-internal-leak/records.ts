@@ -13,6 +13,6 @@ export const records: DatabaseRecord[] = [
         timestamp: '2025-07-10 03:35:00',
         modifiedBy: 'system',
         isAnomaly: true,
-        isEvidence: true
+        isEvidence: false
     }
 ];

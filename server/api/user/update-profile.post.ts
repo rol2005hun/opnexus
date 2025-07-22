@@ -1,9 +1,10 @@
 import { connectToDatabase } from '@@/server/utils/database';
 import { User } from '@@/server/api/models/User';
 import { verifyToken, extractTokenFromHeader } from '@@/server/utils/jwt';
+import { success, error, warn, info } from '@@/server/utils/discord-logger';
 
 export default defineEventHandler(async (event) => {
-    if (getMethod(event) !== 'POST') {
+    if (event.method !== 'POST') {
         throw createError({
             statusCode: 405,
             statusMessage: 'Method Not Allowed'
@@ -39,6 +40,7 @@ export default defineEventHandler(async (event) => {
         const { agentName, username, email } = body;
 
         if (!agentName || !username || !email) {
+            await warn(`[UPDATE-PROFILE] Attempt with missing fields for user ID: ${payload.userId}.`);
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Agent name, username, and email are required'
@@ -46,6 +48,7 @@ export default defineEventHandler(async (event) => {
         }
 
         if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            await warn(`[UPDATE-PROFILE] Invalid email format for user ID: ${payload.userId}, email: ${email}.`);
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Invalid email format'
@@ -57,6 +60,7 @@ export default defineEventHandler(async (event) => {
             _id: { $ne: payload.userId } 
         });
         if (existingUserWithUsername) {
+            await warn(`[UPDATE-PROFILE] Username already taken: ${username} for user ID: ${payload.userId}.`);
             throw createError({
                 statusCode: 409,
                 statusMessage: 'Username already taken'
@@ -68,6 +72,7 @@ export default defineEventHandler(async (event) => {
             _id: { $ne: payload.userId } 
         });
         if (existingUserWithEmail) {
+            await warn(`[UPDATE-PROFILE] Email already in use: ${email} for user ID: ${payload.userId}.`);
             throw createError({
                 statusCode: 409,
                 statusMessage: 'Email already in use'
@@ -85,11 +90,14 @@ export default defineEventHandler(async (event) => {
         ).select('-password');
 
         if (!updatedUser) {
+            await warn(`[UPDATE-PROFILE] User not found: ID: ${payload.userId}.`);
             throw createError({
                 statusCode: 404,
                 statusMessage: 'User not found'
             });
         }
+
+        await success(`[UPDATE-PROFILE] Profile updated successfully for user: ID: ${updatedUser._id} Username: ${updatedUser.username} Agent: ${updatedUser.agent.name}.`);
 
         return {
             success: true,
@@ -97,12 +105,13 @@ export default defineEventHandler(async (event) => {
             user: updatedUser
         };
 
-    } catch (error: any) {
-        if (error.statusCode) {
-            throw error;
+    } catch (err: any) {
+        if (err.statusCode) {
+            throw err;
         }
 
-        console.error('Profile update error:', error);
+        console.error('Profile update error:', err);
+        await error(`[UPDATE-PROFILE] ${err instanceof Error ? err.message : 'Unknown error'}.`);
         throw createError({
             statusCode: 500,
             statusMessage: 'Internal server error'

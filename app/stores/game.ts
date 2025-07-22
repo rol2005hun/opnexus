@@ -37,12 +37,12 @@ export const useGameStore = defineStore('game', {
                     evidenceFound: [],
                     filesExamined: [],
                     suspectsIdentified: [],
-                    connectionsDiscovered: [],
                     timelineBuilt: false,
                     primarySuspectConfirmed: false,
                     caseStatus: 'briefing',
                     investigationScore: 0,
-                    hintsUsed: 0
+                    hintsUsed: 0,
+                    markedEvidence: []
                 };
             }
         },
@@ -55,7 +55,6 @@ export const useGameStore = defineStore('game', {
             if (!this.progress[storyId]) return;
             if (!this.progress[storyId].emailsRead.includes(emailId)) {
                 this.progress[storyId].emailsRead.push(emailId);
-                this.progress[storyId].investigationScore += 10;
                 this.checkStoryCompletion(storyId);
             }
         },
@@ -64,25 +63,69 @@ export const useGameStore = defineStore('game', {
             if (!this.progress[storyId]) return;
             if (!this.progress[storyId].messagesRead.includes(chatId)) {
                 this.progress[storyId].messagesRead.push(chatId);
-                this.progress[storyId].investigationScore += 15;
                 this.checkStoryCompletion(storyId);
             }
         },
 
-        addEvidence(storyId: string, evidenceId: string) {
+        toggleEvidence(storyId: string, itemId: string) {
             if (!this.progress[storyId]) return;
-            if (!this.progress[storyId].evidenceFound.includes(evidenceId)) {
-                this.progress[storyId].evidenceFound.push(evidenceId);
-                this.progress[storyId].investigationScore += 25;
-                this.checkStoryCompletion(storyId);
+            
+            const progress = this.progress[storyId];
+            const isMarked = progress.markedEvidence.includes(itemId);
+            
+            if (isMarked) {
+                progress.markedEvidence = progress.markedEvidence.filter(id => id !== itemId);
+                if (progress.evidenceFound.includes(itemId)) {
+                    progress.evidenceFound = progress.evidenceFound.filter(id => id !== itemId);
+                }
+            } else {
+                progress.markedEvidence.push(itemId);
+                
+                const story = this.stories.find(s => s.id === storyId)?.content;
+                if (!story) return;
+                
+                const isRealEvidence = this.isRealEvidence(story, itemId);
+                
+                if (isRealEvidence && !progress.evidenceFound.includes(itemId)) {
+                    progress.evidenceFound.push(itemId);
+                    this.checkStoryCompletion(storyId);
+                }
             }
         },
 
-        markSuspectConfirmed(storyId: string, suspectId: string) {
+        isRealEvidence(story: StoryContent, itemId: string): boolean {
+            const email = story.emails.find(e => e.id === itemId);
+            if (email?.isEvidence) return true;
+
+            const chat = story.chatMessages.find(c => c.id === itemId);
+            if (chat?.isEvidence) return true;
+
+            const file = story.files.find(f => f.id === itemId);
+            if (file?.isEvidence) return true;
+
+            return false;
+        },
+
+        async markSuspectConfirmed(storyId: string, suspectId: string) {
             if (!this.progress[storyId]) return;
-            this.progress[storyId].primarySuspectConfirmed = true;
-            this.progress[storyId].suspectsIdentified.push(suspectId);
-            this.progress[storyId].investigationScore += 50;
+            const progress = this.progress[storyId];
+            
+            const story = await this.getCurrentStoryContent();
+            if (story) {
+                const totalEvidence = [
+                    ...story.emails.filter(e => e.isEvidence),
+                    ...story.chatMessages.filter(c => c.isEvidence),
+                    ...story.files.filter(f => f.isEvidence)
+                ].length;
+                
+                const foundEvidence = progress.evidenceFound.length;
+                const baseScore = Math.round((foundEvidence / totalEvidence) * 100);
+                
+                progress.investigationScore = Math.max(0, baseScore - 10);
+            }
+            
+            progress.primarySuspectConfirmed = true;
+            progress.suspectsIdentified.push(suspectId);
             this.checkStoryCompletion(storyId);
         },
 
@@ -90,7 +133,6 @@ export const useGameStore = defineStore('game', {
             if (!this.progress[storyId]) return;
             if (!this.progress[storyId].filesExamined.includes(fileId)) {
                 this.progress[storyId].filesExamined.push(fileId);
-                this.progress[storyId].investigationScore += 20;
                 this.checkStoryCompletion(storyId);
             }
         },
@@ -102,22 +144,24 @@ export const useGameStore = defineStore('game', {
             const progress = this.progress[storyId];
             const objectives = story.objectives || [];
 
-            // Check if all objectives are completed
             const allObjectivesCompleted = objectives.every(objective => {
-                const hasRequiredEvidence = objective.requiredEvidence?.every(evidenceId => 
+                const hasRequiredEvidence = objective.requiredEvidence?.every(evidenceId =>
                     progress.evidenceFound.includes(evidenceId)
                 ) ?? true;
                 return hasRequiredEvidence;
             });
 
-            // Check minimum completion criteria
-            const hasMinimumEvidence = progress.evidenceFound.length >= 5;
-            const hasPrimarySuspect = progress.primarySuspectConfirmed;
-            const hasMinimumScore = progress.investigationScore >= 200;
+            const totalRealEvidence = [
+                ...story.emails.filter(e => e.isEvidence),
+                ...story.chatMessages.filter(c => c.isEvidence),
+                ...story.files.filter(f => f.isEvidence)
+            ].length;
 
-            if (allObjectivesCompleted && hasMinimumEvidence && hasPrimarySuspect && hasMinimumScore) {
+            const hasAllEvidence = progress.evidenceFound.length === totalRealEvidence;
+            const hasPrimarySuspect = progress.primarySuspectConfirmed;
+
+            if (allObjectivesCompleted && hasAllEvidence && hasPrimarySuspect) {
                 progress.caseStatus = 'completed';
-                // Trigger completion modal
                 const { showCompletionModal } = await import('@/composables/useStoryCompletion');
                 showCompletionModal(storyId, progress.investigationScore);
             }

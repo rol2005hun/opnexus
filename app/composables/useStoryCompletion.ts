@@ -16,25 +16,25 @@ export const useStoryCompletion = () => {
     };
 
     const getRankBasedOnScore = (score: number): { rank: string; color: string; description: string } => {
-        if (score >= 500) {
+        if (score >= 90) {
             return {
                 rank: 'LEGENDARY INVESTIGATOR',
                 color: '#FFD700',
                 description: 'Perfect investigation! You found every clue and solved the case flawlessly.'
             };
-        } else if (score >= 400) {
+        } else if (score >= 75) {
             return {
                 rank: 'MASTER DETECTIVE',
                 color: '#C0C0C0',
                 description: 'Outstanding work! You conducted a thorough investigation.'
             };
-        } else if (score >= 300) {
+        } else if (score >= 60) {
             return {
                 rank: 'SKILLED AGENT',
                 color: '#CD7F32',
                 description: 'Great job! You successfully solved the case with solid detective work.'
             };
-        } else if (score >= 200) {
+        } else if (score >= 40) {
             return {
                 rank: 'COMPETENT INVESTIGATOR',
                 color: '#007acc',
@@ -50,19 +50,16 @@ export const useStoryCompletion = () => {
     };
 
     const getStoryTitle = (storyId: string): string => {
-        const storyTitles: Record<string, string> = {
-            'the-internal-leak': 'The Internal Leak',
-            'banking-fraud-investigation': 'Banking Fraud Investigation',
-            'operation-blackout': 'Operation Blackout',
-            'the-insider': 'The Insider',
-            'digital-ghost': 'Digital Ghost'
-        };
-        return storyTitles[storyId] || 'Unknown Case';
+        const gameStore = typeof useGameStore === 'function' ? useGameStore() : undefined;
+        const story = gameStore?.stories?.find((s: any) => s.id === storyId);
+
+        if (story && story.title) return story.title;
+
+        return 'Unknown Case';
     };
 
     const completionData = computed(() => {
         if (!completedStoryId.value) return null;
-
         return {
             storyId: completedStoryId.value,
             storyTitle: getStoryTitle(completedStoryId.value),

@@ -3,7 +3,7 @@ import { User } from '@@/server/api/models/User';
 import { verifyToken, extractTokenFromHeader } from '@@/server/utils/jwt';
 
 export default defineEventHandler(async (event) => {
-    if (getMethod(event) !== 'GET') {
+    if (event.method !== 'GET') {
         throw createError({
             statusCode: 405,
             statusMessage: 'Method Not Allowed'

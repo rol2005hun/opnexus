@@ -34,7 +34,7 @@ DEADLINE: August 15, 2025
 **WARNING: UNAUTHORIZED DISCLOSURE PUNISHABLE BY LAW**`,
         encrypted: true,
         accessLevel: 9,
-        isEvidence: true,
+        isEvidence: false,
         relatedTo: ['aaron_cole', 'irene_walker', 'sophie_tanaka']
     },
     {
@@ -77,7 +77,7 @@ EVALUATION CRITERIA:
 **CONFIDENTIAL - FOR AUTHORIZED PERSONNEL ONLY**`,
         encrypted: true,
         accessLevel: 8,
-        isEvidence: true,
+        isEvidence: false,
         relatedTo: ['irene_walker', 'sophie_tanaka', 'marcus_webb']
     },
     {
@@ -109,7 +109,7 @@ Status: COMPLETED
 Authorized by: Dr. Marcus Webb, CTO`,
         encrypted: true,
         accessLevel: 7,
-        isEvidence: true,
+        isEvidence: false,
         relatedTo: ['aaron_cole', 'marcus_webb']
     },
     {
@@ -148,7 +148,7 @@ RECOMMENDATION: IMMEDIATE INVESTIGATION REQUIRED
 System Administrator: Liam Rivera`,
         encrypted: false,
         accessLevel: 6,
-        isEvidence: true,
+        isEvidence: false,
         relatedTo: ['aaron_cole', 'liam_rivera', 'irene_walker']
     },
     {
@@ -194,7 +194,7 @@ Margaret Bradley, Esq.
 Senior Partner`,
         encrypted: false,
         accessLevel: 3,
-        isEvidence: true,
+        isEvidence: false,
         relatedTo: ['aaron_cole']
     },
     {
@@ -237,7 +237,7 @@ SLIDE 5: WINNING STRATEGY
 **CONFIDENTIAL - STRATEGIC ADVANTAGE MATERIAL**`,
         encrypted: true,
         accessLevel: 8,
-        isEvidence: true,
+        isEvidence: false,
         relatedTo: ['marcus_webb', 'aaron_cole']
     }
 ];

@@ -10,7 +10,6 @@
           <li>File management and analysis</li>
           <li>Web browsing</li>
           <li>Note taking and summaries</li>
-          <li>Evidence collection</li>
         </ul>
       </div>
     </div>

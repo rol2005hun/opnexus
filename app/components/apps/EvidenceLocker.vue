@@ -1,68 +1,28 @@
 <template>
   <div class="app-evidence-locker">
-    <div class="evidence-locker-header">
-      <h2>🔍 Evidence Locker</h2>
-      <div class="case-info" v-if="gameStore.currentStoryData">
-        <span class="case-name">{{ gameStore.currentStoryData.title }}</span>
-        <span class="case-status" :class="statusClass">{{ statusText }}</span>
+    <div class="complete-investigation" v-if="canIdentifySuspects">
+      <button class="complete-btn" @click="openSuspectSelection">
+        🎯 Identify Suspects
+      </button>
+    </div>
+    <div class="evidence-locker-container">
+      <div class="evidence-locker-header">
+        <h2>🔍 Evidence Locker</h2>
+        <div class="case-info" v-if="gameStore.currentStoryData">
+          <span class="case-name">{{ gameStore.currentStoryData.title }}</span>
+          <span class="case-status" :class="statusClass">{{ statusText }}</span>
+        </div>
       </div>
     </div>
-
     <div class="evidence-content">
 
-      <div class="progress-section">
+      <div v-if="isPremiumUser" class="progress-section">
         <h3>🔍 Investigation Status</h3>
-        <div class="progress-items">
-          <div class="progress-item">
-            <span class="progress-label">Emails reviewed:</span>
-            <span class="progress-value">{{ emailsRead }}/{{ totalEmails }}</span>
-          </div>
-          <div class="progress-item">
-            <span class="progress-label">Conversations analyzed:</span>
-            <span class="progress-value">{{ messagesRead }}/{{ totalChats }}</span>
-          </div>
-          <div class="progress-item">
-            <span class="progress-label">Evidence collected:</span>
-            <span class="progress-value">{{ evidenceCount }}/{{ requiredEvidence }}</span>
-          </div>
-          <div class="progress-item">
-            <span class="progress-label">Investigation Score:</span>
-            <span class="progress-value">{{ gameStore.currentProgress?.investigationScore || 0 }}</span>
-          </div>
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: `${investigationProgress}%` }" :class="progressClass"></div>
         </div>
-
-        <!-- Complete Investigation Button -->
-        <div class="complete-investigation" v-if="canCompleteInvestigation">
-          <button 
-            class="complete-btn" 
-            @click="completeInvestigation"
-            :disabled="!canCompleteInvestigation"
-          >
-            🏆 Complete Investigation
-          </button>
-          <p class="complete-hint">
-            You've gathered enough evidence to close this case!
-          </p>
-        </div>
-        
-        <div class="investigation-hints" v-else-if="!isInvestigationComplete">
-          <p class="hint-text">
-            <strong>Investigation Requirements:</strong>
-          </p>
-          <ul class="requirements-list">
-            <li :class="{ completed: emailsRead >= 5 }">
-              📧 Read at least 5 emails ({{ emailsRead }}/5)
-            </li>
-            <li :class="{ completed: messagesRead >= 3 }">
-              💬 Analyze at least 3 conversations ({{ messagesRead }}/3)
-            </li>
-            <li :class="{ completed: evidenceCount >= 5 }">
-              📄 Collect at least 5 pieces of evidence ({{ evidenceCount }}/5)
-            </li>
-            <li :class="{ completed: (gameStore.currentProgress?.investigationScore || 0) >= 200 }">
-              🎯 Achieve minimum score of 200 ({{ gameStore.currentProgress?.investigationScore || 0 }}/200)
-            </li>
-          </ul>
+        <div class="progress-status">
+          <span class="status-text">{{ progressStatusText }}</span>
         </div>
       </div>
 
@@ -89,36 +49,48 @@
         </div>
       </div>
 
-      <div class="clues-section" v-if="gameStore.currentProgress?.connectionsDiscovered?.length">
-        <h3>💡 Key Discoveries</h3>
-        <div class="clues-list">
-          <div v-for="clue in clueItems" :key="clue.id" class="clue-item">
-            <div class="clue-icon">🔍</div>
-            <div class="clue-text">{{ clue.description }}</div>
-          </div>
-        </div>
-      </div>
-
       <div class="report-section" v-if="gameStore.currentProgress?.suspectsIdentified?.length">
         <h3>📝 Investigation Report</h3>
         <div class="report-content">
-          <div class="suspect-info">
-            <h4>🎯 Primary Suspect</h4>
-            <div v-for="suspect in nexusCorpLeakStory.suspects.filter(s => s.suspicionLevel >= 8)" :key="suspect.id"
-              class="suspect-details">
-              <strong>{{ suspect.name }}</strong> - {{ suspect.role }}
-              <p>{{ suspect.motive }}</p>
-              <div class="suspicion-level">
-                Suspicion Level: {{ suspect.suspicionLevel }}/10
-              </div>
-            </div>
-          </div>
-
-          <div class="case-conclusion" v-if="gameStore.currentProgress?.caseStatus === 'completed'">
+          <div class="case-conclusion">
             <h4>✅ Case Status</h4>
-            <p>Investigation complete. All evidence has been collected and analyzed. The perpetrator has been
-              identified.</p>
+            <p>Investigation complete. The perpetrator has been identified.</p>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="suspect-selection-modal" v-if="showSuspectModal" @click="closeSuspectModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>🎯 Suspect Identification</h3>
+          <button class="close-btn" @click="closeSuspectModal">✕</button>
+        </div>
+
+        <div class="modal-description">
+          <p>Based on your investigation and the evidence collected, who do you believe is responsible for the data
+            breach?</p>
+        </div>
+
+        <div class="suspects-grid">
+          <div v-for="suspect in availableSuspects" :key="suspect.id" class="suspect-card"
+            :class="{ 'selected': selectedSuspect === suspect.id }" @click="selectSuspect(suspect.id)">
+            <div class="suspect-avatar">👤</div>
+            <div class="suspect-info">
+              <h4>{{ suspect.name }}</h4>
+              <p class="suspect-role">{{ suspect.role }}</p>
+            </div>
+            <div v-if="selectedSuspect === suspect.id" class="selected-indicator">✓</div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="cancel-btn" @click="closeSuspectModal">
+            Cancel
+          </button>
+          <button class="confirm-btn" :disabled="!selectedSuspect" @click="confirmSuspect">
+            Confirm Selection
+          </button>
         </div>
       </div>
     </div>
@@ -127,9 +99,15 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game';
-import { nexusCorpLeakStory } from '@@/stories/the-internal-leak';
+import { useAuthStore } from '@/stores/auth';
 
 const gameStore = useGameStore();
+const authStore = useAuthStore();
+
+const isPremiumUser = computed(() => {
+  const user = authStore.currentUser;
+  return user?.subscription?.type === 'premium';
+});
 
 interface EvidenceItem {
   id: string
@@ -141,46 +119,143 @@ interface EvidenceItem {
   discoveredAt: Date
 }
 
-interface ClueItem {
-  id: string
-  description: string
-}
-
-const emailsRead = computed(() => gameStore.currentProgress?.emailsRead.length || 0);
-const messagesRead = computed(() => gameStore.currentProgress?.messagesRead.length || 0);
-const evidenceCount = computed(() => gameStore.currentProgress?.evidenceFound.length || 0);
-
-const totalEmails = nexusCorpLeakStory.emails.length;
-const totalChats = nexusCorpLeakStory.chatMessages.length;
-const requiredEvidence = nexusCorpLeakStory.objectives.reduce((total, obj) => total + obj.requiredEvidence.length, 0);
-
-const canCompleteInvestigation = computed(() => {
+const investigationProgress = computed(() => {
   const progress = gameStore.currentProgress;
-  if (!progress) return false;
-  
-  return (
-    emailsRead.value >= 5 &&
-    messagesRead.value >= 3 &&
-    evidenceCount.value >= 5 &&
-    progress.investigationScore >= 200 &&
-    progress.caseStatus !== 'completed'
-  );
+  const storyContent = gameStore.currentStoryData?.content;
+  if (!progress || !storyContent) return 0;
+
+  const totalRealEvidence = [
+    ...storyContent.emails.filter(e => e.isEvidence),
+    ...storyContent.chatMessages.filter(c => c.isEvidence),
+    ...storyContent.files.filter(f => f.isEvidence)
+  ].length;
+
+  if (totalRealEvidence === 0) return 0;
+
+  return Math.min(Math.floor((progress.evidenceFound.length / totalRealEvidence) * 100), 100);
 });
 
-const isInvestigationComplete = computed(() => {
-  return gameStore.currentProgress?.caseStatus === 'completed';
+const progressClass = computed(() => {
+  const progress = investigationProgress.value;
+  if (progress >= 80) return 'progress-high';
+  if (progress >= 40) return 'progress-medium';
+  return 'progress-low';
 });
 
-const completeInvestigation = () => {
-  if (!gameStore.currentStory || !canCompleteInvestigation.value) return;
-  
-  gameStore.markSuspectConfirmed(gameStore.currentStory, 'aaron_cole');
+const progressStatusText = computed(() => {
+  const progress = investigationProgress.value;
+  if (progress >= 80) return 'Investigation Nearly Complete';
+  if (progress >= 60) return 'Significant Progress Made';
+  if (progress >= 40) return 'Investigation Ongoing';
+  if (progress >= 20) return 'Early Investigation Phase';
+  return 'Investigation Started';
+});
+
+const canIdentifySuspects = computed(() => {
+  const progress = gameStore.currentProgress;
+  const storyContent = gameStore.currentStoryData?.content;
+  if (!progress || !storyContent) return false;
+
+  const realEvidenceIds = [
+    ...storyContent.emails.filter(e => e.isEvidence).map(e => e.id),
+    ...storyContent.chatMessages.filter(c => c.isEvidence).map(c => c.id),
+    ...storyContent.files.filter(f => f.isEvidence).map(f => f.id)
+  ];
+
+  const marked = progress.markedEvidence;
+  const allMatch =
+    marked.length === realEvidenceIds.length &&
+    marked.every(id => realEvidenceIds.includes(id)) &&
+    realEvidenceIds.every(id => marked.includes(id));
+
+  return allMatch && progress.caseStatus !== 'completed';
+});
+
+const showSuspectModal = ref(false);
+const selectedSuspect = ref<string | null>(null);
+
+const availableSuspects = computed(() => {
+  const storyContent = gameStore.currentStoryData?.content;
+  if (!storyContent?.characters) return [];
+  return storyContent.characters.map(character => ({
+    id: character.id,
+    name: character.name,
+    role: character.role
+  }));
+});
+
+const openSuspectSelection = () => {
+  showSuspectModal.value = true;
+  selectedSuspect.value = null;
+};
+
+const closeSuspectModal = () => {
+  showSuspectModal.value = false;
+  selectedSuspect.value = null;
+};
+
+const selectSuspect = (suspectId: string) => {
+  selectedSuspect.value = suspectId;
+};
+
+const confirmSuspect = async () => {
+  if (!selectedSuspect.value || !gameStore.currentStory) return;
+
+  const storyContent = gameStore.currentStoryData?.content;
+  const trueSuspect = storyContent?.suspects?.find(s => s.evidenceAgainst && s.evidenceAgainst.length > 0);
+
+  const progress = gameStore.progress[gameStore.currentStory];
+
+  if (trueSuspect && selectedSuspect.value === trueSuspect.id) {
+    gameStore.markSuspectConfirmed(gameStore.currentStory, selectedSuspect.value);
+    showSuspectModal.value = false;
+    try {
+      const response = await $fetch<{ success: boolean; currentScore: number }>('/api/user/update-score', {
+        method: 'POST',
+        body: {
+          storyId: gameStore.currentStory,
+          points: 100
+        }
+      });
+      showCompletionModal(gameStore.currentStory, response.currentScore);
+    } catch (error) {
+      console.error('Failed to update story score:', error);
+      showCompletionModal(gameStore.currentStory, 0);
+    }
+  } else {
+    try {
+      await $fetch('/api/user/update-score', {
+        method: 'POST',
+        body: {
+          storyId: gameStore.currentStory,
+          points: -10
+        }
+      });
+    } catch (error) {
+      console.error('Failed to update story score:', error);
+    }
+
+    gameStore.progress[gameStore.currentStory] = {
+      emailsRead: [],
+      messagesRead: [],
+      filesExamined: [],
+      evidenceFound: [],
+      markedEvidence: [],
+      suspectsIdentified: [],
+      timelineBuilt: false,
+      primarySuspectConfirmed: false,
+      caseStatus: 'briefing',
+      investigationScore: 0,
+      hintsUsed: 0
+    };
+    showSuspectModal.value = false;
+  }
 };
 
 const statusClass = computed(() => {
   const progress = gameStore.currentProgress;
   if (!progress) return 'investigating';
-  
+
   if (progress.caseStatus === 'completed') return 'completed';
   if (progress.investigationScore >= 300) return 'building_case';
   if (progress.evidenceFound.length >= 5) return 'analyzing';
@@ -190,7 +265,7 @@ const statusClass = computed(() => {
 const statusText = computed(() => {
   const progress = gameStore.currentProgress;
   if (!progress) return 'Under Investigation';
-  
+
   switch (statusClass.value) {
     case 'completed': return 'Case Closed';
     case 'building_case': return 'Building Case';
@@ -202,86 +277,63 @@ const statusText = computed(() => {
 });
 
 const evidenceItems = computed((): EvidenceItem[] => {
-  if (!gameStore.currentProgress?.evidenceFound) return [];
+  const currentProgress = gameStore.currentProgress;
+  const storyData = gameStore.currentStoryData;
+  if (!currentProgress?.markedEvidence || !storyData?.content) return [];
 
-  const evidenceMap: Record<string, EvidenceItem> = {};
-
-  nexusCorpLeakStory.emails.forEach(email => {
-    if (email.isEvidence) {
-      evidenceMap[`email_evidence_${email.id}`] = {
-        id: `email_evidence_${email.id}`,
-        title: `Email: ${email.subject}`,
-        description: `From ${email.from} to ${email.to.join(', ')} - ${email.body.substring(0, 100)}...`,
+  const content = storyData.content;
+  return currentProgress.markedEvidence.map(evidenceId => {
+    const email = content.emails?.find(e => e.id === evidenceId);
+    if (email) {
+      return {
+        id: evidenceId,
+        title: email.subject || 'Email Evidence',
+        description: email.body?.substring(0, 100) + '...' || 'Email content',
         type: 'Email Evidence',
         icon: '📧',
-        important: email.from.includes('unknown') || email.subject.toLowerCase().includes('urgent') || email.importance === 'high',
-        discoveredAt: new Date(email.timestamp)
+        important: false,
+        discoveredAt: new Date(email.timestamp || Date.now())
       };
     }
-  });
 
-  nexusCorpLeakStory.chatMessages.forEach(chat => {
-    if (chat.isEvidence) {
-      evidenceMap[`chat_evidence_${chat.id}`] = {
-        id: `chat_evidence_${chat.id}`,
-        title: `Chat: ${chat.title}`,
-        description: `Conversation on ${chat.platform} between ${chat.participants.join(' and ')}`,
-        type: 'Message Evidence',
+    const chat = content.chatMessages?.find(c => c.id === evidenceId);
+    if (chat) {
+      const lastMessage = chat.messages[chat.messages.length - 1];
+      return {
+        id: evidenceId,
+        title: chat.title || `Chat Evidence`,
+        description: lastMessage?.content || 'Chat conversation',
+        type: 'Chat Evidence',
         icon: '💬',
-        important: chat.participants.includes('Unknown Contact'),
-        discoveredAt: new Date(chat.messages[0]?.timestamp || Date.now())
+        important: false,
+        discoveredAt: new Date(lastMessage?.timestamp || Date.now())
       };
     }
-  });
 
-  nexusCorpLeakStory.files.forEach(file => {
-    if (file.isEvidence) {
-      evidenceMap[`file_evidence_${file.id}`] = {
-        id: `file_evidence_${file.id}`,
-        title: `File: ${file.name}`,
-        description: `${file.type.toUpperCase()} file (${file.size}) - ${file.content.substring(0, 100)}...`,
-        type: 'File Evidence',
-        icon: file.encrypted ? '🔒' : '📄',
-        important: file.encrypted || file.accessLevel >= 8,
-        discoveredAt: new Date(file.lastModified)
+    const file = content.files?.find(f => f.id === evidenceId);
+    if (file) {
+      return {
+        id: evidenceId,
+        title: file.name,
+        description: file.content?.toString().substring(0, 100) || 'File content',
+        type: `${file.type.charAt(0).toUpperCase() + file.type.slice(1)} Evidence`,
+        icon: '📄',
+        important: file.isEvidence,
+        discoveredAt: new Date(file.lastModified || Date.now())
       };
     }
+
+    return {
+      id: evidenceId,
+      title: `Evidence Item ${evidenceId}`,
+      description: 'This item has been marked as evidence in your investigation.',
+      type: 'Investigation Evidence',
+      icon: '🔍',
+      important: false,
+      discoveredAt: new Date()
+    };
   });
-
-  return gameStore.currentProgress.evidenceFound
-    .map(id => evidenceMap[id])
-    .filter((item): item is EvidenceItem => Boolean(item));
 });
-
-const clueItems = computed((): ClueItem[] => {
-  if (!gameStore.currentProgress?.connectionsDiscovered) return [];
-
-  const clueMap: Record<string, ClueItem> = {
-    'suspect_aaron_cole': {
-      id: 'suspect_aaron_cole',
-      description: 'Aaron Cole has suspicious access patterns and financial motivations for leaking classified documents.'
-    },
-    'payment_trail': {
-      id: 'payment_trail',
-      description: 'Financial transactions indicate payment for confidential information transfer to external parties.'
-    },
-    'after_hours_access': {
-      id: 'after_hours_access',
-      description: 'Unauthorized building access and file transfers occurred during non-business hours.'
-    }
-  };
-
-  return gameStore.currentProgress.connectionsDiscovered
-    .map((id: string) => clueMap[id])
-    .filter((item): item is ClueItem => Boolean(item));
-});
-
-const formatTime = (date: Date) => {
-  return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
 </script>
 
 <style lang="scss" scoped>

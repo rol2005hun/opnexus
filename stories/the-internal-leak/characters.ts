@@ -1,18 +1,5 @@
 export const characters: Character[] = [
     {
-        id: 'player_investigator',
-        name: 'Digital Investigator',
-        role: 'NEXUS Investigation Specialist',
-        department: 'Digital Investigation Agency',
-        background: 'Expert digital forensics investigator assigned to investigate the internal data leak at Nexus-Corp. Specialized in corporate espionage cases and cybersecurity incidents.',
-        personality: 'Methodical, detail-oriented, skilled at uncovering digital evidence and connecting patterns.',
-        avatar: '🕵️',
-        accessLevel: 10,
-        suspicious: false,
-        isSuspect: false,
-        isPlayer: true
-    },
-    {
         id: 'tech_director_001',
         name: 'Irene Walker',
         role: 'Chief Technology Officer',

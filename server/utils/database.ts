@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { success, error, info } from './discord-logger';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/opnexus';
 
@@ -6,18 +7,19 @@ let isConnected = false;
 
 export async function connectToDatabase() {
     if (isConnected) {
-        console.log('Using existing MongoDB connection');
         return;
     }
 
     try {
+        await info('[DATABASE] Attempting to connect to MongoDB...');
         const connection = await mongoose.connect(MONGODB_URI);
         isConnected = true;
-        console.log('MongoDB connected successfully');
+        await success('[DATABASE] Successfully connected to MongoDB.');
         return connection;
-    } catch (error) {
-        console.error('MongoDB connection error:', error);
-        throw error;
+    } catch (err) {
+        console.error('MongoDB connection error:', err);
+        await error(`[DATABASE] MongoDB connection failed: ${err instanceof Error ? err.message : 'Unknown error'}.`);
+        throw err;
     }
 }
 
@@ -29,9 +31,10 @@ export async function disconnectFromDatabase() {
     try {
         await mongoose.disconnect();
         isConnected = false;
-        console.log('MongoDB disconnected');
-    } catch (error) {
-        console.error('MongoDB disconnection error:', error);
-        throw error;
+        await info('[DATABASE] Disconnected from MongoDB.');
+    } catch (err) {
+        console.error('MongoDB disconnection error:', err);
+        await error(`[DATABASE] MongoDB disconnection failed: ${err instanceof Error ? err.message : 'Unknown error'}.`);
+        throw err;
     }
 }

@@ -37,26 +37,33 @@
       <div v-if="activeChatData" class="chat-view">
 
         <div class="chat-header-bar">
-          <div class="contact-info">
-            <div class="contact-avatar">{{ activeChatData.avatar }}</div>
-            <div class="contact-details">
-              <div class="contact-name">
-                {{ activeChatData.name }}
-                <span v-if="activeChatData.type === 'group'" class="group-label">(Group)</span>
-              </div>
-              <div class="chat-type-label chat-type-label-header">{{ getChatTypeLabel(activeChatData) }}</div>
-              <div class="contact-status" :class="getStatusClass(activeChatData.status)">
-                {{ activeChatData.status }}
-                <span v-if="activeChatData.platform"> • {{ activeChatData.platform }}</span>
+          <div class="chat-header-content">
+            <div class="contact-info">
+              <div class="contact-avatar">{{ activeChatData.avatar }}</div>
+              <div class="contact-details">
+                <div class="contact-name">
+                  {{ activeChatData.name }}
+                  <span v-if="activeChatData.type === 'group'" class="group-label">(Group)</span>
+                </div>
+                <div class="chat-type-label chat-type-label-header">{{ getChatTypeLabel(activeChatData) }}</div>
+                <div class="contact-status" :class="getStatusClass(activeChatData.status)">
+                  {{ activeChatData.status }}
+                  <span v-if="activeChatData.platform"> • {{ activeChatData.platform }}</span>
+                </div>
               </div>
             </div>
+            <button class="mark-evidence-btn" :class="{ 'marked': isMarkedAsEvidence(activeChatData.id) }"
+              @click="toggleEvidence(activeChatData.id)">
+              {{ isMarkedAsEvidence(activeChatData.id) ? '🔍 Evidence' : '🔍 Mark as Evidence' }}
+            </button>
           </div>
         </div>
 
         <div class="messages" ref="messagesContainer">
           <div v-for="message in activeChatData.messages" :key="message.id" class="message"
             :class="{ sent: message.sent, received: !message.sent }">
-            <div v-if="(!activeChatData.isOwnChat || activeChatData.type === 'group') && !message.sent" class="message-sender">
+            <div v-if="(!activeChatData.isOwnChat || activeChatData.type === 'group') && !message.sent"
+              class="message-sender">
               {{ message.sender }}
             </div>
             <div class="message-content">
@@ -118,10 +125,10 @@
           </div>
 
           <div class="dialog-actions">
+            <button @click="showNewChatDialog = false" class="cancel-btn">Cancel</button>
             <button @click="createNewChat" :disabled="selectedCharacters.length === 0" class="create-btn">
               Create Chat
             </button>
-            <button @click="showNewChatDialog = false" class="cancel-btn">Cancel</button>
           </div>
         </div>
       </div>
@@ -131,8 +138,10 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game';
+import { useAuthStore } from '@/stores/auth';
 
 const gameStore = useGameStore();
+const authStore = useAuthStore();
 
 const activeChat = ref<string | null>(null);
 const newMessage = ref('');
@@ -146,8 +155,7 @@ const newChatName = ref('');
 const selectedCharacters = ref<string[]>([]);
 
 const playerName = computed(() => {
-  const playerChar = currentStoryContent.value?.characters.find((char: Character) => char.isPlayer);
-  return playerChar?.name || 'Digital Investigator';
+  return authStore.userAgent?.name || 'Agent';
 });
 
 const availableCharacters = computed(() => {
@@ -213,15 +221,26 @@ const allChats = computed((): Chat[] => {
 });
 
 const filteredChats = computed(() => {
+  let chats: Chat[] = [];
+  
   switch (chatFilter.value) {
     case 'own':
-      return allChats.value.filter(chat => chat.isOwnChat);
+      chats = allChats.value.filter(chat => chat.isOwnChat);
+      break;
     case 'observed':
-      return allChats.value.filter(chat => chat.canView && !chat.isOwnChat);
+      chats = allChats.value.filter(chat => chat.canView && !chat.isOwnChat);
+      break;
     case 'all':
     default:
-      return allChats.value.filter(chat => chat.canView);
+      chats = allChats.value.filter(chat => chat.canView);
+      break;
   }
+  
+  return chats.sort((a, b) => {
+    const timeA = new Date(a.lastMessageTime).getTime();
+    const timeB = new Date(b.lastMessageTime).getTime();
+    return timeB - timeA;
+  });
 });
 
 const activeChatData = computed(() => {
@@ -238,7 +257,7 @@ const selectChat = (chatId: string) => {
     gameStore.markMessageRead(gameStore.currentStory, chatId);
 
     if (chat.isEvidence) {
-      gameStore.addEvidence(gameStore.currentStory, `chat_evidence_${chatId}`);
+      gameStore.toggleEvidence(gameStore.currentStory, `chat_evidence_${chatId}`);
     }
   }
 
@@ -281,13 +300,6 @@ const getParticipantsDisplay = (chat: Chat): string => {
     return `You + ${otherParticipants.join(', ')}`;
   }
   return otherParticipants.join(', ');
-};
-
-const formatTime = (date: Date) => {
-  return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 };
 
 const getStatusClass = (status: string) => {
@@ -370,6 +382,16 @@ const createNewChat = () => {
   newChatType.value = 'private';
 };
 
+const isMarkedAsEvidence = (chatId: string) => {
+  if (!gameStore.currentStory || !gameStore.currentProgress) return false;
+  return gameStore.currentProgress.markedEvidence.includes(chatId);
+};
+
+const toggleEvidence = (chatId: string) => {
+  if (!gameStore.currentStory) return;
+  gameStore.toggleEvidence(gameStore.currentStory, chatId);
+};
+
 onMounted(async () => {
   currentStoryContent.value = await gameStore.getCurrentStoryContent();
 });
@@ -385,18 +407,4 @@ watch(() => gameStore.currentStory, async (newStoryId) => {
 
 <style lang="scss" scoped>
 @use '@/assets/scss/components/apps/CipherChat';
-
-.chat-type-label {
-  font-size: 0.85em;
-  color: #007acc;
-  margin-top: 2px;
-  font-weight: 500;
-}
-
-.chat-type-label-header {
-  margin-top: 4px;
-  margin-bottom: 2px;
-  font-size: 0.9em;
-  display: block;
-}
 </style>
