@@ -1,5 +1,6 @@
-export interface Chat {
-    id: string;
+import type { BaseEntity } from '../core/base';
+
+export interface Chat extends BaseEntity {
     name: string;
     avatar: string;
     participants: string[];
@@ -16,8 +17,7 @@ export interface Chat {
     platform?: string;
 }
 
-export interface ChatMessage {
-    id: string;
+export interface ChatMessage extends BaseEntity {
     sender: string;
     content: string;
     timestamp: Date;

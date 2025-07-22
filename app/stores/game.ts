@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from './auth';
 import { getAllStoryMetadata } from '@/utils/storyRegistry';
-import type { Story, StoryProgress, GameState } from '@/types/game';
+import type { Story, StoryProgress, GameState } from '#shared/types';
 
 export const useGameStore = defineStore('game', {
     state: (): GameState => ({

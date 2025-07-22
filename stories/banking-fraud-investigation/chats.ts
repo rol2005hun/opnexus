@@ -1,4 +1,4 @@
-import type { EvidenceConversation } from '@/types/content';
+import type { EvidenceConversation } from '#shared/types';
 
 export const chats: EvidenceConversation[] = [
     {

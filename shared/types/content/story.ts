@@ -1,12 +1,11 @@
+import type { BaseEntity } from '../core/base';
 import type { EmailMessage } from './email';
 import type { Character, Suspect } from './characters';
-import type { EvidenceConversation } from './evidence';
-import type { FileDocument, DatabaseRecord } from './evidence';
-import type { StoryApp } from './applications';
+import type { EvidenceConversation, FileDocument, DatabaseRecord } from './evidence';
 import type { Objective, StoryEvent } from './investigation';
+import type { StoryApp } from '../ui/applications';
 
-export interface StoryContent {
-    id: string;
+export interface StoryContent extends BaseEntity {
     storyId: string;
     setting: StorySetting;
     characters: Character[];

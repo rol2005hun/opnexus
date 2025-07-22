@@ -1,5 +1,6 @@
-export interface Objective {
-    id: string;
+import type { BaseEntity } from '../core/base';
+
+export interface Objective extends BaseEntity {
     title: string;
     description: string;
     type: 'identify' | 'analyze' | 'connect' | 'prove' | 'timeline' | 'primary' | 'secondary' | 'hidden';
@@ -8,8 +9,7 @@ export interface Objective {
     hints?: string[];
 }
 
-export interface StoryEvent {
-    id: string;
+export interface StoryEvent extends BaseEntity {
     timestamp: string;
     title: string;
     description: string;

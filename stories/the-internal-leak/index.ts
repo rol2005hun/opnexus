@@ -1,4 +1,4 @@
-import type { StoryContent, StorySetting, Suspect, EvidenceConversation, DatabaseRecord, StoryApp, StoryEvent } from '@/types/content';
+import type { StoryContent, StorySetting, Suspect, EvidenceConversation, DatabaseRecord, StoryApp, StoryEvent } from '#shared/types';
 import { characters } from './characters';
 import { emails } from './emails';
 import { files } from './files';

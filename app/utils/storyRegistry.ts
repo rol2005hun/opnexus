@@ -1,5 +1,4 @@
-import type { StoryContent } from '@/types/content';
-import type { Story } from '@/types/game';
+import type { StoryContent, Story } from '#shared/types';
 
 export type StoryId = 'the-internal-leak' | 'banking-fraud-investigation' | 'operation-blackout' | 'the-insider' | 'digital-ghost';
 

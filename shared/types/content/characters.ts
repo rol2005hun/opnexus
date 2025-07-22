@@ -1,5 +1,6 @@
-export interface Character {
-    id: string;
+import type { BaseEntity } from '../core/base';
+
+export interface Character extends BaseEntity {
     name: string;
     role: string;
     department: string;

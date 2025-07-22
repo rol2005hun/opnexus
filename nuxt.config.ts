@@ -28,7 +28,6 @@ export default defineNuxtConfig({
         { name: 'language', content: 'en' },
         { name: 'theme-color', content: '#007acc' },
 
-        // Open Graph / Facebook
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: 'Operation: Nexus - Digital Investigation Agency' },
         {
@@ -40,7 +39,6 @@ export default defineNuxtConfig({
         { property: 'og:site_name', content: 'Operation: Nexus' },
         { property: 'og:locale', content: 'en_US' },
 
-        // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Operation: Nexus - Digital Investigation Agency' },
         {
@@ -50,7 +48,6 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: '/twitter-card.png' },
         { name: 'twitter:creator', content: '@OperationNexus' },
 
-        // Additional SEO
         { name: 'application-name', content: 'Operation: Nexus' },
         { name: 'apple-mobile-web-app-title', content: 'Operation: Nexus' },
         { name: 'mobile-web-app-capable', content: 'yes' },
@@ -111,10 +108,26 @@ export default defineNuxtConfig({
     }
   },
 
-  // Alias configuration
+  imports: {
+    dirs: [
+      'shared/utils/**',
+      'shared/types/**'
+    ]
+  },
+
+  nitro: {
+    imports: {
+      dirs: [
+        'shared/utils/**',
+        'shared/types/**'
+      ]
+    }
+  },
+
   alias: {
-    '@': fileURLToPath(new URL('./app', import.meta.url)),      // @ = source directory (app folder)
-    '@@': fileURLToPath(new URL('.', import.meta.url)),         // @@ = root directory
+    '@': fileURLToPath(new URL('./app', import.meta.url)),
+    '@@': fileURLToPath(new URL('.', import.meta.url)),
+    '#shared': fileURLToPath(new URL('./shared', import.meta.url))
   },
 
   vite: {

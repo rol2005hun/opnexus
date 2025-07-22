@@ -179,7 +179,7 @@
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game';
 import { useAuthStore } from '@/stores/auth';
-import type { Story } from '@/types/game';
+import type { Story } from '#shared/types';
 import LaptopScreen from '@/components/LaptopScreen.vue';
 
 const gameStore = useGameStore();

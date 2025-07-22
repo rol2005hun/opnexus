@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { LaptopApp, LaptopState } from '@/types/laptop';
+import type { LaptopApp, LaptopState } from '#shared/types';
 
 export const useLaptopStore = defineStore('laptop', {
     state: (): LaptopState => ({
@@ -146,8 +146,8 @@ export const useLaptopStore = defineStore('laptop', {
                     if (windowsContainer) {
                         const containerRect = windowsContainer.getBoundingClientRect();
                         app.position = { x: 0, y: 0 };
-                        app.size = { 
-                            width: containerRect.width, 
+                        app.size = {
+                            width: containerRect.width,
                             height: containerRect.height
                         };
                     } else {
@@ -187,11 +187,9 @@ export const useLaptopStore = defineStore('laptop', {
             }
         },
 
-        // Handle window resize - update maximized apps
         handleWindowResize() {
             this.apps.forEach(app => {
                 if (app.maximized) {
-                    // Get container dimensions for maximized apps
                     const container = document.querySelector('.windows-container');
                     const containerRect = container?.getBoundingClientRect();
 

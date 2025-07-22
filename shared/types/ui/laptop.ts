@@ -1,5 +1,6 @@
-export interface LaptopApp {
-    id: string;
+import type { BaseEntity } from '../core/base';
+
+export interface LaptopApp extends BaseEntity {
     name: string;
     icon: string;
     isOpen: boolean;

@@ -1,4 +1,4 @@
-import type { FileDocument } from '@/types/content';
+import type { FileDocument } from '#shared/types';
 
 export const files: FileDocument[] = [
     {

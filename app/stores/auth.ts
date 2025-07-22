@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { User, AuthState } from '@/types/auth';
+import type { User, AuthState } from '#shared/types';
 
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({

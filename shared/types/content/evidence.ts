@@ -1,5 +1,6 @@
-export interface FileDocument {
-    id: string;
+import type { BaseEntity } from '../core/base';
+
+export interface FileDocument extends BaseEntity {
     name: string;
     type: 'document' | 'spreadsheet' | 'image' | 'video' | 'audio' | 'archive';
     size: string;
@@ -12,8 +13,7 @@ export interface FileDocument {
     relatedTo: string[];
 }
 
-export interface DatabaseRecord {
-    id: string;
+export interface DatabaseRecord extends BaseEntity {
     database: string;
     table: string;
     record: Record<string, any>;
@@ -23,8 +23,7 @@ export interface DatabaseRecord {
     isEvidence: boolean;
 }
 
-export interface EvidenceConversation {
-    id: string;
+export interface EvidenceConversation extends BaseEntity {
     participants: string[];
     platform: string;
     messages: EvidenceMessage[];
@@ -34,8 +33,7 @@ export interface EvidenceConversation {
     title: string;
 }
 
-export interface EvidenceMessage {
-    id: string;
+export interface EvidenceMessage extends BaseEntity {
     sender: string;
     content: string;
     timestamp: string;

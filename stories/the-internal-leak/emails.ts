@@ -1,4 +1,4 @@
-import type { EmailMessage } from '@/types/email';
+import type { EmailMessage } from '#shared/types';
 
 export const emails: EmailMessage[] = [
     {

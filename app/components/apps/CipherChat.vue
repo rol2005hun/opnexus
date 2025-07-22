@@ -134,8 +134,7 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/game';
-import type { Chat, ChatMessage } from '@/types/chat';
-import type { Character, StoryContent, EvidenceConversation } from '@/types/content';
+import type { Chat, ChatMessage, Character, StoryContent, EvidenceConversation } from '#shared/types';
 
 const gameStore = useGameStore();
 

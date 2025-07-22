@@ -1,4 +1,4 @@
-import type { Character } from '@/types/content';
+import type { Character } from '#shared/types';
 
 export const characters: Character[] = [
     {

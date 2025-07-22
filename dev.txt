@@ -1,0 +1,25 @@
+Hibak
+- Modal nem gorgetheto email es chat appnal
+
+Befejezett feladatok
+✅ Nuxt 4 directory structure migration
+   - Összes fájl átmozgatva az app/ mappába
+   - Import útvonalak frissítve alias-okra:
+     * @/ = app/ directory (source directory)
+     * @@/ = root directory
+   - SCSS útvonalak frissítve @/ prefix-szel
+   - Abszolút útvonal aliasok beállítva a nuxt.config.ts-ben
+   - Project sikeresen elindul Nuxt 4-ben, hibák kijavítva
+
+✅ Shared types reorganization FIXED
+   - .d.ts fájlok átnevezve .ts fájlokra (auto-import támogatás)
+   - Auto-import beállítva a nuxt.config.ts-ben (imports.dirs)
+   - Nitro server import konfigurálva
+   - Unimport warning-ok eltűntek
+   - Stores és pages frissítve #shared/types import-okra
+   - HMR működik, project stabil
+
+Következő lépések
+- Összes komponens frissítése shared típusokra
+- Régi app/types mappa eltávolítása
+- Server fájlok frissítése shared típusokra
