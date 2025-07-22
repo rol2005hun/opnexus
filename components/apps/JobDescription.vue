@@ -116,7 +116,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
 import { useGameStore } from '@/stores/game';
 import type { StoryContent } from '@/types/content';
 
@@ -127,9 +126,6 @@ const currentStoryContent = ref<StoryContent | null>(null);
 const initializeJobDescription = async () => {
   try {
     currentStoryContent.value = await gameStore.getCurrentStoryContent();
-    if (!currentStoryContent.value) {
-      console.log('JobDescription: No current story content available');
-    }
   } catch (error) {
     console.error('JobDescription: Error loading story content:', error);
   }

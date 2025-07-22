@@ -10,8 +10,14 @@
  * - investigation.ts: Objectives and timeline events
  * - chat.ts: Interactive chat application UI types (separate from evidence)
  * - content.ts: Re-exports all story types for backward compatibility
+ * - auth.ts: User authentication and profile types
+ * - game.ts: Game state and story progress types
+ * - laptop.ts: Laptop simulation and app management types
  * 
  * Each category is closed for modification but open for extension.
  */
 
 export * from './content';
+export * from './auth';
+export * from './game';
+export * from './laptop';

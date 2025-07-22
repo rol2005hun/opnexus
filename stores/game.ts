@@ -1,42 +1,7 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from './auth';
 import { getAllStoryMetadata } from '@/utils/storyRegistry';
-
-export interface Story {
-    id: string;
-    title: string;
-    description: string;
-    briefing: string;
-    thumbnail: string;
-    difficulty: 'Rookie' | 'Agent' | 'Senior Agent' | 'Special Agent';
-    estimatedTime: string;
-    completed: boolean;
-    available: boolean;
-    securityClearance: number;
-    icon: string;
-    price?: number;
-    isPaid?: boolean;
-}
-
-interface StoryProgress {
-    emailsRead: string[];
-    messagesRead: string[];
-    evidenceFound: string[];
-    suspectsIdentified: string[];
-    connectionsDiscovered: string[];
-    timelineBuilt: boolean;
-    primarySuspectConfirmed: boolean;
-    caseStatus: 'briefing' | 'investigating' | 'analyzing' | 'building_case' | 'arrest_warrant' | 'completed';
-    investigationScore: number;
-    hintsUsed: number;
-}
-
-interface GameState {
-    currentStory: string | null;
-    stories: Story[];
-    isInLaptop: boolean;
-    progress: Record<string, StoryProgress>;
-}
+import type { Story, StoryProgress, GameState } from '@/types/game';
 
 export const useGameStore = defineStore('game', {
     state: (): GameState => ({
@@ -66,7 +31,6 @@ export const useGameStore = defineStore('game', {
             this.currentStory = storyId;
             this.isInLaptop = true;
 
-            // Initialize progress if it doesn't exist
             if (!this.progress[storyId]) {
                 this.progress[storyId] = {
                     emailsRead: [],

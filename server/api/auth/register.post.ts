@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
             agent: {
                 name: agentName,
                 badge: `NX-${Math.floor(Math.random() * 9000) + 1000}`,
-                rank: 'Trainee Agent',
+                rank: 'Rookie',
                 department: 'Digital Investigation Unit',
                 clearanceLevel: 1,
                 joinDate: new Date()

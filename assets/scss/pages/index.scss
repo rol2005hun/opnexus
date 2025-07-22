@@ -96,9 +96,54 @@
                 }
 
                 .agent-rank {
-                    color: $accent-blue;
                     font-size: 0.9rem;
                     font-weight: 500;
+                    transition: all 0.3s ease;
+                    color: $accent-blue;
+                    
+                    &.rookie {
+                        color: $accent-green;
+                    }
+                    
+                    &.agent {
+                        color: $accent-orange;
+                    }
+                    
+                    &.senior-agent {
+                        color: $accent-red;
+                    }
+                    
+                    &.special-agent {
+                        color: $accent-purple;
+                    }
+                    
+                    &.supervisor {
+                        color: $rank-supervisor;
+                    }
+                    
+                    &.section-chief {
+                        color: $rank-section-chief;
+                        text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+                        font-weight: 600;
+                    }
+                    
+                    &.deputy-director {
+                        color: $rank-deputy-director;
+                        text-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+                        font-weight: 700;
+                    }
+                    
+                    &.director {
+                        color: $rank-director;
+                        text-shadow: 
+                            0 0 5px rgba(239, 68, 68, 1.0),
+                            0 0 10px rgba(239, 68, 68, 1.0),
+                            0 0 15px rgba(239, 68, 68, 1.0),
+                            0 0 20px rgba(239, 68, 68, 0.8);
+                        font-weight: 700;
+                        letter-spacing: 0.5px;
+                        animation: directorGlow 2s ease-in-out infinite alternate;
+                    }
                 }
 
                 .agent-dept {
@@ -409,6 +454,29 @@
                     &.special-agent {
                         background: rgba(148, 0, 211, 0.2);
                         color: $accent-purple;
+                    }
+
+                    &.supervisor {
+                        background: rgba(59, 130, 246, 0.2);
+                        color: $rank-supervisor;
+                    }
+
+                    &.section-chief {
+                        background: rgba(16, 185, 129, 0.2);
+                        color: $rank-section-chief;
+                    }
+
+                    &.deputy-director {
+                        background: rgba(245, 158, 11, 0.2);
+                        color: $rank-deputy-director;
+                    }
+
+                    &.director {
+                        background: rgba(239, 68, 68, 0.3);
+                        color: $rank-director;
+                        border: 1px solid rgba(239, 68, 68, 0.5);
+                        font-weight: 700;
+                        text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
                     }
                 }
 
@@ -828,5 +896,24 @@
     .briefing-content {
         margin: 1rem;
         max-height: 90vh;
+    }
+}
+
+// Director rank glow animation
+@keyframes directorGlow {
+    0% {
+        text-shadow: 
+            0 0 5px rgba(239, 68, 68, 1.0),
+            0 0 10px rgba(239, 68, 68, 1.0),
+            0 0 15px rgba(239, 68, 68, 1.0),
+            0 0 20px rgba(239, 68, 68, 0.8);
+    }
+    
+    100% {
+        text-shadow: 
+            0 0 8px rgba(239, 68, 68, 1.0),
+            0 0 16px rgba(239, 68, 68, 1.0),
+            0 0 24px rgba(239, 68, 68, 1.0),
+            0 0 32px rgba(239, 68, 68, 1.0);
     }
 }

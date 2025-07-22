@@ -1,27 +1,5 @@
 import { defineStore } from 'pinia';
-
-interface LaptopApp {
-    id: string;
-    name: string;
-    icon: string;
-    isOpen: boolean;
-    zIndex: number;
-    position: { x: number; y: number };
-    size: { width: number; height: number };
-    minimized: boolean;
-    maximized: boolean;
-    originalPosition?: { x: number; y: number };
-    originalSize?: { width: number; height: number };
-    preMinimizePosition?: { x: number; y: number };
-    preMinimizeSize?: { width: number; height: number };
-    preMinimizeMaximized?: boolean;
-}
-
-interface LaptopState {
-    apps: LaptopApp[];
-    highestZIndex: number;
-    wallpaper: string;
-}
+import type { LaptopApp, LaptopState } from '@/types/laptop';
 
 export const useLaptopStore = defineStore('laptop', {
     state: (): LaptopState => ({
@@ -164,8 +142,21 @@ export const useLaptopStore = defineStore('laptop', {
                     app.originalPosition = { ...app.position };
                     app.originalSize = { ...app.size };
 
-                    app.position = { x: 0, y: 0 };
-                    app.size = { width: window.innerWidth, height: window.innerHeight };
+                    const windowsContainer = document.querySelector('.windows-container') as HTMLElement;
+                    if (windowsContainer) {
+                        const containerRect = windowsContainer.getBoundingClientRect();
+                        app.position = { x: 0, y: 0 };
+                        app.size = { 
+                            width: containerRect.width, 
+                            height: containerRect.height
+                        };
+                    } else {
+                        app.position = { x: 0, y: 0 };
+                        app.size = {
+                            width: window.innerWidth,
+                            height: window.innerHeight - 50
+                        };
+                    }
                     app.maximized = true;
                 }
 
@@ -194,6 +185,22 @@ export const useLaptopStore = defineStore('laptop', {
             if (app) {
                 app.size = size;
             }
+        },
+
+        // Handle window resize - update maximized apps
+        handleWindowResize() {
+            this.apps.forEach(app => {
+                if (app.maximized) {
+                    // Get container dimensions for maximized apps
+                    const container = document.querySelector('.windows-container');
+                    const containerRect = container?.getBoundingClientRect();
+
+                    app.size = {
+                        width: containerRect?.width || window.innerWidth,
+                        height: containerRect?.height || (window.innerHeight - 50)
+                    };
+                }
+            });
         }
     },
 

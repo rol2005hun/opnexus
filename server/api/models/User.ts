@@ -60,7 +60,7 @@ const userSchema = new mongoose.Schema({
         },
         rank: {
             type: String,
-            default: 'Trainee Agent'
+            default: 'Rookie'
         },
         department: {
             type: String,

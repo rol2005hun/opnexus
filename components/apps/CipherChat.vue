@@ -133,9 +133,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted, watch } from 'vue';
 import { useGameStore } from '@/stores/game';
-import type { Chat, ChatMessage, ChatFilter, NewChatRequest } from '@/types/chat';
+import type { Chat, ChatMessage } from '@/types/chat';
 import type { Character, StoryContent, EvidenceConversation } from '@/types/content';
 
 const gameStore = useGameStore();
@@ -146,21 +145,10 @@ const messagesContainer = ref<HTMLElement>();
 const showNewChatDialog = ref(false);
 const chatFilter = ref<'own' | 'all'>('all');
 const currentStoryContent = ref<StoryContent | null>(null);
-
+const customChats = ref<Chat[]>([]);
 const newChatType = ref<'private' | 'group'>('private');
 const newChatName = ref('');
 const selectedCharacters = ref<string[]>([]);
-
-onMounted(async () => {
-  currentStoryContent.value = await gameStore.getCurrentStoryContent();
-});
-
-watch(() => gameStore.currentStory, async (newStoryId) => {
-  if (newStoryId) {
-    currentStoryContent.value = await gameStore.getCurrentStoryContent();
-    activeChat.value = null;
-  }
-});
 
 const playerName = computed(() => {
   const playerChar = currentStoryContent.value?.characters.find((char: Character) => char.isPlayer);
@@ -224,7 +212,9 @@ const convertEvidenceToChats = (evidenceConversations: EvidenceConversation[]): 
 const allChats = computed((): Chat[] => {
   if (!currentStoryContent.value) return [];
 
-  return convertEvidenceToChats(currentStoryContent.value.chatMessages);
+  const storyChats = convertEvidenceToChats(currentStoryContent.value.chatMessages);
+
+  return [...storyChats, ...customChats.value];
 });
 
 const filteredChats = computed(() => {
@@ -265,7 +255,7 @@ const selectChat = (chatId: string) => {
 const sendMessage = () => {
   if (!newMessage.value.trim() || !activeChatData.value || !activeChatData.value.canSendMessage) return;
 
-  const message: ChatMessage = {
+  const chatMessage: ChatMessage = {
     id: 'msg_' + Date.now(),
     content: newMessage.value.trim(),
     timestamp: new Date(),
@@ -273,9 +263,9 @@ const sendMessage = () => {
     sender: playerName.value
   };
 
-  activeChatData.value.messages.push(message);
-  activeChatData.value.lastMessage = message.content;
-  activeChatData.value.lastMessageTime = message.timestamp;
+  activeChatData.value.messages.push(chatMessage);
+  activeChatData.value.lastMessage = chatMessage.content;
+  activeChatData.value.lastMessageTime = chatMessage.timestamp;
 
   newMessage.value = '';
 
@@ -339,7 +329,7 @@ const createNewChat = () => {
   });
   participants.push(...characterNames);
 
-  const newChatId = 'chat_' + Date.now();
+  const newChatId = 'custom_chat_' + Date.now();
   const chatName = newChatType.value === 'group'
     ? (newChatName.value || 'New Group Chat')
     : (characterNames[0] || 'Unknown');
@@ -361,7 +351,7 @@ const createNewChat = () => {
     messages: []
   };
 
-  allChats.value.push(newChat);
+  customChats.value.push(newChat);
   activeChat.value = newChatId;
 
   showNewChatDialog.value = false;
@@ -369,6 +359,18 @@ const createNewChat = () => {
   newChatName.value = '';
   newChatType.value = 'private';
 };
+
+onMounted(async () => {
+  currentStoryContent.value = await gameStore.getCurrentStoryContent();
+});
+
+watch(() => gameStore.currentStory, async (newStoryId) => {
+  if (newStoryId) {
+    currentStoryContent.value = await gameStore.getCurrentStoryContent();
+    activeChat.value = null;
+    customChats.value = [];
+  }
+});
 </script>
 
 <style lang="scss" scoped>

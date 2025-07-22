@@ -16,7 +16,8 @@
                 <div v-if="authStore.isAuthenticated" class="agent-profile">
                     <div class="agent-details">
                         <span class="agent-name">{{ gameStore.agent.name }}</span>
-                        <span class="agent-rank">{{ gameStore.agent.rank }}</span>
+                        <span class="agent-rank" :class="gameStore.agent.rank.toLowerCase().replace(' ', '-')">{{
+                            gameStore.agent.rank }}</span>
                         <span class="agent-dept">{{ gameStore.agent.department }}</span>
                         <span class="clearance">Security Clearance: {{ gameStore.agent.clearanceLevel }}</span>
                     </div>
@@ -100,7 +101,7 @@
                 </div>
                 <div class="stat">
                     <span class="stat-value">{{ authStore.isAuthenticated ? gameStore.availableStories.length : '0'
-                        }}</span>
+                    }}</span>
                     <span class="stat-label">Available Cases</span>
                 </div>
                 <div class="stat">
@@ -126,7 +127,7 @@
                         <h3>{{ selectedStory.title }}</h3>
                         <div class="clearance-info">
                             <span class="clearance-level">Security Clearance: {{ selectedStory.securityClearance
-                            }}</span>
+                                }}</span>
                             <span class="difficulty">{{ selectedStory.difficulty }}</span>
                         </div>
                     </div>

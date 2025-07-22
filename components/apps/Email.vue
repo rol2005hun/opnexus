@@ -115,7 +115,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
 import { useGameStore } from '@/stores/game';
 import type { EmailMessage, EmailAttachment, ProcessedEmail, EmailFolder } from '@/types/email';
 import type { StoryContent } from '@/types/content';
@@ -304,7 +303,7 @@ const permanentDelete = (emailId: string) => {
 };
 
 const openAttachment = (attachment: EmailAttachment) => {
-  console.log('Opening attachment:', attachment.name);
+  // TODO: Implement attachment opening logic
 };
 
 const openCompose = () => {
