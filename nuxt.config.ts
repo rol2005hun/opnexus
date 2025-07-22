@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { fileURLToPath, URL } from 'node:url';
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
@@ -107,6 +109,12 @@ export default defineNuxtConfig({
       'Inter': [400, 500, 600, 700],
       'JetBrains Mono': [400, 500, 600]
     }
+  },
+
+  // Alias configuration
+  alias: {
+    '@': fileURLToPath(new URL('./app', import.meta.url)),      // @ = source directory (app folder)
+    '@@': fileURLToPath(new URL('.', import.meta.url)),         // @@ = root directory
   },
 
   vite: {

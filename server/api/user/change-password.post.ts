@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { connectToDatabase } from '~/server/utils/database';
-import { User } from '~/server/api/models/User';
-import { verifyToken, extractTokenFromHeader } from '~/server/utils/jwt';
+import { connectToDatabase } from '@@/server/utils/database';
+import { User } from '@@/server/api/models/User';
+import { verifyToken, extractTokenFromHeader } from '@@/server/utils/jwt';
 
 export default defineEventHandler(async (event) => {
     if (getMethod(event) !== 'POST') {
