@@ -1,4 +1,4 @@
-export interface StoryProgress {
+export interface MissionProgress {
     emailsRead: string[];
     messagesRead: string[];
     evidenceFound: string[];

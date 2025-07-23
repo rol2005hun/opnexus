@@ -1,17 +1,17 @@
 const isCompletionModalVisible = ref(false);
-const completedStoryId = ref<string | null>(null);
+const completedMissionId = ref<string | null>(null);
 const finalScore = ref(0);
 
-export const useStoryCompletion = () => {
-    const showCompletionModal = (storyId: string, score: number) => {
-        completedStoryId.value = storyId;
+export const useMissionCompletion = () => {
+    const showCompletionModal = (missionId: string, score: number) => {
+        completedMissionId.value = missionId;
         finalScore.value = score;
         isCompletionModalVisible.value = true;
     };
 
     const hideCompletionModal = () => {
         isCompletionModalVisible.value = false;
-        completedStoryId.value = null;
+        completedMissionId.value = null;
         finalScore.value = 0;
     };
 
@@ -49,20 +49,20 @@ export const useStoryCompletion = () => {
         }
     };
 
-    const getStoryTitle = (storyId: string): string => {
+    const getMissionTitle = (missionId: string): string => {
         const gameStore = typeof useGameStore === 'function' ? useGameStore() : undefined;
-        const story = gameStore?.stories?.find((s: any) => s.id === storyId);
+        const mission = gameStore?.missions?.find((s: any) => s.id === missionId);
 
-        if (story && story.title) return story.title;
+        if (mission && mission.title) return mission.title;
 
         return 'Unknown Case';
     };
 
     const completionData = computed(() => {
-        if (!completedStoryId.value) return null;
+        if (!completedMissionId.value) return null;
         return {
-            storyId: completedStoryId.value,
-            storyTitle: getStoryTitle(completedStoryId.value),
+            missionId: completedMissionId.value,
+            missionTitle: getMissionTitle(completedMissionId.value),
             score: finalScore.value,
             rank: getRankBasedOnScore(finalScore.value)
         };
@@ -76,7 +76,7 @@ export const useStoryCompletion = () => {
     };
 };
 
-export const showCompletionModal = (storyId: string, score: number) => {
-    const { showCompletionModal: show } = useStoryCompletion();
-    show(storyId, score);
+export const showCompletionModal = (missionId: string, score: number) => {
+    const { showCompletionModal: show } = useMissionCompletion();
+    show(missionId, score);
 };

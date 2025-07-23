@@ -1,5 +1,53 @@
 export const emails: EmailMessage[] = [
     {
+        id: 'dia_briefing',
+        from: 'operations@dia.classified.gov',
+        to: ['agent.undercover@dia.classified.gov'],
+        subject: '[CLASSIFIED] Operation Corporate Shield - Mission Briefing',
+        body: `**CLASSIFIED - DIGITAL INVESTIGATION AGENCY**
+**OPERATION: CORPORATE SHIELD**
+**CLASSIFICATION: CONFIDENTIAL**
+
+Agent,
+
+Your mission is now active. You are officially employed as a Junior Systems Analyst at Nexus-Corp Industries under your cover identity.
+
+**SITUATION:**
+- Nexus-Corp CEO contacted DIA regarding suspected internal data theft
+- $47M classified defense project (Sentinel-X) has been compromised
+- Competitor CyberShield Industries suspected of acquiring insider information
+
+**YOUR COVER:**
+- New junior employee (first week on the job)
+- No one except CEO knows your real identity
+- You have been granted access to all corporate communications systems
+- Maintain cover at all costs
+
+**OBJECTIVES:**
+1. Identify the internal source of the data leak
+2. Gather evidence of corporate espionage
+3. Document all communications and financial transactions
+4. Prepare case for prosecution
+
+**AVAILABLE INTEL:**
+- Intercepted external communications
+- Monitored personal email accounts of suspects  
+- Full access to corporate email and chat systems
+- Financial monitoring in place
+
+**OPERATIONAL NOTES:**
+The emails marked as DIA-MONITORED and DIA-INTERCEPTED are intelligence we've gathered outside the corporate network. Use these to build your case.
+
+Stay alert. Trust no one.
+
+**CLEARANCE LEVEL:** TS/SCI
+**OPERATION CODE:** CORPSHIELD-2025-07**`,
+        timestamp: '2025-07-01 06:00:00',
+        encrypted: true,
+        importance: 'high',
+        isEvidence: false
+    },
+    {
         id: 'email_001',
         from: 'irene.walker@nexus-corp.com',
         to: ['security@nexus-corp.com', 'ceo@nexus-corp.com'],
@@ -12,14 +60,15 @@ Team,
 I've discovered suspicious network activity that suggests unauthorized access to our Sentinel-X project files. My security monitoring detected several anomalies over the past week:
 
 1. Unusual file access patterns outside normal working hours
-2. Large data transfers to external storage devices
+2. Large data transfers to external storage devices  
 3. Bypassing of our standard file tracking protocols
+4. Access to classified documents from unauthorized locations
 
-This could be a serious security breach. The Sentinel-X project contains classified defense contractor information worth $47M to our company.
+This appears to be an internal security breach. The Sentinel-X project contains classified defense contractor information worth $47M to our company.
 
-I'm recommending immediate investigation and temporary suspension of project access until we can identify the source.
+I've already contacted our external security consultants (DIA) as discussed. They're sending someone undercover to investigate without alerting the potential insider.
 
-Please treat this with highest priority.
+All project files have been flagged for enhanced monitoring. Please treat this with highest priority and maintain absolute discretion.
 
 Best regards,
 Irene Walker
@@ -55,7 +104,7 @@ Human Resources Department`,
         timestamp: '2025-07-01 09:15:00',
         encrypted: false,
         importance: 'normal',
-        isEvidence: false
+        isEvidence: true
     },
     {
         id: 'email_011',
@@ -116,10 +165,19 @@ IT Support Team`,
     },
     {
         id: 'email_013',
-        from: 'aaron.cole@nexus-corp.com',
-        to: ['family-law@smithandpartners.com'],
-        subject: 'Urgent: Divorce Settlement Payment Schedule',
-        body: `Dear Attorney Johnson,
+        from: 'DIA-MONITORED@classified.gov',
+        to: ['investigation-team@dia.gov'],
+        subject: '[MONITORED] Personal Email - Aaron Cole Financial Pressure',
+        body: `**CLASSIFIED - DIGITAL INVESTIGATION AGENCY**
+**MONITORED PERSONAL COMMUNICATION**
+
+Subject: Aaron Cole → family-law@smithandpartners.com
+Monitored: 2025-07-02 19:30:00
+Classification: CONFIDENTIAL
+
+---ORIGINAL MESSAGE---
+
+Dear Attorney Johnson,
 
 I need to discuss modifying the payment schedule for my divorce settlement. The current monthly payments of $3,200 are becoming difficult to maintain with my current salary.
 
@@ -136,7 +194,11 @@ Please advise on the best approach.
 
 Aaron Cole
 Senior Developer, Nexus-Corp Industries
-Phone: (555) 847-2931`,
+Phone: (555) 847-2931
+
+---END MONITORED MESSAGE---
+
+**DIA ANALYSIS:** Subject showing severe financial pressure. Mentions "additional income sources" and "better cash flow within the next month" - potential indicator of illicit activity.`,
         timestamp: '2025-07-02 19:30:00',
         encrypted: false,
         importance: 'high',
@@ -220,7 +282,7 @@ Facilities Management`,
 
 🏆 **Innovation Award:** Dr. Sarah Chen (R&D) - Revolutionary quantum encryption breakthrough
 🏆 **Teamwork Award:** DevOps Team - Zero downtime during server migration
-🏆 **Customer Service:** Mike Thompson (Sales) - Secured largest contract in company history
+🏆 **Customer Service:** Mike Thompson (Sales) - Secured largest contract in company himission
 🏆 **Leadership Award:** Sophie Tanaka (PM) - Exceptional project management on Sentinel-X
 
 These employees exemplify our core values of innovation, collaboration, and excellence. 
@@ -407,10 +469,19 @@ P.S. - Yes, this includes people working on Sentinel-X. Sophie says you deserve 
     },
     {
         id: 'email_020',
-        from: 'divorce-attorneys@smithandpartners.com',
-        to: ['aaron.cole@nexus-corp.com'],
-        subject: 'RE: Final Settlement Payment Notice - URGENT ACTION REQUIRED',
-        body: `Mr. Cole,
+        from: 'DIA-MONITORED@classified.gov',
+        to: ['investigation-team@dia.gov'],
+        subject: '[MONITORED] Legal Notice - Aaron Cole Debt Crisis',
+        body: `**CLASSIFIED - DIGITAL INVESTIGATION AGENCY**
+**MONITORED PERSONAL COMMUNICATION**
+
+Source: divorce-attorneys@smithandpartners.com → aaron.cole@nexus-corp.com
+Monitored: 2025-07-11 11:30:00
+Classification: CONFIDENTIAL
+
+---ORIGINAL MESSAGE---
+
+Mr. Cole,
 
 This is your final notice regarding overdue divorce settlement payments. You are currently $9,600 behind on court-ordered support payments.
 
@@ -428,7 +499,11 @@ Your ex-wife has filed a motion for contempt of court. If full payment is not re
 We strongly recommend immediate payment or contact our office to arrange a payment plan.
 
 Johnson & Associates Family Law
-Phone: (555) LAW-HELP`,
+Phone: (555) LAW-HELP
+
+---END MONITORED MESSAGE---
+
+**DIA ANALYSIS:** Subject under extreme financial pressure. Payment deadline July 25th aligns with timeline of data breach. Strong motive for illicit income.`,
         timestamp: '2025-07-11 11:30:00',
         encrypted: false,
         importance: 'high',
@@ -465,10 +540,19 @@ Benefits Administration`,
     },
     {
         id: 'email_006',
-        from: 'marcus.webb@cybershield.com',
-        to: ['acquisition@cybershield.com'],
-        subject: 'Nexus-Corp Intelligence - Project Sentinel-X',
-        body: `Team,
+        from: 'DIA-INTERCEPTED@classified.gov',
+        to: ['investigation-team@dia.gov'],
+        subject: '[INTERCEPTED] Nexus-Corp Intelligence - Project Sentinel-X',
+        body: `**CLASSIFIED - DIGITAL INVESTIGATION AGENCY**
+**INTERCEPTED COMMUNICATION - EXTERNAL THREAT ACTOR**
+
+Source: marcus.webb@cybershield.com → acquisition@cybershield.com
+Intercepted: 2025-07-12 20:15:00
+Classification: CONFIDENTIAL
+
+---ORIGINAL MESSAGE---
+
+Team,
 
 Excellent work on acquiring the Nexus-Corp technical specifications. The Sentinel-X documents you provided give us exactly what we need to counter their bid.
 
@@ -488,7 +572,11 @@ Keep the pipeline open for any additional information.
 Dr. Marcus Webb
 CTO, CyberShield Industries
 
-**CONFIDENTIAL - Do not forward outside leadership team**`,
+**CONFIDENTIAL - Do not forward outside leadership team**
+
+---END INTERCEPTED MESSAGE---
+
+**DIA ANALYSIS:** Confirms external buyer for leaked data. CyberShield Industries is Nexus-Corp's primary competitor for the DoD contract.`,
         timestamp: '2025-07-12 20:15:00',
         encrypted: true,
         importance: 'high',
@@ -612,5 +700,75 @@ Legal Department`,
                 type: 'application/pdf'
             }
         ]
+    },
+    {
+        id: 'email_normal_001',
+        from: 'admin@nexus-corp.com',
+        to: ['all-staff@nexus-corp.com'],
+        subject: 'Office Kitchen Cleanup - Please Help Keep It Tidy',
+        body: `Dear Everyone,
+
+Friendly reminder to please clean up after yourselves in the office kitchen:
+
+- Wash your dishes immediately after use
+- Don't leave food in the refrigerator over the weekend
+- Coffee maker should be cleaned after each pot
+- Microwave needs to be wiped down after use
+
+Thanks for keeping our shared space pleasant for everyone!
+
+Building Management`,
+        timestamp: '2025-07-19 08:30:00',
+        encrypted: false,
+        importance: 'normal',
+        isEvidence: false
+    },
+    {
+        id: 'email_normal_002',  
+        from: 'social-committee@nexus-corp.com',
+        to: ['all-staff@nexus-corp.com'],
+        subject: 'Friday Movie Night - The Matrix Trilogy',
+        body: `Hi Team!
+
+Join us this Friday at 6 PM in the main conference room for The Matrix movie marathon! 
+
+🍿 Popcorn and snacks provided
+🥤 Soft drinks available  
+🍕 Pizza will be ordered around 8 PM
+
+RSVP if you're planning to attend so we order enough food.
+
+Fun Committee`,
+        timestamp: '2025-07-17 14:20:00',
+        encrypted: false,
+        importance: 'normal',
+        isEvidence: false
+    },
+    {
+        id: 'email_normal_003',
+        from: 'facilities@nexus-corp.com', 
+        to: ['all-staff@nexus-corp.com'],
+        subject: 'Parking Lot Repaving - Alternative Arrangements',
+        body: `All Staff,
+
+The parking lot will be repaved next week (July 28-30). During this time:
+
+**Alternative Parking:**
+- Street parking available (2-hour limit, bring quarters)
+- Nearby parking garage at 123 Main St (daily rate $8)
+- Remote work encouraged if possible
+
+**Timeline:**
+- Monday: South section closed
+- Tuesday: North section closed  
+- Wednesday: Final coating, full lot closed
+
+Sorry for the inconvenience!
+
+Facilities Management`,
+        timestamp: '2025-07-21 09:45:00',
+        encrypted: false,
+        importance: 'normal',
+        isEvidence: false
     }
 ];

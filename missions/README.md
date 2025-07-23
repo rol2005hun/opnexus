@@ -1,26 +1,26 @@
-# Creating New Stories - Complete Guide
+# Creating New Missions - Complete Guide
 
-## 🎯 Story System Overview
+## 🎯 Mission System Overview
 
-In the NEXUS game, each story represents independent investigation cases. Players use various digital tools (email, chat, files) to collect evidence and solve mysteries.
+In the NEXUS game, each mission represents independent investigation cases. Players use various digital tools (email, chat, files) to collect evidence and solve mysteries.
 
-## 📁 Story Structure
+## 📁 Mission Structure
 
 ```
-stories/
-  new-story-name/
-    ├── index.ts          # Main story file (assembles everything)
+missions/
+  new-mission-name/
+    ├── index.ts          # Main mission file (assembles everything)
     ├── characters.ts     # Characters and people
     ├── emails.ts         # Email messages
     ├── chats.ts          # Chat conversations
     ├── files.ts          # Documents and files
-    └── README.md         # Story documentation
+    └── README.md         # Mission documentation
 ```
 
-## 🚀 Step by Step - Creating New Stories
+## 🚀 Step by Step - Creating New Missions
 
-### Step 1: Story Concept
-Start with a good story idea:
+### Step 1: Mission Concept
+Start with a good mission idea:
 - **Theme**: What is the investigation based on? (cybercrime, internal sabotage, financial fraud)
 - **Main Characters**: Who are the suspects and witnesses?
 - **Evidence**: What digital traces will there be?
@@ -28,7 +28,7 @@ Start with a good story idea:
 
 ### Step 2: Create Folder
 ```
-stories/new-story-name/
+missions/new-mission-name/
 ```
 
 ### Step 3: Define Characters (`characters.ts`)
@@ -87,7 +87,7 @@ export const emails: EmailMessage[] = [
 
 **Tips:**
 - Create 5-10 emails
-- Build the story chronologically
+- Build the mission chronologically
 - Include both suspicious and normal emails
 
 ### Step 5: Chat Messages (`chats.ts`)
@@ -138,16 +138,16 @@ export const files: FileDocument[] = [
 ];
 ```
 
-### Step 7: Main Story File (`index.ts`)
+### Step 7: Main Mission File (`index.ts`)
 
 ```typescript
-import type { StoryContent, StorySetting, Suspect, Objective } from '@/types/content';
+import type { MissionContent, MissionSetting, Suspect, Objective } from '@/types/content';
 import { characters } from './characters';
 import { emails } from './emails';
 import { chats } from './chats';
 import { files } from './files';
 
-const setting: StorySetting = {
+const setting: MissionSetting = {
     location: 'Location',
     organization: 'Organization',
     department: 'Department',
@@ -180,9 +180,9 @@ const objectives: Objective[] = [
     }
 ];
 
-export const newStoryName: StoryContent = {
-    id: 'new-story-id',
-    storyId: 'new-story-id',
+export const newMissionName: MissionContent = {
+    id: 'new-mission-id',
+    missionId: 'new-mission-id',
     setting,
     characters,
     suspects,
@@ -198,15 +198,15 @@ export const newStoryName: StoryContent = {
 
 ### Step 8: Game Store Registration
 
-In the `stores/game.ts` file, add the new story:
+In the `stores/game.ts` file, add the new mission:
 
 ```typescript
 {
-    id: 'new-story-id',
-    title: 'Story Title',
+    id: 'new-mission-id',
+    title: 'Mission Title',
     description: 'Short description...',
     briefing: 'Detailed briefing...',
-    thumbnail: '/stories/image.jpg',
+    thumbnail: '/missions/image.jpg',
     difficulty: 'Agent', // 'Rookie', 'Agent', 'Senior Agent', 'Special Agent'
     estimatedTime: '60-90 mins',
     completed: false,
@@ -218,32 +218,32 @@ In the `stores/game.ts` file, add the new story:
 }
 ```
 
-### Step 9: Story Registry Registration
+### Step 9: Mission Registry Registration
 
-In the `utils/storyRegistry.ts` file, add the new story:
+In the `utils/missionRegistry.ts` file, add the new mission:
 
 ```typescript
-export type StoryId = 'the-internal-leak' | 'banking-fraud-investigation' | 'new-story-id';
+export type MissionId = 'the-internal-leak' | 'banking-fraud-investigation' | 'new-mission-id';
 
-export const storyRegistry: Record<StoryId, () => Promise<StoryContent>> = {
+export const missionRegistry: Record<MissionId, () => Promise<MissionContent>> = {
     'the-internal-leak': async () => {
-        const { nexusCorpLeakStory } = await import('@/stories/the-internal-leak');
-        return nexusCorpLeakStory;
+        const { nexusCorpLeakMission } = await import('@/missions/the-internal-leak');
+        return nexusCorpLeakMission;
     },
     'banking-fraud-investigation': async () => {
-        const { bankingFraudStory } = await import('@/stories/banking-fraud-investigation');
-        return bankingFraudStory;
+        const { bankingFraudMission } = await import('@/missions/banking-fraud-investigation');
+        return bankingFraudMission;
     },
-    'new-story-id': async () => {
-        const { newStoryName } = await import('@/stories/new-story-name');
-        return newStoryName;
+    'new-mission-id': async () => {
+        const { newMissionName } = await import('@/missions/new-mission-name');
+        return newMissionName;
     }
 };
 ```
 
 ## 💡 Design Tips
 
-### Good Story Elements:
+### Good Mission Elements:
 - **Multiple suspects**: Choose from 3-5 people
 - **Connected evidence**: Emails, chats, files support each other
 - **Chronological structure**: Evidence builds up in logical order
@@ -255,7 +255,7 @@ export const storyRegistry: Record<StoryId, () => Promise<StoryContent>> = {
 - Contradictory evidence
 - Missing motivation
 
-## 📝 Example Story Ideas
+## 📝 Example Mission Ideas
 
 1. **Startup Sabotage**: Employee steals source code for competitor company
 2. **Hospital Data Breach**: Doctor sells patient data to insurance companies
@@ -267,12 +267,12 @@ export const storyRegistry: Record<StoryId, () => Promise<StoryContent>> = {
 
 - Every ID must be unique across the entire game
 - Use TypeScript interfaces for type safety
-- Test story logic during gameplay
+- Test mission logic during gameplay
 - Give appropriate access levels to characters
 
-## 📚 Current Stories
+## 📚 Current Missions
 
-### Available Stories:
+### Available Missions:
 - **the-internal-leak**: Corporate espionage at defense contractor
 - **banking-fraud-investigation**: Sophisticated fraud scheme at City National Bank
 

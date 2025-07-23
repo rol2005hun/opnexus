@@ -8,8 +8,8 @@
     <div class="evidence-locker-container">
       <div class="evidence-locker-header">
         <h2>🔍 Evidence Locker</h2>
-        <div class="case-info" v-if="gameStore.currentStoryData">
-          <span class="case-name">{{ gameStore.currentStoryData.title }}</span>
+        <div class="case-info" v-if="gameStore.currentMissionData">
+          <span class="case-name">{{ gameStore.currentMissionData.title }}</span>
           <span class="case-status" :class="statusClass">{{ statusText }}</span>
         </div>
       </div>
@@ -121,13 +121,13 @@ interface EvidenceItem {
 
 const investigationProgress = computed(() => {
   const progress = gameStore.currentProgress;
-  const storyContent = gameStore.currentStoryData?.content;
-  if (!progress || !storyContent) return 0;
+  const missionContent = gameStore.currentMissionData?.content;
+  if (!progress || !missionContent) return 0;
 
   const totalRealEvidence = [
-    ...storyContent.emails.filter(e => e.isEvidence),
-    ...storyContent.chatMessages.filter(c => c.isEvidence),
-    ...storyContent.files.filter(f => f.isEvidence)
+    ...missionContent.emails.filter(e => e.isEvidence),
+    ...missionContent.chatMessages.filter(c => c.isEvidence),
+    ...missionContent.files.filter(f => f.isEvidence)
   ].length;
 
   if (totalRealEvidence === 0) return 0;
@@ -153,13 +153,13 @@ const progressStatusText = computed(() => {
 
 const canIdentifySuspects = computed(() => {
   const progress = gameStore.currentProgress;
-  const storyContent = gameStore.currentStoryData?.content;
-  if (!progress || !storyContent) return false;
+  const missionContent = gameStore.currentMissionData?.content;
+  if (!progress || !missionContent) return false;
 
   const realEvidenceIds = [
-    ...storyContent.emails.filter(e => e.isEvidence).map(e => e.id),
-    ...storyContent.chatMessages.filter(c => c.isEvidence).map(c => c.id),
-    ...storyContent.files.filter(f => f.isEvidence).map(f => f.id)
+    ...missionContent.emails.filter(e => e.isEvidence).map(e => e.id),
+    ...missionContent.chatMessages.filter(c => c.isEvidence).map(c => c.id),
+    ...missionContent.files.filter(f => f.isEvidence).map(f => f.id)
   ];
 
   const marked = progress.markedEvidence;
@@ -175,9 +175,9 @@ const showSuspectModal = ref(false);
 const selectedSuspect = ref<string | null>(null);
 
 const availableSuspects = computed(() => {
-  const storyContent = gameStore.currentStoryData?.content;
-  if (!storyContent?.characters) return [];
-  return storyContent.characters.map(character => ({
+  const missionContent = gameStore.currentMissionData?.content;
+  if (!missionContent?.characters) return [];
+  return missionContent.characters.map(character => ({
     id: character.id,
     name: character.name,
     role: character.role
@@ -199,43 +199,43 @@ const selectSuspect = (suspectId: string) => {
 };
 
 const confirmSuspect = async () => {
-  if (!selectedSuspect.value || !gameStore.currentStory) return;
+  if (!selectedSuspect.value || !gameStore.currentMission) return;
 
-  const storyContent = gameStore.currentStoryData?.content;
-  const trueSuspect = storyContent?.suspects?.find(s => s.evidenceAgainst && s.evidenceAgainst.length > 0);
+  const missionContent = gameStore.currentMissionData?.content;
+  const trueSuspect = missionContent?.suspects?.find(s => s.evidenceAgainst && s.evidenceAgainst.length > 0);
 
-  const progress = gameStore.progress[gameStore.currentStory];
+  const progress = gameStore.progress[gameStore.currentMission];
 
   if (trueSuspect && selectedSuspect.value === trueSuspect.id) {
-    gameStore.markSuspectConfirmed(gameStore.currentStory, selectedSuspect.value);
+    gameStore.markSuspectConfirmed(gameStore.currentMission, selectedSuspect.value);
     showSuspectModal.value = false;
     try {
       const response = await $fetch<{ success: boolean; currentScore: number }>('/api/user/update-score', {
         method: 'POST',
         body: {
-          storyId: gameStore.currentStory,
+          missionId: gameStore.currentMission,
           points: 100
         }
       });
-      showCompletionModal(gameStore.currentStory, response.currentScore);
+      showCompletionModal(gameStore.currentMission, response.currentScore);
     } catch (error) {
-      console.error('Failed to update story score:', error);
-      showCompletionModal(gameStore.currentStory, 0);
+      console.error('Failed to update mission score:', error);
+      showCompletionModal(gameStore.currentMission, 0);
     }
   } else {
     try {
       await $fetch('/api/user/update-score', {
         method: 'POST',
         body: {
-          storyId: gameStore.currentStory,
+          missionId: gameStore.currentMission,
           points: -10
         }
       });
     } catch (error) {
-      console.error('Failed to update story score:', error);
+      console.error('Failed to update mission score:', error);
     }
 
-    gameStore.progress[gameStore.currentStory] = {
+    gameStore.progress[gameStore.currentMission] = {
       emailsRead: [],
       messagesRead: [],
       filesExamined: [],
@@ -278,10 +278,10 @@ const statusText = computed(() => {
 
 const evidenceItems = computed((): EvidenceItem[] => {
   const currentProgress = gameStore.currentProgress;
-  const storyData = gameStore.currentStoryData;
-  if (!currentProgress?.markedEvidence || !storyData?.content) return [];
+  const missionData = gameStore.currentMissionData;
+  if (!currentProgress?.markedEvidence || !missionData?.content) return [];
 
-  const content = storyData.content;
+  const content = missionData.content;
   return currentProgress.markedEvidence.map(evidenceId => {
     const email = content.emails?.find(e => e.id === evidenceId);
     if (email) {

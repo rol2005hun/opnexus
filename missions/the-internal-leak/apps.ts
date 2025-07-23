@@ -1,4 +1,4 @@
-export const customApps: StoryApp[] = [
+export const customApps: MissionApp[] = [
     {
         id: 'security_monitor',
         name: 'Security Monitor',

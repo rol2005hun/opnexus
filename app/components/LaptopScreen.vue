@@ -56,7 +56,7 @@
             <kbd>ESC</kbd> to exit
         </div>
 
-        <StoryCompletionModal />
+        <MissionCompletionModal />
     </div>
 </template>
 

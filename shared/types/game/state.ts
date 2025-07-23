@@ -1,9 +1,9 @@
-import type { Story } from './story';
-import type { StoryProgress } from './progress';
+import type { Mission } from './mission';
+import type { MissionProgress } from './progress';
 
 export interface GameState {
-    currentStory: string | null;
-    stories: Story[];
+    currentMission: string | null;
+    missions: Mission[];
     isInLaptop: boolean;
-    progress: Record<string, StoryProgress>;
+    progress: Record<string, MissionProgress>;
 }

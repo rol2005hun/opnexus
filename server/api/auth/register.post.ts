@@ -62,9 +62,9 @@ export default defineEventHandler(async (event) => {
                 joinDate: new Date()
             },
             gameProgress: {
-                completedStories: [],
-                purchasedStories: ['the-internal-leak'],
-                currentStory: null,
+                completedMissions: [],
+                purchasedMissions: ['the-internal-leak'],
+                currentMission: null,
                 totalPlaytime: 0,
                 achievements: ['new-recruit']
             },

@@ -28,7 +28,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         return token.value ? navigateTo('/') : navigateTo('/auth');
     }
 
-    if (gameStore.stories.length === 0) {
-        await gameStore.initializeStories();
+    if (gameStore.missions.length === 0) {
+        await gameStore.initializeMissions();
     }
 });

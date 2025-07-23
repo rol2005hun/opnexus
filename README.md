@@ -138,7 +138,7 @@ nexus/
 
 ## 🔮 Roadmap
 
-- 📚 **Multiple Stories**: Additional investigation scenarios
+- 📚 **Multiple Missions**: Additional investigation scenarios
 - 🏆 **Achievement System**: Progress tracking and rewards
 - 📊 **Analytics Dashboard**: Case completion statistics
 - 🎵 **Audio Integration**: Ambient sounds and effects

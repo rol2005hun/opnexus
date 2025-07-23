@@ -100,42 +100,42 @@
                     font-weight: 500;
                     transition: all 0.3s ease;
                     color: $accent-blue;
-                    
+
                     &.rookie {
                         color: $accent-green;
                     }
-                    
+
                     &.agent {
                         color: $accent-orange;
                     }
-                    
+
                     &.senior-agent {
                         color: $accent-red;
                     }
-                    
+
                     &.special-agent {
                         color: $accent-purple;
                     }
-                    
+
                     &.supervisor {
                         color: $rank-supervisor;
                     }
-                    
+
                     &.section-chief {
                         color: $rank-section-chief;
                         text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
                         font-weight: 600;
                     }
-                    
+
                     &.deputy-director {
                         color: $rank-deputy-director;
                         text-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
                         font-weight: 700;
                     }
-                    
+
                     &.director {
                         color: $rank-director;
-                        text-shadow: 
+                        text-shadow:
                             0 0 5px rgba(239, 68, 68, 1.0),
                             0 0 10px rgba(239, 68, 68, 1.0),
                             0 0 15px rgba(239, 68, 68, 1.0),
@@ -263,14 +263,14 @@
     }
 }
 
-.stories-grid {
+.missions-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 2rem;
     margin-bottom: 3rem;
 }
 
-.story-card {
+.mission-card {
     background: $bg-secondary;
     border: 1px solid $border-color;
     border-radius: 12px;
@@ -328,12 +328,12 @@
         }
     }
 
-    .story-thumbnail {
+    .mission-thumbnail {
         position: relative;
         text-align: center;
         margin-bottom: 1rem;
 
-        .story-icon {
+        .mission-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
         }
@@ -399,7 +399,7 @@
         }
     }
 
-    .story-info {
+    .mission-info {
         display: flex;
         flex-direction: column;
         flex: 1;
@@ -410,7 +410,7 @@
             color: $text-primary;
         }
 
-        .story-description {
+        .mission-description {
             color: $text-secondary;
             margin-bottom: 0.5rem;
             line-height: 1.5;
@@ -418,14 +418,14 @@
             min-height: 0;
         }
 
-        .story-footer {
+        .mission-footer {
             margin-top: 1rem;
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
             flex-shrink: 0;
 
-            .story-meta {
+            .mission-meta {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -497,7 +497,7 @@
                 }
             }
 
-            .story-briefing {
+            .mission-briefing {
                 .briefing-btn {
                     width: 100%;
                     background: $accent-blue;
@@ -846,6 +846,262 @@
     }
 }
 
+:deep(.classified-briefing) {
+    .classification-header {
+        background: linear-gradient(90deg, $accent-red, color.adjust($accent-red, $lightness: -10%));
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        margin: -2rem -2rem 2rem -2rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .operation-title {
+        text-align: center;
+        margin-bottom: 2rem;
+
+        h3 {
+            color: $accent-blue;
+            font-size: 1.6rem;
+            margin: 0;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 122, 204, 0.5);
+        }
+    }
+
+    .briefing-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: rgba(0, 122, 204, 0.05);
+        border: 1px solid rgba(0, 122, 204, 0.2);
+        border-radius: 8px;
+
+        h4 {
+            color: $accent-blue;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        p {
+            color: $text-secondary;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .critical {
+            color: $accent-orange;
+            font-weight: 700;
+            background: rgba(255, 136, 0, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .value {
+            color: $accent-green;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .access-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+                color: $text-secondary;
+                margin-bottom: 0.5rem;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid rgba(0, 122, 204, 0.1);
+
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+        }
+    }
+
+    .warning-section {
+        background: rgba(255, 136, 0, 0.1);
+        border: 2px solid $accent-orange;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+
+        h4 {
+            color: $accent-orange;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .warning-text {
+            color: $accent-orange;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+    }
+
+    h1,
+    h2,
+    h3 {
+        color: $accent-blue;
+        font-weight: 700;
+        text-shadow: 0 0 8px rgba(0, 122, 204, 0.4);
+        margin-bottom: 1rem;
+    }
+
+    h4,
+    h5,
+    h6 {
+        color: $accent-blue;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    p {
+        color: $text-secondary;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    strong {
+        color: $text-primary;
+        font-weight: 700;
+    }
+
+    em {
+        color: $accent-orange;
+        font-style: italic;
+    }
+
+    ul,
+    ol {
+        color: $text-secondary;
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+
+        li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+
+            &::marker {
+                color: $accent-blue;
+            }
+        }
+    }
+
+    .highlight {
+        background: rgba(0, 122, 204, 0.2);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        color: $accent-blue;
+        font-weight: 600;
+    }
+
+    .danger {
+        background: rgba(239, 68, 68, 0.2);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        color: $accent-red;
+        font-weight: 600;
+    }
+
+    .success {
+        background: rgba(34, 197, 94, 0.2);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        color: $accent-green;
+        font-weight: 600;
+    }
+
+    .warning {
+        background: rgba(255, 136, 0, 0.2);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        color: $accent-orange;
+        font-weight: 600;
+    }
+
+    .code {
+        background: $bg-secondary;
+        border: 1px solid $border-color;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        color: $accent-green;
+    }
+
+    .classified-tag {
+        background: linear-gradient(90deg, $accent-red, color.adjust($accent-red, $lightness: -10%));
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        display: inline-block;
+        margin: 0.2rem;
+    }
+
+    .clearance-level {
+        background: $bg-secondary;
+        border: 1px solid $accent-blue;
+        color: $accent-blue;
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-block;
+        margin: 0.2rem;
+    }
+
+    .money {
+        color: $accent-green;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+    }
+
+    .location {
+        color: $accent-blue;
+        font-weight: 600;
+        font-style: italic;
+    }
+
+    .person {
+        color: $text-primary;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+    }
+
+    .company {
+        color: $accent-orange;
+        font-weight: 600;
+    }
+
+    .date {
+        color: $accent-blue;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+    }
+}
+
 .laptop-boot-enter-active,
 .laptop-boot-leave-active {
     transition: all 0.8s ease;
@@ -872,15 +1128,15 @@
         }
     }
 
-    .stories-grid {
+    .missions-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
 
-    .story-card {
+    .mission-card {
         padding: 1rem;
 
-        .story-info .story-meta {
+        .mission-info .mission-meta {
             flex-direction: column;
             gap: 0.5rem;
             align-items: flex-start;
@@ -901,15 +1157,15 @@
 
 @keyframes directorGlow {
     0% {
-        text-shadow: 
+        text-shadow:
             0 0 5px rgba(239, 68, 68, 1.0),
             0 0 10px rgba(239, 68, 68, 1.0),
             0 0 15px rgba(239, 68, 68, 1.0),
             0 0 20px rgba(239, 68, 68, 0.8);
     }
-    
+
     100% {
-        text-shadow: 
+        text-shadow:
             0 0 8px rgba(239, 68, 68, 1.0),
             0 0 16px rgba(239, 68, 68, 1.0),
             0 0 24px rgba(239, 68, 68, 1.0),

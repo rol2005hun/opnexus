@@ -1,34 +1,34 @@
 <template>
   <div class="app-job-description">
-    <div class="job-description-header" v-if="currentStoryContent">
-      <h2>💼 Case Assignment - {{ currentStoryContent.setting.organization }} Investigation</h2>
+    <div class="job-description-header" v-if="currentMissionContent">
+      <h2>💼 Case Assignment - {{ currentMissionContent.setting.organization }} Investigation</h2>
       <div class="job-description-meta">
-        <span class="case-id">Case ID: {{ currentStoryContent.id.toUpperCase() }}</span>
+        <span class="case-id">Case ID: {{ currentMissionContent.id.toUpperCase() }}</span>
         <span class="classification">Classification: TOP SECRET</span>
       </div>
     </div>
 
-    <div class="job-description-content" v-if="currentStoryContent">
+    <div class="job-description-content" v-if="currentMissionContent">
       <div class="investigation-brief">
         <h3>🎯 Mission Assignment</h3>
         <p>
           Agent, you have been assigned to investigate a suspected data breach at <strong>{{
-            currentStoryContent.setting.organization }}</strong>.
+            currentMissionContent.setting.organization }}</strong>.
         </p>
 
         <h4>📋 Incident Report</h4>
-        <p>{{ currentStoryContent.setting.backgroundInfo }}</p>
+        <p>{{ currentMissionContent.setting.backgroundInfo }}</p>
 
         <div class="case-details">
-          <p><strong>Location:</strong> {{ currentStoryContent.setting.location }}</p>
-          <p><strong>Affected Department:</strong> {{ currentStoryContent.setting.department }}</p>
-          <p><strong>Investigation Period:</strong> {{ currentStoryContent.setting.timeframe }}</p>
+          <p><strong>Location:</strong> {{ currentMissionContent.setting.location }}</p>
+          <p><strong>Affected Department:</strong> {{ currentMissionContent.setting.department }}</p>
+          <p><strong>Investigation Period:</strong> {{ currentMissionContent.setting.timeframe }}</p>
         </div>
 
         <h4>📜 Your Mission</h4>
         <div class="mission-objectives">
           <ol>
-            <li v-for="objective in currentStoryContent.objectives" :key="objective.id">
+            <li v-for="objective in currentMissionContent.objectives" :key="objective.id">
               <strong>{{ objective.title }}:</strong> {{ objective.description }}
             </li>
           </ol>
@@ -86,13 +86,13 @@ import { useGameStore } from '@/stores/game';
 
 const gameStore = useGameStore();
 
-const currentStoryContent = ref<StoryContent | null>(null);
+const currentMissionContent = ref<MissionContent | null>(null);
 
 const initializeJobDescription = async () => {
   try {
-    currentStoryContent.value = await gameStore.getCurrentStoryContent();
+    currentMissionContent.value = await gameStore.getCurrentMissionContent();
   } catch (error) {
-    console.error('JobDescription: Error loading story content:', error);
+    console.error('JobDescription: Error loading mission content:', error);
   }
 };
 
@@ -100,7 +100,7 @@ onMounted(() => {
   initializeJobDescription();
 });
 
-watch(() => gameStore.currentStory, () => {
+watch(() => gameStore.currentMission, () => {
   initializeJobDescription();
 });
 </script>

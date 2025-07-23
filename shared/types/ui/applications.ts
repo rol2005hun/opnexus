@@ -1,6 +1,6 @@
 import type { BaseEntity } from '../core/base';
 
-export interface StoryApp extends BaseEntity {
+export interface MissionApp extends BaseEntity {
     name: string;
     icon: string;
     type: 'financial' | 'surveillance' | 'database' | 'communication' | 'monitoring' | 'social' | 'forensic';

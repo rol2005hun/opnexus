@@ -1,11 +1,23 @@
 export const characters: Character[] = [
     {
+        id: 'player_agent',
+        name: 'Agent [CLASSIFIED]',
+        role: 'Junior Systems Analyst (Cover Identity)',
+        department: 'IT Support (Cover Assignment)',
+        background: 'Digital Investigation Agency operative working undercover at Nexus-Corp. Your real identity is known only to CEO and CTO Irene Walker. Officially you are a new hire in the IT department, but you have access to monitor all corporate communications systems.',
+        personality: 'Professional, observant, analytical. Skilled in digital forensics and corporate espionage investigation. Maintains perfect cover as an eager new employee.',
+        avatar: '🕵️‍♂️',
+        accessLevel: 5,
+        suspicious: false,
+        isSuspect: false
+    },
+    {
         id: 'tech_director_001',
         name: 'Irene Walker',
         role: 'Chief Technology Officer',
         department: 'Technology Leadership',
-        background: 'Visionary tech leader with 12 years at Nexus-Corp. Built the cybersecurity division from ground up. Known for her paranoia about data protection and her ability to spot security threats before anyone else. Recently discovered suspicious network activity.',
-        personality: 'Highly analytical, security-focused, tends to be suspicious of everyone. Has a reputation for being the "canary in the coal mine" for security issues.',
+        background: 'Visionary tech leader with 12 years at Nexus-Corp. Built the cybersecurity division from ground up. Known for her paranoia about data protection and her ability to spot security threats before anyone else. Made the decision to contact DIA when she discovered the security breach. Only person at Nexus-Corp who knows your true identity.',
+        personality: 'Highly analytical, security-focused, tends to be suspicious of everyone. Has a reputation for being the "canary in the coal mine" for security issues. Extremely discreet and trustworthy.',
         avatar: '👩‍💼',
         accessLevel: 9,
         suspicious: false,

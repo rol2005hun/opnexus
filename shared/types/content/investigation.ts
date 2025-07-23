@@ -9,7 +9,7 @@ export interface Objective extends BaseEntity {
     hints?: string[];
 }
 
-export interface StoryEvent extends BaseEntity {
+export interface MissionEvent extends BaseEntity {
     timestamp: string;
     title: string;
     description: string;

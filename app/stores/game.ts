@@ -1,37 +1,37 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from './auth';
-import { getAllStories } from '@/utils/registerStory';
+import { getAllMissions } from '@/utils/registerMission';
 
 export const useGameStore = defineStore('game', {
     state: (): GameState => ({
-        currentStory: null,
+        currentMission: null,
         isInLaptop: false,
-        stories: [],
+        missions: [],
         progress: {}
     }),
 
     actions: {
-        async initializeStories() {
-            if (this.stories.length === 0) {
+        async initializeMissions() {
+            if (this.missions.length === 0) {
                 try {
-                    this.stories = await getAllStories();
+                    this.missions = await getAllMissions();
                 } catch (error) {
-                    console.error('Failed to initialize stories:', error);
+                    console.error('Failed to initialize missions:', error);
                 }
             }
         },
 
-        selectStory(storyId: string) {
-            const story = this.stories.find(s => s.id === storyId);
-            if (!story || !story.available || story.securityClearance > this.agent.clearanceLevel) {
+        selectMission(missionId: string) {
+            const mission = this.missions.find(s => s.id === missionId);
+            if (!mission || !mission.available || mission.securityClearance > this.agent.clearanceLevel) {
                 return;
             }
 
-            this.currentStory = storyId;
+            this.currentMission = missionId;
             this.isInLaptop = true;
 
-            if (!this.progress[storyId]) {
-                this.progress[storyId] = {
+            if (!this.progress[missionId]) {
+                this.progress[missionId] = {
                     emailsRead: [],
                     messagesRead: [],
                     evidenceFound: [],
@@ -51,26 +51,26 @@ export const useGameStore = defineStore('game', {
             this.isInLaptop = false;
         },
 
-        markEmailRead(storyId: string, emailId: string) {
-            if (!this.progress[storyId]) return;
-            if (!this.progress[storyId].emailsRead.includes(emailId)) {
-                this.progress[storyId].emailsRead.push(emailId);
-                this.checkStoryCompletion(storyId);
+        markEmailRead(missionId: string, emailId: string) {
+            if (!this.progress[missionId]) return;
+            if (!this.progress[missionId].emailsRead.includes(emailId)) {
+                this.progress[missionId].emailsRead.push(emailId);
+                this.checkMissionCompletion(missionId);
             }
         },
 
-        markMessageRead(storyId: string, chatId: string) {
-            if (!this.progress[storyId]) return;
-            if (!this.progress[storyId].messagesRead.includes(chatId)) {
-                this.progress[storyId].messagesRead.push(chatId);
-                this.checkStoryCompletion(storyId);
+        markMessageRead(missionId: string, chatId: string) {
+            if (!this.progress[missionId]) return;
+            if (!this.progress[missionId].messagesRead.includes(chatId)) {
+                this.progress[missionId].messagesRead.push(chatId);
+                this.checkMissionCompletion(missionId);
             }
         },
 
-        toggleEvidence(storyId: string, itemId: string) {
-            if (!this.progress[storyId]) return;
+        toggleEvidence(missionId: string, itemId: string) {
+            if (!this.progress[missionId]) return;
             
-            const progress = this.progress[storyId];
+            const progress = this.progress[missionId];
             const isMarked = progress.markedEvidence.includes(itemId);
             
             if (isMarked) {
@@ -81,41 +81,41 @@ export const useGameStore = defineStore('game', {
             } else {
                 progress.markedEvidence.push(itemId);
                 
-                const story = this.stories.find(s => s.id === storyId)?.content;
-                if (!story) return;
+                const mission = this.missions.find(s => s.id === missionId)?.content;
+                if (!mission) return;
                 
-                const isRealEvidence = this.isRealEvidence(story, itemId);
+                const isRealEvidence = this.isRealEvidence(mission, itemId);
                 
                 if (isRealEvidence && !progress.evidenceFound.includes(itemId)) {
                     progress.evidenceFound.push(itemId);
-                    this.checkStoryCompletion(storyId);
+                    this.checkMissionCompletion(missionId);
                 }
             }
         },
 
-        isRealEvidence(story: StoryContent, itemId: string): boolean {
-            const email = story.emails.find(e => e.id === itemId);
+        isRealEvidence(mission: MissionContent, itemId: string): boolean {
+            const email = mission.emails.find(e => e.id === itemId);
             if (email?.isEvidence) return true;
 
-            const chat = story.chatMessages.find(c => c.id === itemId);
+            const chat = mission.chatMessages.find(c => c.id === itemId);
             if (chat?.isEvidence) return true;
 
-            const file = story.files.find(f => f.id === itemId);
+            const file = mission.files.find(f => f.id === itemId);
             if (file?.isEvidence) return true;
 
             return false;
         },
 
-        async markSuspectConfirmed(storyId: string, suspectId: string) {
-            if (!this.progress[storyId]) return;
-            const progress = this.progress[storyId];
+        async markSuspectConfirmed(missionId: string, suspectId: string) {
+            if (!this.progress[missionId]) return;
+            const progress = this.progress[missionId];
             
-            const story = await this.getCurrentStoryContent();
-            if (story) {
+            const mission = await this.getCurrentMissionContent();
+            if (mission) {
                 const totalEvidence = [
-                    ...story.emails.filter(e => e.isEvidence),
-                    ...story.chatMessages.filter(c => c.isEvidence),
-                    ...story.files.filter(f => f.isEvidence)
+                    ...mission.emails.filter(e => e.isEvidence),
+                    ...mission.chatMessages.filter(c => c.isEvidence),
+                    ...mission.files.filter(f => f.isEvidence)
                 ].length;
                 
                 const foundEvidence = progress.evidenceFound.length;
@@ -126,23 +126,23 @@ export const useGameStore = defineStore('game', {
             
             progress.primarySuspectConfirmed = true;
             progress.suspectsIdentified.push(suspectId);
-            this.checkStoryCompletion(storyId);
+            this.checkMissionCompletion(missionId);
         },
 
-        markFileExamined(storyId: string, fileId: string) {
-            if (!this.progress[storyId]) return;
-            if (!this.progress[storyId].filesExamined.includes(fileId)) {
-                this.progress[storyId].filesExamined.push(fileId);
-                this.checkStoryCompletion(storyId);
+        markFileExamined(missionId: string, fileId: string) {
+            if (!this.progress[missionId]) return;
+            if (!this.progress[missionId].filesExamined.includes(fileId)) {
+                this.progress[missionId].filesExamined.push(fileId);
+                this.checkMissionCompletion(missionId);
             }
         },
 
-        async checkStoryCompletion(storyId: string) {
-            const story = await this.getCurrentStoryContent();
-            if (!story || !this.progress[storyId]) return;
+        async checkMissionCompletion(missionId: string) {
+            const mission = await this.getCurrentMissionContent();
+            if (!mission || !this.progress[missionId]) return;
 
-            const progress = this.progress[storyId];
-            const objectives = story.objectives || [];
+            const progress = this.progress[missionId];
+            const objectives = mission.objectives || [];
 
             const allObjectivesCompleted = objectives.every(objective => {
                 const hasRequiredEvidence = objective.requiredEvidence?.every(evidenceId =>
@@ -152,9 +152,9 @@ export const useGameStore = defineStore('game', {
             });
 
             const totalRealEvidence = [
-                ...story.emails.filter(e => e.isEvidence),
-                ...story.chatMessages.filter(c => c.isEvidence),
-                ...story.files.filter(f => f.isEvidence)
+                ...mission.emails.filter(e => e.isEvidence),
+                ...mission.chatMessages.filter(c => c.isEvidence),
+                ...mission.files.filter(f => f.isEvidence)
             ].length;
 
             const hasAllEvidence = progress.evidenceFound.length === totalRealEvidence;
@@ -162,40 +162,40 @@ export const useGameStore = defineStore('game', {
 
             if (allObjectivesCompleted && hasAllEvidence && hasPrimarySuspect) {
                 progress.caseStatus = 'completed';
-                const { showCompletionModal } = await import('@/composables/useStoryCompletion');
-                showCompletionModal(storyId, progress.investigationScore);
+                const { showCompletionModal } = await import('@/composables/useMissionCompletion');
+                showCompletionModal(missionId, progress.investigationScore);
             }
         },
 
-        async getCurrentStoryContent() {
-            if (!this.currentStory) return null;
+        async getCurrentMissionContent() {
+            if (!this.currentMission) return null;
 
-            const registerStory = (await import('@/utils/registerStory')).default;
-            const story = await registerStory(this.currentStory);
-            return story?.content || null;
+            const registerMission = (await import('@/utils/registerMission')).default;
+            const mission = await registerMission(this.currentMission);
+            return mission?.content || null;
         }
     },
 
     getters: {
-        currentProgress(): StoryProgress | null {
-            if (!this.currentStory || !this.progress[this.currentStory]) {
+        currentProgress(): MissionProgress | null {
+            if (!this.currentMission || !this.progress[this.currentMission]) {
                 return null;
             }
-            return this.progress[this.currentStory] || null;
+            return this.progress[this.currentMission] || null;
         },
 
-        currentStoryData(): Story | null {
-            if (!this.currentStory) return null;
-            return this.stories.find(s => s.id === this.currentStory) || null;
+        currentMissionData(): Mission | null {
+            if (!this.currentMission) return null;
+            return this.missions.find(s => s.id === this.currentMission) || null;
         },
 
-        availableStories(): Story[] {
+        availableMissions(): Mission[] {
             const authStore = useAuthStore();
             const userClearance = authStore.userAgent?.clearanceLevel || 1;
-            return this.stories.filter(story =>
-                story.available &&
-                story.securityClearance <= userClearance &&
-                (!story.isPaid || authStore.hasStoryAccess(story.id))
+            return this.missions.filter(mission =>
+                mission.available &&
+                mission.securityClearance <= userClearance &&
+                (!mission.isPaid || authStore.hasMissionAccess(mission.id))
             );
         },
 

@@ -159,7 +159,7 @@ const newMessage = ref('');
 const messagesContainer = ref<HTMLElement>();
 const showNewChatDialog = ref(false);
 const chatFilter = ref<'chats' | 'own' | 'all' | 'observed' | 'trash'>('chats');
-const currentStoryContent = ref<StoryContent | null>(null);
+const currentMissionContent = ref<MissionContent | null>(null);
 const customChats = ref<Chat[]>([]);
 const deletedChatIds = ref<Set<string>>(new Set());
 const permanentlyDeletedChatIds = ref<Set<string>>(new Set());
@@ -172,8 +172,8 @@ const playerName = computed(() => {
 });
 
 const availableCharacters = computed(() => {
-  if (!currentStoryContent.value) return [];
-  return currentStoryContent.value.characters.filter((char: Character) =>
+  if (!currentMissionContent.value) return [];
+  return currentMissionContent.value.characters.filter((char: Character) =>
     !char.isPlayer &&
     !char.name.includes('Unknown') &&
     !char.name.includes('External')
@@ -181,9 +181,9 @@ const availableCharacters = computed(() => {
 });
 
 const getCharacterAvatar = (name: string): string => {
-  if (!currentStoryContent.value) return '👤';
+  if (!currentMissionContent.value) return '👤';
 
-  const character = currentStoryContent.value.characters.find((char: Character) => char.name === name);
+  const character = currentMissionContent.value.characters.find((char: Character) => char.name === name);
   if (character?.avatar) return character.avatar;
 
   if (name.includes('Unknown') || name.includes('External')) return '🕵️';
@@ -226,11 +226,11 @@ const convertEvidenceToChats = (evidenceConversations: EvidenceConversation[]): 
 };
 
 const allChats = computed((): Chat[] => {
-  if (!currentStoryContent.value) return [];
+  if (!currentMissionContent.value) return [];
 
-  const storyChats = convertEvidenceToChats(currentStoryContent.value.chatMessages);
+  const missionChats = convertEvidenceToChats(currentMissionContent.value.chatMessages);
 
-  return [...storyChats, ...customChats.value];
+  return [...missionChats, ...customChats.value];
 });
 
 const filteredChats = computed(() => {
@@ -291,12 +291,12 @@ const selectChat = (chatId: string) => {
   activeChat.value = chatId;
   const chat = allChats.value.find(c => c.id === chatId);
 
-  if (chat && chat.unreadCount > 0 && gameStore.currentStory) {
+  if (chat && chat.unreadCount > 0 && gameStore.currentMission) {
     chat.unreadCount = 0;
-    gameStore.markMessageRead(gameStore.currentStory, chatId);
+    gameStore.markMessageRead(gameStore.currentMission, chatId);
 
     if (chat.isEvidence) {
-      gameStore.toggleEvidence(gameStore.currentStory, `chat_evidence_${chatId}`);
+      gameStore.toggleEvidence(gameStore.currentMission, `chat_evidence_${chatId}`);
     }
   }
 
@@ -422,13 +422,13 @@ const createNewChat = () => {
 };
 
 const isMarkedAsEvidence = (chatId: string) => {
-  if (!gameStore.currentStory || !gameStore.currentProgress) return false;
+  if (!gameStore.currentMission || !gameStore.currentProgress) return false;
   return gameStore.currentProgress.markedEvidence.includes(chatId);
 };
 
 const toggleEvidence = (chatId: string) => {
-  if (!gameStore.currentStory) return;
-  gameStore.toggleEvidence(gameStore.currentStory, chatId);
+  if (!gameStore.currentMission) return;
+  gameStore.toggleEvidence(gameStore.currentMission, chatId);
 };
 
 const moveToTrash = (chatId: string) => {
@@ -464,12 +464,12 @@ const permanentDelete = (chatId: string) => {
 };
 
 onMounted(async () => {
-  currentStoryContent.value = await gameStore.getCurrentStoryContent();
+  currentMissionContent.value = await gameStore.getCurrentMissionContent();
 });
 
-watch(() => gameStore.currentStory, async (newStoryId) => {
-  if (newStoryId) {
-    currentStoryContent.value = await gameStore.getCurrentStoryContent();
+watch(() => gameStore.currentMission, async (newMissionId) => {
+  if (newMissionId) {
+    currentMissionContent.value = await gameStore.getCurrentMissionContent();
     activeChat.value = null;
     customChats.value = [];
     deletedChatIds.value.clear();

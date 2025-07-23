@@ -17,7 +17,10 @@
 
     <div class="email-list">
       <div class="email-header">
-        <h3>{{ getCurrentFolder()?.name || 'Inbox' }}</h3>
+        <div class="header-info">
+          <h3>{{ getCurrentFolder()?.name || 'Inbox' }}</h3>
+          <span class="email-count">({{ getUnreadCount() }}/{{ currentEmails.length }})</span>
+        </div>
         <div class="email-actions">
           <button class="refresh-btn" @click="refreshEmails">↻</button>
         </div>
@@ -130,7 +133,7 @@ const gameStore = useGameStore();
 const activeFolder = ref('inbox');
 const selectedEmail = ref<string | null>(null);
 const showCompose = ref(false);
-const currentStoryContent = ref<StoryContent | null>(null);
+const currentMissionContent = ref<MissionContent | null>(null);
 const composeForm = ref({
   to: '',
   cc: '',
@@ -140,8 +143,7 @@ const composeForm = ref({
 
 const folders: EmailFolder[] = [
   { id: 'inbox', name: 'Inbox', icon: '📥', unread: 0 },
-  { id: 'sent', name: 'Sent', icon: '📤', unread: 0 },
-  { id: 'direct', name: 'Direct to Me', icon: '👤', unread: 0 },
+  { id: 'mission', name: 'Mission Access', icon: '�️', unread: 0 },
   { id: 'drafts', name: 'Drafts', icon: '📝', unread: 0 },
   { id: 'important', name: 'Important', icon: '⭐', unread: 0 },
   { id: 'allmails', name: 'All Mails', icon: '📧', unread: 0 },
@@ -150,16 +152,29 @@ const folders: EmailFolder[] = [
 
 const playerEmail = computed(() => authStore.currentUser ? `${authStore.currentUser.username}@operation.nexus` : '');
 
-const getStoryEmails = (): EmailMessage[] => {
-  return currentStoryContent.value?.emails || [];
+const getMissionEmails = (): EmailMessage[] => {
+  return currentMissionContent.value?.emails || [];
 }
 
 const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
   return rawEmails.map(email => {
     const processedAttachments: EmailAttachment[] = email.attachments || [];
-    
+
     const allRecipients = email.to || ['me@nexus-corp.com'];
     const primaryRecipient = allRecipients[0] || 'me@nexus-corp.com';
+
+    let folder = 'mission';
+
+    if (email.to.includes('me@nexus-corp.com') ||
+      email.to.some(recipient => recipient.includes('agent'))) {
+      folder = 'inbox';
+    }
+
+    if (email.from.includes('DIA-') ||
+      email.from.includes('@classified.gov') ||
+      email.from.includes('@nexus-corp.com')) {
+      folder = 'mission';
+    }
 
     return {
       id: email.id,
@@ -170,10 +185,10 @@ const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
       content: formatEmailContent(email.body),
       timestamp: new Date(email.timestamp),
       read: false,
-      important: email.importance === 'high',
+      important: false,
       hasAttachment: (email.attachments?.length || 0) > 0,
       attachments: processedAttachments,
-      folder: email.folder || (email.from === 'me@nexus-corp.com' ? 'sent' : 'inbox')
+      folder: folder
     };
   });
 };
@@ -181,25 +196,37 @@ const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
 const emails = ref<ProcessedEmail[]>([]);
 
 const initializeEmails = () => {
-  const storyEmails = getStoryEmails();
-  emails.value = processEmails(storyEmails);
+  const missionEmails = getMissionEmails();
+  emails.value = processEmails(missionEmails);
   updateFolderCounts();
 };
 
 const updateFolderCounts = () => {
   folders.forEach(folder => {
     if (folder.id === 'important') {
-      folder.unread = emails.value.filter(email => email.important && !email.read).length;
+      folder.unread = emails.value.filter(email => email.important && !email.read && email.folder !== 'trash').length;
     } else if (folder.id === 'allmails') {
       folder.unread = emails.value.filter(email => !email.read).length;
-    } else if (folder.id === 'direct') {
+    } else if (folder.id === 'mission') {
       folder.unread = emails.value.filter(email => {
         if (email.read || email.folder === 'trash') return false;
 
-        const storyEmail = getStoryEmails().find(e => e.id === email.id);
-        if (storyEmail) {
-          return storyEmail.to.includes('me@nexus-corp.com') ||
-            storyEmail.to.some(recipient => recipient.includes('agent'));
+        const missionEmail = getMissionEmails().find(e => e.id === email.id);
+        if (missionEmail) {
+          return missionEmail.from.includes('DIA-') ||
+            missionEmail.from.includes('@nexus-corp.com') ||
+            missionEmail.from.includes('@classified.gov');
+        }
+        return false;
+      }).length;
+    } else if (folder.id === 'inbox') {
+      folder.unread = emails.value.filter(email => {
+        if (email.read || email.folder === 'trash') return false;
+
+        const missionEmail = getMissionEmails().find(e => e.id === email.id);
+        if (missionEmail) {
+          return missionEmail.to.includes('me@nexus-corp.com') ||
+            missionEmail.to.some(recipient => recipient.includes('agent'));
         }
         return false;
       }).length;
@@ -215,6 +242,10 @@ const getCurrentFolder = () => {
   return folders.find(f => f.id === activeFolder.value);
 };
 
+const getUnreadCount = () => {
+  return currentEmails.value.filter(email => !email.read).length;
+};
+
 const currentEmails = computed(() => {
   let filteredEmails: ProcessedEmail[] = [];
 
@@ -222,22 +253,29 @@ const currentEmails = computed(() => {
     filteredEmails = emails.value.filter(email => email.important && email.folder !== 'trash');
   } else if (activeFolder.value === 'allmails') {
     filteredEmails = emails.value;
-  } else if (activeFolder.value === 'direct') {
+  } else if (activeFolder.value === 'mission') {
     filteredEmails = emails.value.filter(email => {
       if (email.folder === 'trash') return false;
 
-      const storyEmail = getStoryEmails().find(e => e.id === email.id);
-      if (storyEmail) {
-        return storyEmail.to.includes('me@nexus-corp.com') ||
-          storyEmail.to.some(recipient => recipient.includes('agent'));
+      const missionEmail = getMissionEmails().find(e => e.id === email.id);
+      if (missionEmail) {
+        return missionEmail.from.includes('DIA-') ||
+          missionEmail.from.includes('@nexus-corp.com') ||
+          missionEmail.from.includes('@classified.gov');
       }
       return false;
     });
   } else if (activeFolder.value === 'inbox') {
-    filteredEmails = emails.value.filter(email =>
-      email.folder === 'inbox' ||
-      (email.folder !== 'sent' && email.folder !== 'trash' && email.folder !== 'drafts')
-    );
+    filteredEmails = emails.value.filter(email => {
+      if (email.folder === 'trash') return false;
+
+      const missionEmail = getMissionEmails().find(e => e.id === email.id);
+      if (missionEmail) {
+        return missionEmail.to.includes('me@nexus-corp.com') ||
+          missionEmail.to.some(recipient => recipient.includes('agent'));
+      }
+      return false;
+    });
   } else {
     filteredEmails = emails.value.filter(email => email.folder === activeFolder.value);
   }
@@ -261,8 +299,8 @@ const selectEmail = (emailId: string) => {
     email.read = true;
     updateFolderCounts();
 
-    if (gameStore.currentStory) {
-      gameStore.markEmailRead(gameStore.currentStory, emailId);
+    if (gameStore.currentMissionData) {
+      gameStore.markEmailRead(gameStore.currentMissionData.id, emailId);
     }
   }
 };
@@ -314,14 +352,14 @@ const openAttachment = (attachment: EmailAttachment) => {
 };
 
 const isMarkedAsEvidence = (emailId: string) => {
-  if (!gameStore.currentStory || !gameStore.currentProgress) return false;
+  if (!gameStore.currentMissionData || !gameStore.currentProgress) return false;
   return gameStore.currentProgress.markedEvidence.includes(emailId);
 };
 
 const toggleEvidence = (emailId: string) => {
-  if (!gameStore.currentStory) return;
+  if (!gameStore.currentMissionData) return;
 
-  gameStore.toggleEvidence(gameStore.currentStory, emailId);
+  gameStore.toggleEvidence(gameStore.currentMissionData.id, emailId);
 };
 
 const openCompose = () => {
@@ -351,7 +389,7 @@ const sendEmail = () => {
     important: false,
     hasAttachment: false,
     attachments: [],
-    folder: 'sent'
+    folder: 'drafts'
   };
 
   emails.value.push(newEmail);
@@ -378,39 +416,36 @@ function displayEmailAddress(address: string): string {
 }
 
 function displayRecipients(email: ProcessedEmail): string {
-  const storyEmail = getStoryEmails().find(e => e.id === email.id);
-  if (storyEmail) {
+  const missionEmail = getMissionEmails().find(e => e.id === email.id);
+  if (missionEmail) {
     const recipients: string[] = [];
-    
-    if (storyEmail.to && storyEmail.to.length > 0) {
-      recipients.push(...storyEmail.to.map(recipient => displayEmailAddress(recipient)));
+
+    if (missionEmail.to && missionEmail.to.length > 0) {
+      recipients.push(...missionEmail.to.map(recipient => displayEmailAddress(recipient)));
     }
-    
-    if (storyEmail.cc && storyEmail.cc.length > 0) {
-      recipients.push(...storyEmail.cc.map(recipient => `${displayEmailAddress(recipient)} (CC)`));
+
+    if (missionEmail.cc && missionEmail.cc.length > 0) {
+      recipients.push(...missionEmail.cc.map(recipient => `${displayEmailAddress(recipient)} (CC)`));
     }
-    
+
     return recipients.length > 0 ? recipients.join(', ') : displayEmailAddress(email.recipient);
   }
-  
+
   return displayEmailAddress(email.recipient);
 }
 
 function displaySender(email: ProcessedEmail): string {
-  if (activeFolder.value === 'sent') {
-    return displayEmailAddress(email.recipient);
-  }
   return displayEmailAddress(email.sender);
 }
 
 onMounted(async () => {
-  currentStoryContent.value = await gameStore.getCurrentStoryContent();
+  currentMissionContent.value = await gameStore.getCurrentMissionContent();
   initializeEmails();
 });
 
-watch(() => gameStore.currentStory, async (newStoryId) => {
-  if (newStoryId) {
-    currentStoryContent.value = await gameStore.getCurrentStoryContent();
+watch(() => gameStore.currentMissionData, async (newMission) => {
+  if (newMission) {
+    currentMissionContent.value = await gameStore.getCurrentMissionContent();
     selectedEmail.value = null;
     activeFolder.value = 'inbox';
     initializeEmails();

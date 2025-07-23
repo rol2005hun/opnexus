@@ -12,11 +12,11 @@ export const useAuthStore = defineStore('auth', {
         currentUser: (state) => state.user,
         userAgent: (state) => state.user?.agent,
         gameProgress: (state) => state.user?.gameProgress,
-        canAccessStory: (state) => (requiredClearance: number) => {
+        canAccessMission: (state) => (requiredClearance: number) => {
             return state.user ? state.user.agent.clearanceLevel >= requiredClearance : false;
         },
-        hasStoryAccess: (state) => (storyId: string) => {
-            return state.user?.gameProgress.purchasedStories.includes(storyId) || false;
+        hasMissionAccess: (state) => (missionId: string) => {
+            return state.user?.gameProgress.purchasedMissions.includes(missionId) || false;
         }
     },
 
@@ -127,17 +127,17 @@ export const useAuthStore = defineStore('auth', {
             // TODO: Sync with server
         },
 
-        async purchaseStory(storyId: string) {
-            if (!this.user || this.hasStoryAccess(storyId)) return false;
+        async purchaseMission(missionId: string) {
+            if (!this.user || this.hasMissionAccess(missionId)) return false;
 
             try {
                 // TODO: Implement payment logic
 
-                this.user.gameProgress.purchasedStories.push(storyId);
+                this.user.gameProgress.purchasedMissions.push(missionId);
 
                 return true;
             } catch (error) {
-                console.error('Story purchase error:', error);
+                console.error('Mission purchase error:', error);
                 return false;
             }
         }

@@ -1,7 +1,7 @@
 import type { BaseEntity, DifficultyLevel, SecurityClearanceLevel } from '../core/base';
-import type { StoryContent } from '../content/story';
+import type { MissionContent } from '../content/mission';
 
-export interface Story extends BaseEntity {
+export interface Mission extends BaseEntity {
     title: string;
     description: string;
     briefing: string;
@@ -14,5 +14,5 @@ export interface Story extends BaseEntity {
     icon: string;
     price?: number;
     isPaid?: boolean;
-    content?: StoryContent;
+    content?: MissionContent;
 }

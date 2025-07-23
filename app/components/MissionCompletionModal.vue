@@ -8,7 +8,7 @@
                         <span class="complete-text">COMPLETE</span>
                     </div>
                 </div>
-                <h2 class="case-title">{{ completionData?.storyTitle }}</h2>
+                <h2 class="case-title">{{ completionData?.missionTitle }}</h2>
             </div>
 
             <div class="completion-content">
@@ -32,7 +32,7 @@
 
                 <div class="case-summary">
                     <h3>Case Summary</h3>
-                    <p v-if="completionData?.storyId === 'the-internal-leak'">
+                    <p v-if="completionData?.missionId === 'the-internal-leak'">
                         You successfully identified Aaron Cole as the perpetrator of the Sentinel-X data breach.
                         Through careful analysis of network logs, chat communications, and financial records,
                         you uncovered his motivation and exposed the $75,000 payment from an unknown competitor.
@@ -44,7 +44,7 @@
                         <h3>🎉 Enjoyed the Investigation?</h3>
                         <p>
                             This is just the beginning! We're working on creating a full investigation agency
-                            experience with multiple complex cases, advanced forensic tools, and immersive storylines.
+                            experience with multiple complex cases, advanced forensic tools, and immersive missionlines.
                         </p>
                         <p>
                             <strong>Help us bring more cases to life!</strong> Your support will enable us to:
@@ -52,7 +52,7 @@
                         <ul>
                             <li>📱 Develop more intricate investigation scenarios</li>
                             <li>🔍 Add advanced digital forensics tools</li>
-                            <li>🎭 Create deeper character development and storylines</li>
+                            <li>🎭 Create deeper character development and missionlines</li>
                             <li>🌐 Build multiplayer investigation teams</li>
                             <li>🏆 Implement achievements and career progression</li>
                         </ul>
@@ -83,8 +83,8 @@
 </template>
 
 <script setup lang="ts">
-import { useStoryCompletion } from '@/composables/useStoryCompletion';
-const { isCompletionModalVisible, completionData, hideCompletionModal } = useStoryCompletion();
+import { useMissionCompletion } from '@/composables/useMissionCompletion';
+const { isCompletionModalVisible, completionData, hideCompletionModal } = useMissionCompletion();
 const gameStore = useGameStore();
 
 const handleOverlayClick = () => { };
@@ -96,8 +96,8 @@ const returnToMenu = async () => {
 };
 
 const restartCase = () => {
-    if (completionData.value?.storyId) {
-        gameStore.progress[completionData.value.storyId] = {
+    if (completionData.value?.missionId) {
+        gameStore.progress[completionData.value.missionId] = {
             emailsRead: [],
             messagesRead: [],
             filesExamined: [],

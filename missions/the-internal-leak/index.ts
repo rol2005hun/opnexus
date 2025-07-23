@@ -4,15 +4,15 @@ import { characters } from './characters';
 import { emails } from './emails';
 import { chats } from './chats';
 import { files } from './files';
-import { storyMetadata } from './metadata';
+import { missionMetadata } from './metadata';
 import { records } from './records';
 import { customApps } from './apps';
 import { timeline } from './timeline';
 import { objectives } from './objectives';
 
-export const storyContent: StoryContent = {
+export const missionContent: MissionContent = {
     id: 'the-internal-leak',
-    storyId: 'the-internal-leak',
+    missionId: 'the-internal-leak',
     setting,
     characters,
     suspects,
@@ -25,4 +25,4 @@ export const storyContent: StoryContent = {
     timeline
 };
 
-export { storyMetadata };
+export { missionMetadata };

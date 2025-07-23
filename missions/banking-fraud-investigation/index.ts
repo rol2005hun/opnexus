@@ -2,9 +2,9 @@ import { characters } from './characters';
 import { emails } from './emails';
 import { chats } from './chats';
 import { files } from './files';
-import { storyMetadata } from './metadata';
+import { missionMetadata } from './metadata';
 
-const setting: StorySetting = {
+const setting: MissionSetting = {
     location: 'City National Bank, Downtown Financial District',
     organization: 'City National Bank',
     department: 'Digital Investigation Unit',
@@ -68,7 +68,7 @@ const records: DatabaseRecord[] = [
     }
 ];
 
-const customApps: StoryApp[] = [
+const customApps: MissionApp[] = [
     {
         id: 'fraud_monitor',
         name: 'Fraud Detection System',
@@ -84,7 +84,7 @@ const customApps: StoryApp[] = [
     }
 ];
 
-const timeline: StoryEvent[] = [
+const timeline: MissionEvent[] = [
     {
         id: 'event_bank_001',
         timestamp: '2025-07-12 16:45:00',
@@ -147,9 +147,9 @@ const objectives: Objective[] = [
     }
 ];
 
-export const bankingFraudStory: StoryContent = {
+export const bankingFraudMission: MissionContent = {
     id: 'banking-fraud-investigation',
-    storyId: 'banking-fraud-investigation',
+    missionId: 'banking-fraud-investigation',
     setting,
     characters,
     suspects,
@@ -162,4 +162,4 @@ export const bankingFraudStory: StoryContent = {
     timeline
 };
 
-export { storyMetadata, bankingFraudStory as storyContent };
+export { missionMetadata, bankingFraudMission as missionContent };

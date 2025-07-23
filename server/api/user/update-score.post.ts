@@ -37,18 +37,18 @@ export default defineEventHandler(async (event) => {
         }
 
         const body = await readBody(event);
-        const { storyId, points } = body; 
+        const { missionId, points } = body; 
 
-        if (!storyId) {
-            await warn(`[UPDATE-SCORE] Missing story ID for user ID: ${payload.userId}.`);
+        if (!missionId) {
+            await warn(`[UPDATE-SCORE] Missing mission ID for user ID: ${payload.userId}.`);
             throw createError({
                 statusCode: 400,
-                statusMessage: 'Story ID is required'
+                statusMessage: 'Mission ID is required'
             });
         }
 
         if (typeof points !== 'number' || ![100, -10].includes(points)) {
-            await warn(`[UPDATE-SCORE] Invalid points value: ${points} for user ID: ${payload.userId}, story: ${storyId}.`);
+            await warn(`[UPDATE-SCORE] Invalid points value: ${points} for user ID: ${payload.userId}, mission: ${missionId}.`);
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Points must be either 100 or -10.'
@@ -66,44 +66,44 @@ export default defineEventHandler(async (event) => {
 
         if (!user.gameProgress) {
             user.gameProgress = {
-                completedStories: [],
-                purchasedStories: [],
-                currentStory: null,
+                completedMissions: [],
+                purchasedMissions: [],
+                currentMission: null,
                 totalPlaytime: 0,
-                storyScores: new Map(),
+                missionScores: new Map(),
                 achievements: []
             };
         }
-        if (!user.gameProgress.storyScores) {
-             user.gameProgress.storyScores = new Map();
+        if (!user.gameProgress.missionScores) {
+             user.gameProgress.missionScores = new Map();
         }
-        if (!user.gameProgress.completedStories) {
-            user.gameProgress.completedStories = [];
+        if (!user.gameProgress.completedMissions) {
+            user.gameProgress.completedMissions = [];
         }
 
-        let currentStoryScore = user.gameProgress.storyScores.get(storyId) || 0;
-        const isStoryCompleted = user.gameProgress.completedStories.includes(storyId);
+        let currentMissionScore = user.gameProgress.missionScores.get(missionId) || 0;
+        const isMissionCompleted = user.gameProgress.completedMissions.includes(missionId);
         let message = '';
 
         if (points === -10) {
-            user.gameProgress.storyScores.set(storyId, currentStoryScore + points);
-            message = `Wrong guess. Score decreased by 10. New score: ${user.gameProgress.storyScores.get(storyId)}`;
-            await info(`[UPDATE-SCORE] Score decreased for user: ID: ${user._id}, username: ${user.username}, story: ${storyId}, new score: ${user.gameProgress.storyScores.get(storyId)}.`);
+            user.gameProgress.missionScores.set(missionId, currentMissionScore + points);
+            message = `Wrong guess. Score decreased by 10. New score: ${user.gameProgress.missionScores.get(missionId)}`;
+            await info(`[UPDATE-SCORE] Score decreased for user: ID: ${user._id}, username: ${user.username}, mission: ${missionId}, new score: ${user.gameProgress.missionScores.get(missionId)}.`);
         } else if (points === 100) {
-            if (!isStoryCompleted) {
-                user.gameProgress.storyScores.set(storyId, currentStoryScore + points);
-                user.gameProgress.completedStories.push(storyId);
-                message = `Story completed. Points added: 100. New score: ${user.gameProgress.storyScores.get(storyId)}`;
-                await success(`[UPDATE-SCORE] Story completed by user: ID: ${user._id}, username: ${user.username}, story: ${storyId}, new score: ${user.gameProgress.storyScores.get(storyId)}.`);
+            if (!isMissionCompleted) {
+                user.gameProgress.missionScores.set(missionId, currentMissionScore + points);
+                user.gameProgress.completedMissions.push(missionId);
+                message = `Mission completed. Points added: 100. New score: ${user.gameProgress.missionScores.get(missionId)}`;
+                await success(`[UPDATE-SCORE] Mission completed by user: ID: ${user._id}, username: ${user.username}, mission: ${missionId}, new score: ${user.gameProgress.missionScores.get(missionId)}.`);
             } else {
-                message = 'Story already completed. Score not updated.';
-                await info(`[UPDATE-SCORE] Attempt to complete already finished story by user: ID: ${user._id}, username: ${user.username}, story: ${storyId}.`);
+                message = 'Mission already completed. Score not updated.';
+                await info(`[UPDATE-SCORE] Attempt to complete already finished mission by user: ID: ${user._id}, username: ${user.username}, mission: ${missionId}.`);
             }
         }
         
         const updateDoc = {
-            'gameProgress.storyScores': user.gameProgress.storyScores,
-            'gameProgress.completedStories': user.gameProgress.completedStories
+            'gameProgress.missionScores': user.gameProgress.missionScores,
+            'gameProgress.completedMissions': user.gameProgress.completedMissions
         };
 
         const updatedUser = await User.findByIdAndUpdate(
@@ -113,7 +113,7 @@ export default defineEventHandler(async (event) => {
         );
 
         if (!updatedUser) {
-            await error(`[UPDATE-SCORE] Failed to update user progress for user ID: ${payload.userId}, story: ${storyId}.`);
+            await error(`[UPDATE-SCORE] Failed to update user progress for user ID: ${payload.userId}, mission: ${missionId}.`);
             throw createError({
                 statusCode: 500,
                 statusMessage: 'Failed to update user progress.'
@@ -122,7 +122,7 @@ export default defineEventHandler(async (event) => {
 
         return {
             success: true,
-            currentScore: updatedUser.gameProgress.storyScores.get(storyId) || 0,
+            currentScore: updatedUser.gameProgress.missionScores.get(missionId) || 0,
             message: message
         };
 
@@ -131,7 +131,7 @@ export default defineEventHandler(async (event) => {
             throw err;
         }
 
-        console.error('Story score update error:', err);
+        console.error('Mission score update error:', err);
         await error(`[UPDATE-SCORE] ${err instanceof Error ? err.message : 'Unknown error'}.`);
         throw createError({
             statusCode: 500,

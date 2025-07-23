@@ -1,7 +1,3 @@
-/**
- * Base types used across the entire application
- */
-
 export interface BaseEntity {
   id: string;
   createdAt?: Date;

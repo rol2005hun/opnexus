@@ -22,24 +22,24 @@ This is a Nuxt 3 TypeScript project for creating an FBI-style investigation game
 
 ## Key Features
 
-1. **Story Selection**: Main menu with different investigation cases
+1. **Mission Selection**: Main menu with different investigation cases
 2. **Laptop Simulation**: Full desktop environment with apps, taskbar, and windows
 3. **Email Investigation**: Email client with suspicious communications
 4. **Message Analysis**: Chat application with evidence
 5. **File Exploration**: Document and evidence management
 6. **Window Management**: Draggable, resizable windows like a real OS
 
-## Current Stories
+## Current Missions
 
-### Available Stories:
+### Available Missions:
 - **the-internal-leak**: Corporate espionage investigation at defense contractor (Nexus-Corp Industries)
 - **banking-fraud-investigation**: Sophisticated fraud scheme at City National Bank involving cryptocurrency laundering
 
-### Story Development:
-- **Story Documentation**: Complete story creation guide available in `stories/README.md`
-- **Story Structure**: Each story has its own folder with characters.ts, emails.ts, chats.ts, files.ts, and index.ts
-- **Story Registry**: All stories must be registered in `utils/storyRegistry.ts` for dynamic loading
-- **Story IDs**: Must match between game store, story registry, and story content files
+### Mission Development:
+- **Mission Documentation**: Complete mission creation guide available in `missions/README.md`
+- **Mission Structure**: Each mission has its own folder with characters.ts, emails.ts, chats.ts, files.ts, and index.ts
+- **Mission Registry**: All missions must be registered in `utils/missionRegistry.ts` for dynamic loading
+- **Mission IDs**: Must match between game store, mission registry, and mission content files
 
 ## Application Names
 

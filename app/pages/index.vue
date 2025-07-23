@@ -40,52 +40,52 @@
                 <p>Every case is a new challenge. Use digital tools and your investigative instincts to solve them.</p>
             </div>
 
-            <div class="stories-grid">
-                <div v-for="story in gameStore.stories" :key="story.id" class="story-card" :class="{
-                    completed: story.completed,
-                    disabled: !story.available || !authStore.isAuthenticated,
-                    'clearance-locked': authStore.isAuthenticated && story.securityClearance > gameStore.agent.clearanceLevel
-                }" @click="authStore.isAuthenticated && canAccessStory(story) ? selectStory(story.id) : null">
-                    <div class="story-thumbnail">
-                        <div class="story-icon">{{ story.icon }}</div>
-                        <div v-if="story.completed" class="completed-badge">✓</div>
-                        <div v-if="!story.available" class="locked-badge">🔒</div>
-                        <div v-if="!authStore.isAuthenticated && story.id !== 'the-internal-leak'"
+            <div class="missions-grid">
+                <div v-for="mission in gameStore.missions" :key="mission.id" class="mission-card" :class="{
+                    completed: mission.completed,
+                    disabled: !mission.available || !authStore.isAuthenticated,
+                    'clearance-locked': authStore.isAuthenticated && mission.securityClearance > gameStore.agent.clearanceLevel
+                }" @click="authStore.isAuthenticated && canAccessMission(mission) ? selectMission(mission.id) : null">
+                    <div class="mission-thumbnail">
+                        <div class="mission-icon">{{ mission.icon }}</div>
+                        <div v-if="mission.completed" class="completed-badge">✓</div>
+                        <div v-if="!mission.available" class="locked-badge">🔒</div>
+                        <div v-if="!authStore.isAuthenticated && mission.id !== 'the-internal-leak'"
                             class="auth-required-badge">🔐</div>
-                        <div v-if="!authStore.isAuthenticated && story.id === 'the-internal-leak'"
+                        <div v-if="!authStore.isAuthenticated && mission.id === 'the-internal-leak'"
                             class="preview-badge">👁️
                         </div>
-                        <div v-else-if="authStore.isAuthenticated && story.securityClearance > gameStore.agent.clearanceLevel"
+                        <div v-else-if="authStore.isAuthenticated && mission.securityClearance > gameStore.agent.clearanceLevel"
                             class="clearance-badge">
-                            CL{{ story.securityClearance }}
+                            CL{{ mission.securityClearance }}
                         </div>
                     </div>
 
-                    <div class="story-info">
-                        <h3>{{ story.title }}</h3>
-                        <p class="story-description">
-                            {{ getStoryDescription(story) }}
+                    <div class="mission-info">
+                        <h3>{{ mission.title }}</h3>
+                        <p class="mission-description">
+                            {{ getMissionDescription(mission) }}
                         </p>
 
-                        <div class="story-footer">
-                            <div class="story-meta">
-                                <span class="difficulty" :class="story.difficulty.toLowerCase().replace(' ', '-')">
-                                    {{ story.difficulty }}
+                        <div class="mission-footer">
+                            <div class="mission-meta">
+                                <span class="difficulty" :class="mission.difficulty.toLowerCase().replace(' ', '-')">
+                                    {{ mission.difficulty }}
                                 </span>
-                                <span class="time">{{ story.estimatedTime }}</span>
-                                <span class="clearance">CL{{ story.securityClearance }}</span>
+                                <span class="time">{{ mission.estimatedTime }}</span>
+                                <span class="clearance">CL{{ mission.securityClearance }}</span>
                             </div>
 
-                            <div v-if="authStore.isAuthenticated && story.available && canAccessStory(story)"
-                                class="story-briefing">
-                                <button class="briefing-btn" @click.stop="showBriefing(story)">📋 View Briefing</button>
+                            <div v-if="authStore.isAuthenticated && mission.available && canAccessMission(mission)"
+                                class="mission-briefing">
+                                <button class="briefing-btn" @click.stop="showBriefing(mission)">📋 View Briefing</button>
                             </div>
-                            <div v-else-if="!authStore.isAuthenticated && story.id === 'the-internal-leak'"
-                                class="story-briefing">
-                                <button class="preview-briefing-btn" @click.stop="showBriefing(story)">👁️ Preview
+                            <div v-else-if="!authStore.isAuthenticated && mission.id === 'the-internal-leak'"
+                                class="mission-briefing">
+                                <button class="preview-briefing-btn" @click.stop="showBriefing(mission)">👁️ Preview
                                     Briefing</button>
                             </div>
-                            <div v-else-if="!authStore.isAuthenticated" class="story-briefing">
+                            <div v-else-if="!authStore.isAuthenticated" class="mission-briefing">
                                 <button class="auth-required-btn" @click.stop="navigateToLogin">🔐 Sign In
                                     Required</button>
                             </div>
@@ -96,16 +96,16 @@
 
             <div class="stats">
                 <div class="stat">
-                    <span class="stat-value">{{ authStore.isAuthenticated ? completedStories : '0' }}</span>
+                    <span class="stat-value">{{ authStore.isAuthenticated ? completedMissions : '0' }}</span>
                     <span class="stat-label">Completed Cases</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">{{ authStore.isAuthenticated ? gameStore.availableStories.length : '0'
+                    <span class="stat-value">{{ authStore.isAuthenticated ? gameStore.availableMissions.length : '0'
                     }}</span>
                     <span class="stat-label">Available Cases</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">{{ gameStore.stories.length }}</span>
+                    <span class="stat-value">{{ gameStore.missions.length }}</span>
                     <span class="stat-label">Total Cases</span>
                 </div>
             </div>
@@ -122,19 +122,19 @@
                     <button class="close-btn" @click="closeBriefing">✕</button>
                 </div>
 
-                <div v-if="selectedStory" class="briefing-body">
+                <div v-if="selectedMission" class="briefing-body">
                     <div class="mission-title">
-                        <h3>{{ selectedStory.title }}</h3>
+                        <h3>{{ selectedMission.title }}</h3>
                         <div class="clearance-info">
-                            <span class="clearance-level">Security Clearance: {{ selectedStory.securityClearance
+                            <span class="clearance-level">Security Clearance: {{ selectedMission.securityClearance
                                 }}</span>
-                            <span class="difficulty">{{ selectedStory.difficulty }}</span>
+                            <span class="difficulty">{{ selectedMission.difficulty }}</span>
                         </div>
                     </div>
 
                     <div class="mission-briefing">
                         <h4>Mission Briefing:</h4>
-                        <p>{{ selectedStory.briefing }}</p>
+                        <div v-html="selectedMission.briefing" class="classified-briefing"></div>
                     </div>
 
                     <div class="mission-objectives">
@@ -183,46 +183,46 @@ import { useAuthStore } from '@/stores/auth';
 const gameStore = useGameStore();
 const authStore = useAuthStore();
 const showBriefingModal = ref(false);
-const selectedStory = ref<Story | null>(null);
+const selectedMission = ref<Mission | null>(null);
 
-const selectStory = (storyId: string) => {
-    gameStore.selectStory(storyId);
+const selectMission = (missionId: string) => {
+    gameStore.selectMission(missionId);
 };
 
-const canAccessStory = (story: Story): boolean => {
-    if (!story.available) return false;
-    if (story.securityClearance > gameStore.agent.clearanceLevel) return false;
-    if (story.isPaid && !authStore.hasStoryAccess(story.id)) return false;
+const canAccessMission = (mission: Mission): boolean => {
+    if (!mission.available) return false;
+    if (mission.securityClearance > gameStore.agent.clearanceLevel) return false;
+    if (mission.isPaid && !authStore.hasMissionAccess(mission.id)) return false;
     return true;
 };
 
-const getStoryDescription = (story: Story): string => {
+const getMissionDescription = (mission: Mission): string => {
     if (!authStore.isAuthenticated) {
-        if (story.id === 'the-internal-leak') {
+        if (mission.id === 'the-internal-leak') {
             return 'Someone within our organization is leaking confidential documents to external parties. Investigate emails, messages, and file access logs to identify the mole.';
         }
         return 'Sign in to access this classified case.';
     }
-    if (!story.available) {
+    if (!mission.available) {
         return 'Coming Soon - This case is not yet available.';
     }
-    if (story.securityClearance > gameStore.agent.clearanceLevel) {
-        return `Insufficient security clearance. Required: Level ${story.securityClearance}`;
+    if (mission.securityClearance > gameStore.agent.clearanceLevel) {
+        return `Insufficient security clearance. Required: Level ${mission.securityClearance}`;
     }
-    if (story.isPaid && !authStore.hasStoryAccess(story.id)) {
-        return `Premium case - $${story.price} to unlock`;
+    if (mission.isPaid && !authStore.hasMissionAccess(mission.id)) {
+        return `Premium case - $${mission.price} to unlock`;
     }
-    return story.description;
+    return mission.description;
 };
 
-const showBriefing = (story: Story) => {
-    selectedStory.value = story;
+const showBriefing = (mission: Mission) => {
+    selectedMission.value = mission;
     showBriefingModal.value = true;
 };
 
 const closeBriefing = () => {
     showBriefingModal.value = false;
-    selectedStory.value = null;
+    selectedMission.value = null;
 };
 
 const handleLogout = async () => {
@@ -239,14 +239,14 @@ const goToSettings = () => {
 };
 
 const startMission = () => {
-    if (selectedStory.value) {
-        selectStory(selectedStory.value.id);
+    if (selectedMission.value) {
+        selectMission(selectedMission.value.id);
         closeBriefing();
     }
 };
 
-const completedStories = computed(() => {
-    return gameStore.stories.filter((story: Story) => story.completed).length;
+const completedMissions = computed(() => {
+    return gameStore.missions.filter((mission: Mission) => mission.completed).length;
 });
 </script>
 

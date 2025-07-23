@@ -14,11 +14,11 @@ export interface IUser {
         joinDate: Date;
     };
     gameProgress: {
-        completedStories: string[];
-        purchasedStories: string[];
-        currentStory: string | null;
+        completedMissions: string[];
+        purchasedMissions: string[];
+        currentMission: string | null;
         totalPlaytime: number;
-        storyScores: { [key: string]: number };
+        missionScores: { [key: string]: number };
         achievements: string[];
     };
     subscription: {
@@ -77,15 +77,15 @@ const userSchema = new mongoose.Schema({
         }
     },
     gameProgress: {
-        completedStories: [{
+        completedMissions: [{
             type: String,
             default: []
         }],
-        purchasedStories: [{
+        purchasedMissions: [{
             type: String,
             default: []
         }],
-        currentStory: {
+        currentMission: {
             type: String,
             default: null
         },
@@ -93,7 +93,7 @@ const userSchema = new mongoose.Schema({
             type: Number,
             default: 0
         },
-        storyScores: {
+        missionScores: {
             type: Map,
             of: Number,
             default: {}

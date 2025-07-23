@@ -1,4 +1,4 @@
-export const setting: StorySetting = {
+export const setting: MissionSetting = {
     location: 'Nexus-Corp Industries, Arlington, VA',
     organization: 'Nexus-Corp Industries',
     department: 'Software Development & Cybersecurity',

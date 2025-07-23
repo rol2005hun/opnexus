@@ -18,9 +18,9 @@ export interface Agent {
 }
 
 export interface GameProgress {
-    completedStories: string[];
-    purchasedStories: string[];
-    currentStory: string | null;
+    completedMissions: string[];
+    purchasedMissions: string[];
+    currentMission: string | null;
     totalPlaytime: number;
     achievements: string[];
 }

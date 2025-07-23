@@ -2,24 +2,24 @@ import type { BaseEntity } from '../core/base';
 import type { EmailMessage } from './email';
 import type { Character, Suspect } from './characters';
 import type { EvidenceConversation, FileDocument, DatabaseRecord } from './evidence';
-import type { Objective, StoryEvent } from './investigation';
-import type { StoryApp } from '../ui/applications';
+import type { Objective, MissionEvent } from './investigation';
+import type { MissionApp } from '../ui/applications';
 
-export interface StoryContent extends BaseEntity {
-    storyId: string;
-    setting: StorySetting;
+export interface MissionContent extends BaseEntity {
+    missionId: string;
+    setting: MissionSetting;
     characters: Character[];
     suspects: Suspect[];
     emails: EmailMessage[];
     chatMessages: EvidenceConversation[];
     files: FileDocument[];
     records: DatabaseRecord[];
-    customApps: StoryApp[];
+    customApps: MissionApp[];
     objectives: Objective[];
-    timeline: StoryEvent[];
+    timeline: MissionEvent[];
 }
 
-export interface StorySetting {
+export interface MissionSetting {
     location: string;
     organization: string;
     department?: string;

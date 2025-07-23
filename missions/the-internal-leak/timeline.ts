@@ -1,4 +1,4 @@
-export const timeline: StoryEvent[] = [
+export const timeline: MissionEvent[] = [
     {
         id: 'event_001',
         timestamp: '2025-07-05 22:30:00',

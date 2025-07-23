@@ -683,13 +683,34 @@ export const chats: EvidenceConversation[] = [
     },
     {
         id: 'suspicious_deal',
-        title: 'Unknown Chat',
-        participants: ['Aaron Cole', 'Unknown Contact'],
+        title: 'Personal Chat - Alex',
+        participants: ['Aaron Cole', 'Alex Thompson'],
         platform: 'Signal',
         messages: [
             {
+                id: 'chat_intro_001',
+                sender: 'Alex Thompson',
+                content: 'Hey man, how have you been? Heard about the divorce situation.',
+                timestamp: '2025-06-28 19:15:00',
+                isClue: false
+            },
+            {
+                id: 'chat_intro_002',
+                sender: 'Aaron Cole',
+                content: 'Not great, to be honest. The payments are killing me.',
+                timestamp: '2025-06-28 19:18:00',
+                isClue: false
+            },
+            {
+                id: 'chat_intro_003',
+                sender: 'Alex Thompson',
+                content: 'I might have something that could help with your situation.',
+                timestamp: '2025-06-30 20:45:00',
+                isClue: false
+            },
+            {
                 id: 'chat_008',
-                sender: 'Unknown Contact',
+                sender: 'Alex Thompson',
                 content: 'We need this data before they finalize their defense contract proposal. Time is critical.',
                 timestamp: '2025-07-05 22:30:00',
                 isClue: true
@@ -703,10 +724,24 @@ export const chats: EvidenceConversation[] = [
             },
             {
                 id: 'chat_010',
-                sender: 'Unknown Contact',
+                sender: 'Alex Thompson',
                 content: '$75,000 final offer. This will solve your divorce settlement problem.',
                 timestamp: '2025-07-05 23:00:00',
                 isClue: true
+            },
+            {
+                id: 'chat_mid_001',
+                sender: 'Aaron Cole',
+                content: 'I need some time to think about this.',
+                timestamp: '2025-07-06 08:30:00',
+                isClue: false
+            },
+            {
+                id: 'chat_mid_002',
+                sender: 'Alex Thompson',
+                content: 'Of course. But don\'t wait too long. The opportunity won\'t last.',
+                timestamp: '2025-07-06 08:45:00',
+                isClue: false
             },
             {
                 id: 'chat_001',
@@ -717,7 +752,7 @@ export const chats: EvidenceConversation[] = [
             },
             {
                 id: 'chat_002',
-                sender: 'Unknown Contact',
+                sender: 'Alex Thompson',
                 content: 'Perfect timing. Payment transferred to your offshore account. $75K as agreed.',
                 timestamp: '2025-07-10 04:15:00',
                 isClue: true
@@ -731,7 +766,7 @@ export const chats: EvidenceConversation[] = [
             },
             {
                 id: 'chat_011',
-                sender: 'Unknown Contact',
+                sender: 'Alex Thompson',
                 content: 'Delete all traces of our communication after this.',
                 timestamp: '2025-07-10 04:20:00',
                 isClue: true
@@ -745,7 +780,7 @@ export const chats: EvidenceConversation[] = [
             },
             {
                 id: 'chat_013',
-                sender: 'Unknown Contact',
+                sender: 'Alex Thompson',
                 content: 'Good. Make sure the audit logs are clean too.',
                 timestamp: '2025-07-10 04:25:00',
                 isClue: true
@@ -982,6 +1017,34 @@ export const chats: EvidenceConversation[] = [
         participants: ['Aaron Cole', 'Chloe Miller'],
         messages: [
             {
+                id: 'normal_001',
+                sender: 'Chloe Miller',
+                content: 'Aaron, can you help me with the encryption module? The docs are a bit confusing.',
+                timestamp: '2025-07-08 15:30:00',
+                isClue: false
+            },
+            {
+                id: 'normal_002',
+                sender: 'Aaron Cole',
+                content: 'Sure! Which part are you stuck on?',
+                timestamp: '2025-07-08 15:32:00',
+                isClue: false
+            },
+            {
+                id: 'normal_003',
+                sender: 'Chloe Miller',
+                content: 'The key rotation process. I want to make sure I\'m doing it right.',
+                timestamp: '2025-07-08 15:35:00',
+                isClue: false
+            },
+            {
+                id: 'normal_004',
+                sender: 'Aaron Cole',
+                content: 'I\'ll show you a few tricks tomorrow. There are some undocumented shortcuts.',
+                timestamp: '2025-07-08 15:38:00',
+                isClue: false
+            },
+            {
                 id: 'chat_004',
                 sender: 'Chloe Miller',
                 content: 'Hey, did you really show me that bypass command? I mentioned it in my email to the team.',
@@ -1011,7 +1074,7 @@ export const chats: EvidenceConversation[] = [
             }
         ],
         isEvidence: true,
-        title: 'Security Bypass Discussion'
+        title: 'Development Assistance'
     },
     {
         id: 'hr_discussions',
