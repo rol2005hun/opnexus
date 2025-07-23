@@ -443,27 +443,19 @@ const restoreFromTrash = (chatId: string) => {
 };
 
 const refreshChats = () => {
-  // Clear all deleted chat IDs to restore everything
   deletedChatIds.value.clear();
   permanentlyDeletedChatIds.value.clear();
-  // Reset custom chats (optional - keeps user-created chats)
-  // customChats.value = [];
-  // Reset active chat selection
   activeChat.value = null;
-  // Reset filter to default
   chatFilter.value = 'chats';
 };
 
 const permanentDelete = (chatId: string) => {
-  // For custom chats, remove from customChats array completely
   const customChatIndex = customChats.value.findIndex(chat => chat.id === chatId);
   if (customChatIndex !== -1) {
     customChats.value.splice(customChatIndex, 1);
   }
   
-  // Add to permanently deleted set so it never shows up anywhere
   permanentlyDeletedChatIds.value.add(chatId);
-  // Also remove from trash
   deletedChatIds.value.delete(chatId);
   
   if (activeChat.value === chatId) {
@@ -480,7 +472,7 @@ watch(() => gameStore.currentStory, async (newStoryId) => {
     currentStoryContent.value = await gameStore.getCurrentStoryContent();
     activeChat.value = null;
     customChats.value = [];
-    deletedChatIds.value.clear(); // Clear deleted chats when switching stories
+    deletedChatIds.value.clear();
   }
 });
 </script>
