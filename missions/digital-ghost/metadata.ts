@@ -1,5 +1,3 @@
-import type { Mission } from '@/stores/game';
-
 export const missionMetadata: Mission = {
     id: 'digital-ghost',
     title: 'Digital Ghost', 
@@ -10,7 +8,7 @@ export const missionMetadata: Mission = {
     estimatedTime: '150-200 mins',
     completed: false,
     available: false,
-    securityClearance: 7,
+    securityClearance: 6,
     icon: '👻',
     price: 1,
     isPaid: true

@@ -95,7 +95,7 @@ This is a Nuxt 3 TypeScript project for creating an FBI-style investigation game
 ## Code Style Guidelines
 
 - **Semicolons**: Always use semicolons (`;`) at the end of statements, except after closing braces (`}`)
-- **Import Paths**: Use `@/` alias instead of `~/` (Nuxt 3 default) for import paths (e.g., `@/stores/game`, `@/components/...`)
+- **Import Paths**: Use `@/` alias instead of `~/` (Nuxt 4 default) for import paths (e.g., `@/stores/game`, `@/components/...`)
 - **Examples**:
   - ✅ `const x = 5;`
   - ✅ `import { ref } from 'vue';`
@@ -103,7 +103,7 @@ This is a Nuxt 3 TypeScript project for creating an FBI-style investigation game
   - ✅ `import LaptopScreen from '@/components/LaptopScreen.vue';`
   - ✅ `if (condition) { doSomething(); }`
   - ❌ `const x = 5` (missing semicolon)
-  - ❌ `import { useGameStore } from '@/stores/game';` (use ~/ instead)
+  - ❌ `import { useGameStore } from '@/stores/game';`
   - ❌ `}; // after closing brace` (unnecessary semicolon)
 
 ## Programming Principles & Design Guidelines

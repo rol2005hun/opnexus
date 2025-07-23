@@ -67,22 +67,50 @@
     z-index: 10;
 }
 
+.desktop-icons {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
 .desktop-icon {
     display: flex;
     flex-direction: column;
     align-items: center;
-    cursor: pointer;
+    cursor: grab;
     padding: 8px;
     border-radius: 8px;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, transform 0.1s ease;
+    width: 90px;
+    height: 100px;
+    user-select: none;
+    z-index: 10;
 
     &:hover {
         background: rgba(255, 255, 255, 0.1);
     }
 
+    &:active {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    &.dragging {
+        opacity: 0.8;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        cursor: grabbing;
+        transition: none;
+    }
+
+    &:not(.dragging) {
+        transition: background 0.2s ease, transform 0.1s ease, left 0.2s ease, top 0.2s ease;
+    }
+
     .icon {
-        font-size: 2rem;
-        margin-bottom: 4px;
+        font-size: 2.2rem;
+        margin-bottom: 5px;
+        pointer-events: none;
     }
 
     .icon-label {
@@ -90,6 +118,10 @@
         color: $text-primary;
         text-align: center;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+        pointer-events: none;
+        line-height: 1.2;
+        word-wrap: break-word;
+        max-width: 100%;
     }
 }
 

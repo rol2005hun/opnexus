@@ -98,11 +98,9 @@
 </template>
 
 <script setup lang="ts">
-import { useGameStore } from '@/stores/game';
-import { useAuthStore } from '@/stores/auth';
-
 const gameStore = useGameStore();
 const authStore = useAuthStore();
+const { updateScore } = useScoring();
 
 const isPremiumUser = computed(() => {
   const user = authStore.currentUser;
@@ -204,35 +202,22 @@ const confirmSuspect = async () => {
   const missionContent = gameStore.currentMissionData?.content;
   const trueSuspect = missionContent?.suspects?.find(s => s.evidenceAgainst && s.evidenceAgainst.length > 0);
 
-  const progress = gameStore.progress[gameStore.currentMission];
-
   if (trueSuspect && selectedSuspect.value === trueSuspect.id) {
     gameStore.markSuspectConfirmed(gameStore.currentMission, selectedSuspect.value);
     showSuspectModal.value = false;
+
     try {
-      const response = await $fetch<{ success: boolean; currentScore: number }>('/api/user/update-score', {
-        method: 'POST',
-        body: {
-          missionId: gameStore.currentMission,
-          points: 100
-        }
-      });
-      showCompletionModal(gameStore.currentMission, response.currentScore);
+      const result = await updateScore(gameStore.currentMission, 100);
+      showCompletionModal(gameStore.currentMission, result.currentScore);
     } catch (error) {
-      console.error('Failed to update mission score:', error);
+      console.error('Failed to complete mission:', error);
       showCompletionModal(gameStore.currentMission, 0);
     }
   } else {
     try {
-      await $fetch('/api/user/update-score', {
-        method: 'POST',
-        body: {
-          missionId: gameStore.currentMission,
-          points: -10
-        }
-      });
+      await updateScore(gameStore.currentMission, -10);
     } catch (error) {
-      console.error('Failed to update mission score:', error);
+      console.error('Failed to apply penalty:', error);
     }
 
     gameStore.progress[gameStore.currentMission] = {

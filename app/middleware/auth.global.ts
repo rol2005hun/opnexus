@@ -1,4 +1,3 @@
-import { useAuthStore } from '@/stores/auth';
 import { useGameStore } from '@/stores/game';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {

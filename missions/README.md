@@ -207,7 +207,7 @@ In the `stores/game.ts` file, add the new mission:
     description: 'Short description...',
     briefing: 'Detailed briefing...',
     thumbnail: '/missions/image.jpg',
-    difficulty: 'Agent', // 'Rookie', 'Agent', 'Senior Agent', 'Special Agent'
+    difficulty: 'Agent', // 'Rookie', 'Agent', 'Senior Agent', 'Special Agent' and all available difficulties
     estimatedTime: '60-90 mins',
     completed: false,
     available: true,

@@ -9,6 +9,7 @@ export interface LaptopApp extends BaseEntity {
     size: { width: number; height: number };
     minimized: boolean;
     maximized: boolean;
+    desktopPosition: { x: number; y: number };
     originalPosition?: { x: number; y: number };
     originalSize?: { width: number; height: number };
     preMinimizePosition?: { x: number; y: number };

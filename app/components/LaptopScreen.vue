@@ -5,7 +5,11 @@
                 <div class="desktop">
                     <div class="desktop-icons">
                         <div v-for="app in laptopStore.apps" :key="app.id" class="desktop-icon"
-                            @click="laptopStore.openApp(app.id)">
+                            :class="{ 'dragging': dragging && dragAppId === app.id }" :style="{
+                                position: 'absolute',
+                                left: app.desktopPosition.x + 'px',
+                                top: app.desktopPosition.y + 'px'
+                            }" @mousedown="startDrag($event, app.id)" @dblclick="laptopStore.openApp(app.id)">
                             <div class="icon">{{ app.icon }}</div>
                             <span class="icon-label">{{ app.name }}</span>
                         </div>
@@ -61,13 +65,13 @@
 </template>
 
 <script setup lang="ts">
-import { useLaptopStore } from '@/stores/laptop';
-import { useGameStore } from '@/stores/game';
-
 const laptopStore = useLaptopStore();
 const gameStore = useGameStore();
 
 const currentTime = ref('');
+const dragging = ref(false);
+const dragAppId = ref<string | null>(null);
+const dragOffset = ref({ x: 0, y: 0 });
 
 let timeInterval: NodeJS.Timeout | null = null;
 
@@ -81,6 +85,90 @@ const updateTime = () => {
 
 const exitLaptop = () => {
     gameStore.exitLaptop();
+};
+
+const startDrag = (event: MouseEvent, appId: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const app = laptopStore.apps.find(a => a.id === appId);
+    if (!app) return;
+
+    dragging.value = true;
+    dragAppId.value = appId;
+
+    const rect = (event.target as HTMLElement).closest('.desktop-icon')?.getBoundingClientRect();
+    if (rect) {
+        dragOffset.value = {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
+        };
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+};
+
+const onMouseMove = (event: MouseEvent) => {
+    if (!dragging.value || !dragAppId.value) return;
+
+    const desktop = document.querySelector('.desktop');
+    if (!desktop) return;
+
+    const desktopRect = desktop.getBoundingClientRect();
+
+    const newX = event.clientX - desktopRect.left - dragOffset.value.x;
+    const newY = event.clientY - desktopRect.top - dragOffset.value.y;
+
+    const iconWidth = 80;
+    const iconHeight = 100;
+
+    const boundedX = Math.max(0, Math.min(newX, desktopRect.width - iconWidth));
+    const boundedY = Math.max(0, Math.min(newY, desktopRect.height - iconHeight - 50));
+
+    laptopStore.updateDesktopIconPosition(dragAppId.value, boundedX, boundedY);
+};
+
+const onMouseUp = () => {
+    if (dragging.value && dragAppId.value) {
+        const app = laptopStore.apps.find(a => a.id === dragAppId.value);
+        if (app) {
+            const snappedPosition = laptopStore.snapToGrid(app.desktopPosition.x, app.desktopPosition.y);
+            
+            if (snappedPosition) {
+                if (laptopStore.isPositionOccupied(snappedPosition.x, snappedPosition.y, dragAppId.value)) {
+                    const availablePositions = laptopStore.getAvailableGridPositions();
+                    if (availablePositions.length > 0) {
+                        let closestAvailable = availablePositions[0];
+                        let minDistance = Number.MAX_VALUE;
+                        
+                        for (const pos of availablePositions) {
+                            const distance = Math.sqrt(
+                                Math.pow(app.desktopPosition.x - pos.x, 2) + 
+                                Math.pow(app.desktopPosition.y - pos.y, 2)
+                            );
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closestAvailable = pos;
+                            }
+                        }
+                        
+                        if (closestAvailable) {
+                            laptopStore.updateDesktopIconPosition(dragAppId.value, closestAvailable.x, closestAvailable.y);
+                        }
+                    }
+                } else {
+                    laptopStore.updateDesktopIconPosition(dragAppId.value, snappedPosition.x, snappedPosition.y);
+                }
+            }
+        }
+    }
+    
+    dragging.value = false;
+    dragAppId.value = null;
+    
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
 };
 
 const handleKeyPress = (event: KeyboardEvent) => {
@@ -101,6 +189,9 @@ onUnmounted(() => {
         timeInterval = null;
     }
     window.removeEventListener('keydown', handleKeyPress);
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
 });
 </script>
 

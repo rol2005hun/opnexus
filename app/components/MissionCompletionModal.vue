@@ -83,7 +83,6 @@
 </template>
 
 <script setup lang="ts">
-import { useMissionCompletion } from '@/composables/useMissionCompletion';
 const { isCompletionModalVisible, completionData, hideCompletionModal } = useMissionCompletion();
 const gameStore = useGameStore();
 

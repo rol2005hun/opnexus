@@ -1,5 +1,3 @@
-import type { Mission } from '@/stores/game';
-
 export const missionMetadata: Mission = {
     id: 'banking-fraud-investigation',
     title: 'Banking Fraud Investigation',
@@ -8,10 +6,8 @@ export const missionMetadata: Mission = {
     thumbnail: '/missions/banking.jpg',
     difficulty: 'Director',
     estimatedTime: '75-105 mins',
-    completed: false,
     available: false,
     securityClearance: 2,
     icon: '🏦',
-    price: 1,
-    isPaid: true
+    price: 1
 };

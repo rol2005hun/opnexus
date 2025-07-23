@@ -1,5 +1,5 @@
-import type { BaseEntity, DifficultyLevel, SecurityClearanceLevel } from '../core/base';
 import type { MissionContent } from '../content/mission';
+import type { BaseEntity, DifficultyLevel, SecurityClearanceLevel } from '../core/base';
 
 export interface Mission extends BaseEntity {
     title: string;
@@ -8,11 +8,9 @@ export interface Mission extends BaseEntity {
     thumbnail: string;
     difficulty: DifficultyLevel;
     estimatedTime: string;
-    completed: boolean;
     available: boolean;
     securityClearance: SecurityClearanceLevel;
     icon: string;
-    price?: number;
-    isPaid?: boolean;
+    price: number;
     content?: MissionContent;
 }

@@ -11,4 +11,4 @@ export interface Timestamps {
 
 export type DifficultyLevel = 'Rookie' | 'Agent' | 'Senior Agent' | 'Special Agent' | 'Supervisor' | 'Section Chief' | 'Deputy Director' | 'Director';
 
-export type SecurityClearanceLevel = 1 | 2 | 3 | 4 | 5;
+export type SecurityClearanceLevel = 1 | 2 | 3 | 4 | 5 | 6;

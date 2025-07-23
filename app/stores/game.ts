@@ -162,7 +162,7 @@ export const useGameStore = defineStore('game', {
 
             if (allObjectivesCompleted && hasAllEvidence && hasPrimarySuspect) {
                 progress.caseStatus = 'completed';
-                const { showCompletionModal } = await import('@/composables/useMissionCompletion');
+                const { showCompletionModal } = useMissionCompletion();
                 showCompletionModal(missionId, progress.investigationScore);
             }
         },
@@ -191,11 +191,9 @@ export const useGameStore = defineStore('game', {
 
         availableMissions(): Mission[] {
             const authStore = useAuthStore();
-            const userClearance = authStore.userAgent?.clearanceLevel || 1;
             return this.missions.filter(mission =>
                 mission.available &&
-                mission.securityClearance <= userClearance &&
-                (!mission.isPaid || authStore.hasMissionAccess(mission.id))
+                authStore.canAccessMission(mission)
             );
         },
 

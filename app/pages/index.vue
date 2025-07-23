@@ -42,13 +42,14 @@
 
             <div class="missions-grid">
                 <div v-for="mission in gameStore.missions" :key="mission.id" class="mission-card" :class="{
-                    completed: mission.completed,
+                    completed: isMissionCompleted(mission.id),
                     disabled: !mission.available || !authStore.isAuthenticated,
                     'clearance-locked': authStore.isAuthenticated && mission.securityClearance > gameStore.agent.clearanceLevel
-                }" @click="authStore.isAuthenticated && canAccessMission(mission) ? selectMission(mission.id) : null">
+                }"
+                    @click="authStore.isAuthenticated && authStore.canAccessMission(mission) ? selectMission(mission.id) : null">
                     <div class="mission-thumbnail">
                         <div class="mission-icon">{{ mission.icon }}</div>
-                        <div v-if="mission.completed" class="completed-badge">✓</div>
+                        <div v-if="isMissionCompleted(mission.id)" class="completed-badge">✓</div>
                         <div v-if="!mission.available" class="locked-badge">🔒</div>
                         <div v-if="!authStore.isAuthenticated && mission.id !== 'the-internal-leak'"
                             class="auth-required-badge">🔐</div>
@@ -76,11 +77,12 @@
                                 <span class="clearance">CL{{ mission.securityClearance }}</span>
                             </div>
 
-                            <div v-if="authStore.isAuthenticated && mission.available && canAccessMission(mission)"
+                            <div v-if="authStore.isAuthenticated && mission.available && authStore.canAccessMission(mission)"
                                 class="mission-briefing">
-                                <button class="briefing-btn" @click.stop="showBriefing(mission)">📋 View Briefing</button>
+                                <button class="briefing-btn" @click.stop="showBriefing(mission)">📋 View
+                                    Briefing</button>
                             </div>
-                            <div v-else-if="!authStore.isAuthenticated && mission.id === 'the-internal-leak'"
+                            <div v-else-if="mission.id === 'the-internal-leak'"
                                 class="mission-briefing">
                                 <button class="preview-briefing-btn" @click.stop="showBriefing(mission)">👁️ Preview
                                     Briefing</button>
@@ -96,24 +98,19 @@
 
             <div class="stats">
                 <div class="stat">
-                    <span class="stat-value">{{ authStore.isAuthenticated ? completedMissions : '0' }}</span>
+                    <span class="stat-value">{{ completedMissionsCount }}</span>
                     <span class="stat-label">Completed Cases</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">{{ authStore.isAuthenticated ? gameStore.availableMissions.length : '0'
-                    }}</span>
+                    <span class="stat-value">{{ purchasedMissionsCount }}</span>
                     <span class="stat-label">Available Cases</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">{{ gameStore.missions.length }}</span>
+                    <span class="stat-value">{{ totalMissionsCount }}</span>
                     <span class="stat-label">Total Cases</span>
                 </div>
             </div>
         </main>
-
-        <transition name="laptop-boot">
-            <LaptopScreen v-if="authStore.isAuthenticated && gameStore.isInLaptop" />
-        </transition>
 
         <div v-if="showBriefingModal" class="briefing-modal" @click="closeBriefing">
             <div class="briefing-content" @click.stop>
@@ -127,7 +124,7 @@
                         <h3>{{ selectedMission.title }}</h3>
                         <div class="clearance-info">
                             <span class="clearance-level">Security Clearance: {{ selectedMission.securityClearance
-                                }}</span>
+                            }}</span>
                             <span class="difficulty">{{ selectedMission.difficulty }}</span>
                         </div>
                     </div>
@@ -165,35 +162,56 @@
 
                     <div class="briefing-actions">
                         <button class="cancel-btn" @click="closeBriefing">Cancel</button>
-                        <button v-if="authStore.isAuthenticated" class="start-mission-btn" @click="startMission">🚀
-                            Start Mission</button>
-                        <button v-else class="login-mission-btn" @click="navigateToLogin">🔐 Sign In to Start
-                            Mission</button>
+                        <button
+                            v-if="authStore.isAuthenticated && selectedMission && authStore.canAccessMission(selectedMission)"
+                            class="start-mission-btn" @click="startMission">
+                            🚀 Start Mission
+                        </button>
+                        <button
+                            v-else-if="authStore.isAuthenticated && selectedMission && !authStore.canAccessMission(selectedMission)"
+                            class="start-mission-btn disabled" disabled
+                            title="Insufficient clearance or mission not purchased">
+                            🔒 Mission Locked
+                        </button>
+                        <button v-else class="login-mission-btn" @click="navigateToLogin">
+                            🔐 Sign In to Start Mission
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <transition name="laptop-boot">
+        <LaptopScreen v-if="authStore.isAuthenticated && gameStore.isInLaptop" />
+    </transition>
 </template>
 
 <script setup lang="ts">
-import { useGameStore } from '@/stores/game';
-import { useAuthStore } from '@/stores/auth';
-
 const gameStore = useGameStore();
 const authStore = useAuthStore();
 const showBriefingModal = ref(false);
 const selectedMission = ref<Mission | null>(null);
 
-const selectMission = (missionId: string) => {
-    gameStore.selectMission(missionId);
+const completedMissionsCount = computed(() =>
+    authStore.user?.gameProgress.completedMissions.length || 0
+);
+
+const purchasedMissionsCount = computed(() =>
+    Math.min(authStore.user?.gameProgress.purchasedMissions.length || 0, gameStore.availableMissions.length)
+);
+
+const totalMissionsCount = computed(() =>
+    gameStore.missions.length
+);
+
+// Függvény ami ellenőrzi, hogy egy adott küldetést befejezett-e a felhasználó
+const isMissionCompleted = (missionId: string): boolean => {
+    return authStore.user?.gameProgress.completedMissions.includes(missionId) || false;
 };
 
-const canAccessMission = (mission: Mission): boolean => {
-    if (!mission.available) return false;
-    if (mission.securityClearance > gameStore.agent.clearanceLevel) return false;
-    if (mission.isPaid && !authStore.hasMissionAccess(mission.id)) return false;
-    return true;
+const selectMission = (missionId: string) => {
+    gameStore.selectMission(missionId);
 };
 
 const getMissionDescription = (mission: Mission): string => {
@@ -206,10 +224,10 @@ const getMissionDescription = (mission: Mission): string => {
     if (!mission.available) {
         return 'Coming Soon - This case is not yet available.';
     }
-    if (mission.securityClearance > gameStore.agent.clearanceLevel) {
-        return `Insufficient security clearance. Required: Level ${mission.securityClearance}`;
-    }
-    if (mission.isPaid && !authStore.hasMissionAccess(mission.id)) {
+    if (!authStore.canAccessMission(mission)) {
+        if (mission.securityClearance > gameStore.agent.clearanceLevel) {
+            return `Insufficient security clearance. Required: Level ${mission.securityClearance}`;
+        }
         return `Premium case - $${mission.price} to unlock`;
     }
     return mission.description;
@@ -244,10 +262,6 @@ const startMission = () => {
         closeBriefing();
     }
 };
-
-const completedMissions = computed(() => {
-    return gameStore.missions.filter((mission: Mission) => mission.completed).length;
-});
 </script>
 
 <style lang="scss" scoped>

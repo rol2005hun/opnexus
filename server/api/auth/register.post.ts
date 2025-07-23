@@ -3,6 +3,7 @@ import { connectToDatabase } from '@@/server/utils/database';
 import { User } from '@@/server/api/models/User';
 import { generateToken } from '@@/server/utils/jwt';
 import { success, error, warn, info } from '@@/server/utils/discord-logger';
+import { DifficultyLevel } from '#shared/types/core/base';
 
 export default defineEventHandler(async (event) => {
     if (event.method !== 'POST') {
@@ -56,7 +57,7 @@ export default defineEventHandler(async (event) => {
             agent: {
                 name: agentName,
                 badge: `NX-${Math.floor(Math.random() * 9000) + 1000}`,
-                rank: 'Rookie',
+                rank: 'Rookie' as DifficultyLevel,
                 department: 'Digital Investigation Unit',
                 clearanceLevel: 1,
                 joinDate: new Date()

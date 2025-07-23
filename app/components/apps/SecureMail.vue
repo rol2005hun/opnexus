@@ -76,8 +76,7 @@
 
         <div v-if="selectedEmailData.attachments?.length" class="email-attachments">
           <h4>Attachments:</h4>
-          <div v-for="attachment in selectedEmailData.attachments" :key="attachment.name" class="attachment"
-            @click="openAttachment(attachment)">
+          <div v-for="attachment in selectedEmailData.attachments" :key="attachment.name" class="attachment">
             <span class="attachment-icon">📄</span>
             <span class="attachment-name">{{ attachment.name }}</span>
             <span class="attachment-size">{{ attachment.size }}</span>
@@ -124,9 +123,6 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth';
-import { useGameStore } from '@/stores/game';
-
 const authStore = useAuthStore();
 const gameStore = useGameStore();
 
@@ -345,10 +341,6 @@ const permanentDelete = (emailId: string) => {
       selectedEmail.value = null;
     }
   }
-};
-
-const openAttachment = (attachment: EmailAttachment) => {
-  // TODO: Implement attachment opening logic
 };
 
 const isMarkedAsEvidence = (emailId: string) => {

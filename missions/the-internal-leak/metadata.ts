@@ -30,10 +30,8 @@ export const missionMetadata: Mission = {
     thumbnail: '/missions/leak.jpg',
     difficulty: 'Rookie',
     estimatedTime: '30-50 mins',
-    completed: false,
     available: true,
     securityClearance: 1,
     icon: '🕵️‍♂️',
-    price: 0,
-    isPaid: false
+    price: 0
 };

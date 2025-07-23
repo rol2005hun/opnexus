@@ -198,8 +198,6 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth';
-
 const authStore = useAuthStore();
 const router = useRouter();
 
@@ -234,26 +232,18 @@ const goBack = () => {
 
 const saveProfile = async () => {
     try {
-        const response = await fetch('/api/user/update-profile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                agentName: userProfile.agentName,
-                username: userProfile.username,
-                email: userProfile.email
-            })
+        const { updateProfile } = useUserProfile();
+        const data = await updateProfile({
+            agentName: userProfile.agentName,
+            username: userProfile.username,
+            email: userProfile.email
         });
-
-        const data = await response.json() as { success: boolean; message?: string };
 
         if (data.success) {
             showMessage('Profile updated successfully!');
             await authStore.fetchProfile();
         } else {
-            showMessage(data.message || 'Failed to update profile', 'error');
+            showMessage('Failed to update profile', 'error');
         }
     } catch (error) {
         showMessage('Failed to update profile', 'error');
@@ -272,19 +262,8 @@ const changePassword = async () => {
     }
 
     try {
-        const response = await fetch('/api/user/change-password', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                currentPassword: passwordForm.currentPassword,
-                newPassword: passwordForm.newPassword
-            })
-        });
-
-        const data = await response.json() as { success: boolean; message?: string };
+        const { changePassword } = useUserProfile();
+        const data = await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
 
         if (data.success) {
             showMessage('Password changed successfully!');
@@ -292,7 +271,7 @@ const changePassword = async () => {
             passwordForm.newPassword = '';
             passwordForm.confirmPassword = '';
         } else {
-            showMessage(data.message || 'Failed to change password', 'error');
+            showMessage('Failed to change password', 'error');
         }
     } catch (error) {
         showMessage('Failed to change password', 'error');
@@ -306,8 +285,6 @@ const logout = async () => {
 
 onMounted(async () => {
     try {
-        await authStore.fetchProfile();
-
         if (authStore.user) {
             userProfile.agentName = authStore.user.agent?.name || '';
             userProfile.username = authStore.user.username || '';

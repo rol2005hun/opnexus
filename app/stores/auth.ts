@@ -12,11 +12,13 @@ export const useAuthStore = defineStore('auth', {
         currentUser: (state) => state.user,
         userAgent: (state) => state.user?.agent,
         gameProgress: (state) => state.user?.gameProgress,
-        canAccessMission: (state) => (requiredClearance: number) => {
-            return state.user ? state.user.agent.clearanceLevel >= requiredClearance : false;
-        },
-        hasMissionAccess: (state) => (missionId: string) => {
-            return state.user?.gameProgress.purchasedMissions.includes(missionId) || false;
+        canAccessMission: (state) => (mission: Mission) => {
+            if (!state.user) return false;
+            
+            const hasPurchased = state.user.gameProgress.purchasedMissions.includes(mission.id);
+            const hasRequiredClearance = state.user.agent.clearanceLevel >= mission.securityClearance;
+            
+            return hasPurchased && hasRequiredClearance;
         }
     },
 
@@ -24,14 +26,12 @@ export const useAuthStore = defineStore('auth', {
         async register(userData: { username: string; email: string; password: string; agentName: string }) {
             this.isLoading = true;
             try {
-                const data = await $fetch<any>('/api/auth/register', {
-                    method: 'POST',
-                    body: userData
-                });
+                const { register } = useAuth();
+                const data = await register(userData);
 
                 if (data.success) {
                     this.user = data.user;
-                    this.token = data.token;
+                    this.token = data.token || null;
                     this.isAuthenticated = true;
 
                     const tokenCookie = useCookie('auth-token');
@@ -43,7 +43,7 @@ export const useAuthStore = defineStore('auth', {
                 console.error('Registration error:', error);
                 return {
                     success: false,
-                    message: error.data?.message || 'Registration failed'
+                    message: error.message || 'Registration failed'
                 };
             } finally {
                 this.isLoading = false;
@@ -53,14 +53,12 @@ export const useAuthStore = defineStore('auth', {
         async login(credentials: { identifier: string; password: string }) {
             this.isLoading = true;
             try {
-                const data = await $fetch<any>('/api/auth/login', {
-                    method: 'POST',
-                    body: credentials
-                });
+                const { login } = useAuth();
+                const data = await login(credentials);
 
                 if (data.success) {
                     this.user = data.user;
-                    this.token = data.token;
+                    this.token = data.token || null;
                     this.isAuthenticated = true;
 
                     const tokenCookie = useCookie('auth-token');
@@ -72,7 +70,7 @@ export const useAuthStore = defineStore('auth', {
                 console.error('Login error:', error);
                 return {
                     success: false,
-                    message: error.data?.message || 'Login failed'
+                    message: error.message || 'Login failed'
                 };
             } finally {
                 this.isLoading = false;
@@ -83,11 +81,8 @@ export const useAuthStore = defineStore('auth', {
             if (!this.token) return;
 
             try {
-                const data = await $fetch<any>('/api/user/profile', {
-                    headers: {
-                        Authorization: `Bearer ${this.token}`
-                    }
-                });
+                const { fetchProfile } = useUserProfile();
+                const data = await fetchProfile(this.token);
 
                 if (data.success) {
                     this.user = data.user;
@@ -113,32 +108,6 @@ export const useAuthStore = defineStore('auth', {
             if (tokenCookie.value) {
                 this.token = tokenCookie.value;
                 await this.fetchProfile();
-            }
-        },
-
-        async updateGameProgress(progress: Partial<User['gameProgress']>) {
-            if (!this.user) return;
-
-            this.user.gameProgress = {
-                ...this.user.gameProgress,
-                ...progress
-            };
-
-            // TODO: Sync with server
-        },
-
-        async purchaseMission(missionId: string) {
-            if (!this.user || this.hasMissionAccess(missionId)) return false;
-
-            try {
-                // TODO: Implement payment logic
-
-                this.user.gameProgress.purchasedMissions.push(missionId);
-
-                return true;
-            } catch (error) {
-                console.error('Mission purchase error:', error);
-                return false;
             }
         }
     }
