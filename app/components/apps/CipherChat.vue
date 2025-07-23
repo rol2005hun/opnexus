@@ -6,10 +6,13 @@
         <h3>Cipher Messages</h3>
         <div class="chat-controls">
           <select v-model="chatFilter" class="filter-select">
+            <option value="chats">Chats</option>
             <option value="all">All Chats</option>
             <option value="own">My Chats</option>
             <option value="observed">Agent Accessible Chats</option>
+            <option value="trash">Trash</option>
           </select>
+          <button class="refresh-btn" @click="refreshChats" title="Refresh Chats">↻</button>
           <button class="new-chat-btn" @click="showNewChatDialog = true">+</button>
         </div>
       </div>
@@ -29,6 +32,14 @@
             <div class="chat-time">{{ formatTime(chat.lastMessageTime) }}</div>
           </div>
           <div v-if="chat.unreadCount > 0" class="unread-badge">{{ chat.unreadCount }}</div>
+          <div class="chat-item-actions">
+            <button v-if="chatFilter !== 'trash'" class="action-btn trash" @click.stop="moveToTrash(chat.id)"
+              title="Move to Trash">🗑️</button>
+            <button v-if="chatFilter === 'trash'" class="action-btn restore" @click.stop="restoreFromTrash(chat.id)"
+              title="Restore">↶</button>
+            <button v-if="chatFilter === 'trash'" class="action-btn delete" @click.stop="permanentDelete(chat.id)"
+              title="Delete Forever">❌</button>
+          </div>
         </div>
       </div>
     </div>
@@ -147,9 +158,11 @@ const activeChat = ref<string | null>(null);
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement>();
 const showNewChatDialog = ref(false);
-const chatFilter = ref<'own' | 'all' | 'observed'>('all');
+const chatFilter = ref<'chats' | 'own' | 'all' | 'observed' | 'trash'>('chats');
 const currentStoryContent = ref<StoryContent | null>(null);
 const customChats = ref<Chat[]>([]);
+const deletedChatIds = ref<Set<string>>(new Set());
+const permanentlyDeletedChatIds = ref<Set<string>>(new Set());
 const newChatType = ref<'private' | 'group'>('private');
 const newChatName = ref('');
 const selectedCharacters = ref<string[]>([]);
@@ -222,20 +235,46 @@ const allChats = computed((): Chat[] => {
 
 const filteredChats = computed(() => {
   let chats: Chat[] = [];
-  
+
   switch (chatFilter.value) {
+    case 'chats':
+      chats = allChats.value.filter(chat => 
+        chat.canView && 
+        !deletedChatIds.value.has(chat.id) && 
+        !permanentlyDeletedChatIds.value.has(chat.id)
+      );
+      break;
     case 'own':
-      chats = allChats.value.filter(chat => chat.isOwnChat);
+      chats = allChats.value.filter(chat => 
+        chat.isOwnChat && 
+        !deletedChatIds.value.has(chat.id) && 
+        !permanentlyDeletedChatIds.value.has(chat.id)
+      );
       break;
     case 'observed':
-      chats = allChats.value.filter(chat => chat.canView && !chat.isOwnChat);
+      chats = allChats.value.filter(chat => 
+        chat.canView && 
+        !chat.isOwnChat && 
+        !deletedChatIds.value.has(chat.id) && 
+        !permanentlyDeletedChatIds.value.has(chat.id)
+      );
+      break;
+    case 'trash':
+      chats = allChats.value.filter(chat => 
+        deletedChatIds.value.has(chat.id) && 
+        !permanentlyDeletedChatIds.value.has(chat.id)
+      );
       break;
     case 'all':
     default:
-      chats = allChats.value.filter(chat => chat.canView);
+      chats = allChats.value.filter(chat => 
+        chat.canView && 
+        !deletedChatIds.value.has(chat.id) && 
+        !permanentlyDeletedChatIds.value.has(chat.id)
+      );
       break;
   }
-  
+
   return chats.sort((a, b) => {
     const timeA = new Date(a.lastMessageTime).getTime();
     const timeB = new Date(b.lastMessageTime).getTime();
@@ -318,7 +357,6 @@ const getStatusClass = (status: string) => {
 };
 
 const getChatTypeLabel = (chat: Chat): string => {
-  const isPlayerInChat = chat.participants.includes(playerName.value);
   const participantsLabel = getParticipantsDisplay(chat);
 
   if (chat.type === 'private') {
@@ -370,7 +408,8 @@ const createNewChat = () => {
     canSendMessage: true,
     canView: true,
     platform: 'Internal Chat',
-    messages: []
+    messages: [],
+    deleted: false
   };
 
   customChats.value.push(newChat);
@@ -392,6 +431,46 @@ const toggleEvidence = (chatId: string) => {
   gameStore.toggleEvidence(gameStore.currentStory, chatId);
 };
 
+const moveToTrash = (chatId: string) => {
+  deletedChatIds.value.add(chatId);
+  if (activeChat.value === chatId) {
+    activeChat.value = null;
+  }
+};
+
+const restoreFromTrash = (chatId: string) => {
+  deletedChatIds.value.delete(chatId);
+};
+
+const refreshChats = () => {
+  // Clear all deleted chat IDs to restore everything
+  deletedChatIds.value.clear();
+  permanentlyDeletedChatIds.value.clear();
+  // Reset custom chats (optional - keeps user-created chats)
+  // customChats.value = [];
+  // Reset active chat selection
+  activeChat.value = null;
+  // Reset filter to default
+  chatFilter.value = 'chats';
+};
+
+const permanentDelete = (chatId: string) => {
+  // For custom chats, remove from customChats array completely
+  const customChatIndex = customChats.value.findIndex(chat => chat.id === chatId);
+  if (customChatIndex !== -1) {
+    customChats.value.splice(customChatIndex, 1);
+  }
+  
+  // Add to permanently deleted set so it never shows up anywhere
+  permanentlyDeletedChatIds.value.add(chatId);
+  // Also remove from trash
+  deletedChatIds.value.delete(chatId);
+  
+  if (activeChat.value === chatId) {
+    activeChat.value = null;
+  }
+};
+
 onMounted(async () => {
   currentStoryContent.value = await gameStore.getCurrentStoryContent();
 });
@@ -401,6 +480,7 @@ watch(() => gameStore.currentStory, async (newStoryId) => {
     currentStoryContent.value = await gameStore.getCurrentStoryContent();
     activeChat.value = null;
     customChats.value = [];
+    deletedChatIds.value.clear(); // Clear deleted chats when switching stories
   }
 });
 </script>

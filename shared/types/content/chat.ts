@@ -15,6 +15,7 @@ export interface Chat extends BaseEntity {
     canView: boolean;
     isEvidence?: boolean;
     platform?: string;
+    deleted?: boolean;
 }
 
 export interface ChatMessage extends BaseEntity {
