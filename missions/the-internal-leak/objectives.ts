@@ -4,7 +4,6 @@ export const objectives: Objective[] = [
         title: 'Establish Cover Identity',
         description: 'Successfully integrate into Nexus-Corp as a junior analyst while gathering intelligence',
         type: 'primary',
-        completed: false,
         requiredEvidence: ['dia_briefing'],
         hints: ['Review your mission briefing', 'Understand your cover mission']
     },
@@ -13,7 +12,6 @@ export const objectives: Objective[] = [
         title: 'Analyze Corporate Communications',
         description: 'Monitor and analyze all intercepted communications for suspicious activity',
         type: 'analyze',
-        completed: false,
         requiredEvidence: ['email_003', 'chat_004', 'chat_005'],
         hints: ['Look for technical discussions about bypassing security', 'Watch for unusual working hours']
     },
@@ -22,7 +20,6 @@ export const objectives: Objective[] = [
         title: 'Identify Financial Motives',
         description: 'Use DIA surveillance data to identify employees under financial pressure',
         type: 'identify',
-        completed: false,
         requiredEvidence: ['DIA-MONITORED@classified.gov'],
         hints: ['Check monitored personal communications', 'Look for legal and financial pressures']
     },
@@ -31,7 +28,6 @@ export const objectives: Objective[] = [
         title: 'Trace External Contacts',
         description: 'Analyze intercepted communications to identify competitor connections',
         type: 'connect',
-        completed: false,
         requiredEvidence: ['DIA-INTERCEPTED@classified.gov'],
         hints: ['Review intercepted external communications', 'Follow the payment trail']
     },
@@ -40,7 +36,6 @@ export const objectives: Objective[] = [
         title: 'Build Prosecution Case',
         description: 'Gather sufficient evidence to identify the insider and their methods',
         type: 'prove',
-        completed: false,
         requiredEvidence: ['chat_001', 'chat_002', 'chat_003'],
         hints: ['Connect all communications to one suspect', 'Establish timeline of the data theft']
     },
@@ -49,7 +44,6 @@ export const objectives: Objective[] = [
         title: 'Maintain Operational Security',
         description: 'Complete investigation without revealing your true identity to anyone except CTO',
         type: 'hidden',
-        completed: false,
         requiredEvidence: ['email_001'],
         hints: ['Only Irene Walker knows your real identity', 'Maintain cover as new employee']
     }

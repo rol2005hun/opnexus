@@ -4,7 +4,6 @@ export interface Objective extends BaseEntity {
     title: string;
     description: string;
     type: 'identify' | 'analyze' | 'connect' | 'prove' | 'timeline' | 'primary' | 'secondary' | 'hidden';
-    completed: boolean;
     requiredEvidence: string[];
     hints?: string[];
 }
