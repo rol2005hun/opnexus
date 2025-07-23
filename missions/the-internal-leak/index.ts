@@ -12,7 +12,6 @@ import { objectives } from './objectives';
 
 export const missionContent: MissionContent = {
     id: 'the-internal-leak',
-    missionId: 'the-internal-leak',
     setting,
     characters,
     suspects,

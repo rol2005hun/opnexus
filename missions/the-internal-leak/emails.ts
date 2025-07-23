@@ -2,7 +2,7 @@ export const emails: EmailMessage[] = [
     {
         id: 'dia_briefing',
         from: 'operations@dia.classified.gov',
-        to: ['agent.undercover@dia.classified.gov'],
+        to: ['{username}@nexus-corp.com'],
         subject: '[CLASSIFIED] Operation Corporate Shield - Mission Briefing',
         body: `**CLASSIFIED - DIGITAL INVESTIGATION AGENCY**
 **OPERATION: CORPORATE SHIELD**
@@ -104,7 +104,7 @@ Human Resources Department`,
         timestamp: '2025-07-01 09:15:00',
         encrypted: false,
         importance: 'normal',
-        isEvidence: true
+        isEvidence: false
     },
     {
         id: 'email_011',
@@ -642,7 +642,7 @@ Marketing Team`,
     },
     {
         id: 'email_008',
-        from: 'me@nexus-corp.com',
+        from: '{username}@nexus-corp.com',
         to: ['security@nexus-corp.com'],
         subject: 'RE: Security Protocol Update Request',
         body: `Hi Team,
@@ -656,7 +656,7 @@ I've reviewed the new security protocols and have the following questions:
 Please let me know when you have time to discuss.
 
 Thanks,
-The Agent`,
+The New Guy`,
         timestamp: '2025-07-16 11:30:00',
         encrypted: false,
         importance: 'normal',
@@ -665,9 +665,9 @@ The Agent`,
     {
         id: 'email_009',
         from: 'legal@nexus-corp.com',
-        to: ['me@nexus-corp.com'],
+        to: ['{username}@nexus-corp.com'],
         subject: 'Contract Documents for Review',
-        body: `Dear Agent,
+        body: `Dear New Guy,
 
 Please find attached the following documents for your review:
 

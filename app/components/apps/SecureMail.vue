@@ -98,11 +98,11 @@
         <form @submit.prevent="sendEmail" class="compose-form">
           <div class="form-row">
             <label>To:</label>
-            <input v-model="composeForm.to" type="email" required placeholder="recipient@nexus-corp.com">
+            <input v-model="composeForm.to" type="email" required :placeholder="`recipient@${emailDomain}`">
           </div>
           <div class="form-row">
             <label>CC:</label>
-            <input v-model="composeForm.cc" type="email" placeholder="cc@nexus-corp.com">
+            <input v-model="composeForm.cc" type="email" :placeholder="`cc@${emailDomain}`">
           </div>
           <div class="form-row">
             <label>Subject:</label>
@@ -139,46 +139,73 @@ const composeForm = ref({
 
 const folders: EmailFolder[] = [
   { id: 'inbox', name: 'Inbox', icon: '📥', unread: 0 },
-  { id: 'mission', name: 'Mission Access', icon: '�️', unread: 0 },
+  { id: 'sent', name: 'Sent', icon: '📤', unread: 0 },
+  { id: 'mission', name: 'Mission Access', icon: '🔐', unread: 0 },
   { id: 'drafts', name: 'Drafts', icon: '📝', unread: 0 },
   { id: 'important', name: 'Important', icon: '⭐', unread: 0 },
   { id: 'allmails', name: 'All Mails', icon: '📧', unread: 0 },
   { id: 'trash', name: 'Trash', icon: '🗑️', unread: 0 }
 ];
 
-const playerEmail = computed(() => authStore.currentUser ? `${authStore.currentUser.username}@operation.nexus` : '');
+const playerEmail = computed(() => {
+  if (!authStore.currentUser) return '';
+  const domain = currentMissionContent.value?.setting?.playerEmailDomain;
+  return `${authStore.currentUser.username}@${domain}`;
+});
+
+const emailDomain = computed(() => {
+  return currentMissionContent.value?.setting?.playerEmailDomain;
+});
+
+const currentUsername = computed(() => {
+  return authStore.currentUser?.username || 'agent';
+});
 
 const getMissionEmails = (): EmailMessage[] => {
   return currentMissionContent.value?.emails || [];
 }
 
+const processEmailContent = (content: string): string => {
+  return content.replace(/{username}/g, currentUsername.value);
+};
+
+const processEmailAddress = (address: string): string => {
+  return address.replace(/{username}/g, currentUsername.value);
+};
+
 const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
   return rawEmails.map(email => {
     const processedAttachments: EmailAttachment[] = email.attachments || [];
 
-    const allRecipients = email.to || ['me@nexus-corp.com'];
-    const primaryRecipient = allRecipients[0] || 'me@nexus-corp.com';
+    const processedFrom = processEmailAddress(email.from);
+    const processedTo = email.to.map(addr => processEmailAddress(addr));
+    const processedSubject = processEmailContent(email.subject);
+    const processedBody = processEmailContent(email.body);
+
+    const allRecipients = processedTo.length > 0 ? processedTo : [playerEmail.value];
+    const primaryRecipient = allRecipients[0] || playerEmail.value;
 
     let folder = 'mission';
 
-    if (email.to.includes('me@nexus-corp.com') ||
-      email.to.some(recipient => recipient.includes('agent'))) {
+    const playerEmailValue = playerEmail.value;
+
+    if (processedTo.includes(playerEmailValue) ||
+      processedTo.some(recipient => recipient.includes(currentUsername.value))) {
       folder = 'inbox';
     }
 
-    if (email.from.includes('DIA-') ||
-      email.from.includes('@classified.gov') ||
-      email.from.includes('@nexus-corp.com')) {
-      folder = 'mission';
+    if (processedFrom === playerEmailValue ||
+      processedFrom.includes(`${currentUsername.value}@`)) {
+      folder = 'sent';
     }
 
     return {
       id: email.id,
-      sender: email.from,
+      sender: processedFrom,
       recipient: primaryRecipient,
-      subject: email.subject,
-      preview: email.body.substring(0, 100) + '...',
-      content: formatEmailContent(email.body),
+      subject: processedSubject,
+      preview: processedBody.length > 100 ? processedBody.substring(0, 100) + '...' : processedBody,
+      content: formatEmailContent(processedBody),
       timestamp: new Date(email.timestamp),
       read: false,
       important: false,
@@ -203,15 +230,34 @@ const updateFolderCounts = () => {
       folder.unread = emails.value.filter(email => email.important && !email.read && email.folder !== 'trash').length;
     } else if (folder.id === 'allmails') {
       folder.unread = emails.value.filter(email => !email.read).length;
+    } else if (folder.id === 'sent') {
+      folder.unread = emails.value.filter(email => {
+        if (email.read || email.folder === 'trash') return false;
+        const missionEmail = getMissionEmails().find(e => e.id === email.id);
+        if (missionEmail) {
+          const processedFrom = processEmailAddress(missionEmail.from);
+          return processedFrom === playerEmail.value ||
+            processedFrom.includes(`${currentUsername.value}@`) ||
+            processedFrom.includes(currentUsername.value);
+        }
+        return false;
+      }).length;
     } else if (folder.id === 'mission') {
       folder.unread = emails.value.filter(email => {
         if (email.read || email.folder === 'trash') return false;
 
         const missionEmail = getMissionEmails().find(e => e.id === email.id);
         if (missionEmail) {
-          return missionEmail.from.includes('DIA-') ||
-            missionEmail.from.includes('@nexus-corp.com') ||
-            missionEmail.from.includes('@classified.gov');
+          const processedFrom = processEmailAddress(missionEmail.from);
+          const processedTo = missionEmail.to.map(addr => processEmailAddress(addr));
+          const playerEmailValue = playerEmail.value;
+
+          const isFromPlayer = processedFrom === playerEmailValue ||
+            processedFrom.includes(`${currentUsername.value}@`);
+          const isToPlayer = processedTo.includes(playerEmailValue) ||
+            processedTo.some(recipient => recipient.includes(currentUsername.value));
+
+          return !isFromPlayer && !isToPlayer;
         }
         return false;
       }).length;
@@ -221,8 +267,9 @@ const updateFolderCounts = () => {
 
         const missionEmail = getMissionEmails().find(e => e.id === email.id);
         if (missionEmail) {
-          return missionEmail.to.includes('me@nexus-corp.com') ||
-            missionEmail.to.some(recipient => recipient.includes('agent'));
+          const processedTo = missionEmail.to.map(addr => processEmailAddress(addr));
+          return processedTo.includes(playerEmail.value) ||
+            processedTo.some(recipient => recipient.includes(currentUsername.value));
         }
         return false;
       }).length;
@@ -249,15 +296,36 @@ const currentEmails = computed(() => {
     filteredEmails = emails.value.filter(email => email.important && email.folder !== 'trash');
   } else if (activeFolder.value === 'allmails') {
     filteredEmails = emails.value;
+  } else if (activeFolder.value === 'sent') {
+    filteredEmails = emails.value.filter(email => {
+      if (email.folder === 'trash') return false;
+      if (email.folder === 'sent') return true;
+      
+      const missionEmail = getMissionEmails().find(e => e.id === email.id);
+      if (missionEmail) {
+        const processedFrom = processEmailAddress(missionEmail.from);
+        return processedFrom === playerEmail.value ||
+          processedFrom.includes(`${currentUsername.value}@`) ||
+          processedFrom.includes(currentUsername.value);
+      }
+      return false;
+    });
   } else if (activeFolder.value === 'mission') {
     filteredEmails = emails.value.filter(email => {
       if (email.folder === 'trash') return false;
 
       const missionEmail = getMissionEmails().find(e => e.id === email.id);
       if (missionEmail) {
-        return missionEmail.from.includes('DIA-') ||
-          missionEmail.from.includes('@nexus-corp.com') ||
-          missionEmail.from.includes('@classified.gov');
+        const processedFrom = processEmailAddress(missionEmail.from);
+        const processedTo = missionEmail.to.map(addr => processEmailAddress(addr));
+        const playerEmailValue = playerEmail.value;
+
+        const isFromPlayer = processedFrom === playerEmailValue ||
+          processedFrom.includes(`${currentUsername.value}@`);
+        const isToPlayer = processedTo.includes(playerEmailValue) ||
+          processedTo.some(recipient => recipient.includes(currentUsername.value));
+
+        return !isFromPlayer && !isToPlayer;
       }
       return false;
     });
@@ -267,8 +335,9 @@ const currentEmails = computed(() => {
 
       const missionEmail = getMissionEmails().find(e => e.id === email.id);
       if (missionEmail) {
-        return missionEmail.to.includes('me@nexus-corp.com') ||
-          missionEmail.to.some(recipient => recipient.includes('agent'));
+        const processedTo = missionEmail.to.map(addr => processEmailAddress(addr));
+        return processedTo.includes(playerEmail.value) ||
+          processedTo.some(recipient => recipient.includes(currentUsername.value));
       }
       return false;
     });
@@ -374,14 +443,14 @@ const sendEmail = () => {
     sender: playerEmail.value,
     recipient: composeForm.value.to,
     subject: composeForm.value.subject,
-    preview: composeForm.value.body.substring(0, 100) + '...',
+    preview: composeForm.value.body.length > 100 ? composeForm.value.body.substring(0, 100) + '...' : composeForm.value.body,
     content: formatEmailContent(composeForm.value.body),
     timestamp: new Date(),
     read: true,
     important: false,
     hasAttachment: false,
     attachments: [],
-    folder: 'drafts'
+    folder: 'sent'
   };
 
   emails.value.push(newEmail);
@@ -401,10 +470,9 @@ const formatEmailContent = (content: string): string => {
 };
 
 function displayEmailAddress(address: string): string {
-  if (address === 'me@nexus-corp.com') {
-    return playerEmail.value;
-  }
-  return address;
+  const processedAddress = processEmailAddress(address);
+
+  return processedAddress;
 }
 
 function displayRecipients(email: ProcessedEmail): string {

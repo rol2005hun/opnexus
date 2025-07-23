@@ -119,18 +119,21 @@ interface EvidenceItem {
 
 const investigationProgress = computed(() => {
   const progress = gameStore.currentProgress;
-  const missionContent = gameStore.currentMissionData?.content;
+  const missionContent = gameStore.currentMissionContent;
+
   if (!progress || !missionContent) return 0;
 
   const totalRealEvidence = [
-    ...missionContent.emails.filter(e => e.isEvidence),
-    ...missionContent.chatMessages.filter(c => c.isEvidence),
-    ...missionContent.files.filter(f => f.isEvidence)
+    ...missionContent.emails.filter((e: any) => e.isEvidence),
+    ...missionContent.chatMessages?.filter((c: any) => c.isEvidence) || [],
+    ...missionContent.files?.filter((f: any) => f.isEvidence) || []
   ].length;
 
   if (totalRealEvidence === 0) return 0;
 
-  return Math.min(Math.floor((progress.evidenceFound.length / totalRealEvidence) * 100), 100);
+  const progressPercent = Math.min(Math.floor((progress.evidenceFound.length / totalRealEvidence) * 100), 100);
+
+  return progressPercent;
 });
 
 const progressClass = computed(() => {
@@ -151,13 +154,13 @@ const progressStatusText = computed(() => {
 
 const canIdentifySuspects = computed(() => {
   const progress = gameStore.currentProgress;
-  const missionContent = gameStore.currentMissionData?.content;
+  const missionContent = gameStore.currentMissionContent;
   if (!progress || !missionContent) return false;
 
   const realEvidenceIds = [
-    ...missionContent.emails.filter(e => e.isEvidence).map(e => e.id),
-    ...missionContent.chatMessages.filter(c => c.isEvidence).map(c => c.id),
-    ...missionContent.files.filter(f => f.isEvidence).map(f => f.id)
+    ...missionContent.emails.filter((e: any) => e.isEvidence).map((e: any) => e.id),
+    ...missionContent.chatMessages?.filter((c: any) => c.isEvidence).map((c: any) => c.id) || [],
+    ...missionContent.files?.filter((f: any) => f.isEvidence).map((f: any) => f.id) || []
   ];
 
   const marked = progress.markedEvidence;
@@ -173,9 +176,9 @@ const showSuspectModal = ref(false);
 const selectedSuspect = ref<string | null>(null);
 
 const availableSuspects = computed(() => {
-  const missionContent = gameStore.currentMissionData?.content;
+  const missionContent = gameStore.currentMissionContent;
   if (!missionContent?.characters) return [];
-  return missionContent.characters.map(character => ({
+  return missionContent.characters.map((character: any) => ({
     id: character.id,
     name: character.name,
     role: character.role
@@ -199,8 +202,8 @@ const selectSuspect = (suspectId: string) => {
 const confirmSuspect = async () => {
   if (!selectedSuspect.value || !gameStore.currentMission) return;
 
-  const missionContent = gameStore.currentMissionData?.content;
-  const trueSuspect = missionContent?.suspects?.find(s => s.evidenceAgainst && s.evidenceAgainst.length > 0);
+  const missionContent = gameStore.currentMissionContent;
+  const trueSuspect = missionContent?.suspects?.find((s: any) => s.evidenceAgainst && s.evidenceAgainst.length > 0);
 
   if (trueSuspect && selectedSuspect.value === trueSuspect.id) {
     gameStore.markSuspectConfirmed(gameStore.currentMission, selectedSuspect.value);
@@ -208,10 +211,16 @@ const confirmSuspect = async () => {
 
     try {
       const result = await updateScore(gameStore.currentMission, 100);
-      showCompletionModal(gameStore.currentMission, result.currentScore);
+      
+      const authStore = useAuthStore();
+      if (authStore.user && !authStore.user.gameProgress.completedMissions.includes(gameStore.currentMission)) {
+        authStore.user.gameProgress.completedMissions.push(gameStore.currentMission);
+      }
+      
+      useMissionCompletion().showCompletionModal(gameStore.currentMission, result.currentScore);
     } catch (error) {
       console.error('Failed to complete mission:', error);
-      showCompletionModal(gameStore.currentMission, 0);
+      useMissionCompletion().showCompletionModal(gameStore.currentMission, 0);
     }
   } else {
     try {
@@ -239,6 +248,7 @@ const confirmSuspect = async () => {
 
 const statusClass = computed(() => {
   const progress = gameStore.currentProgress;
+
   if (!progress) return 'investigating';
 
   if (progress.caseStatus === 'completed') return 'completed';
@@ -263,17 +273,28 @@ const statusText = computed(() => {
 
 const evidenceItems = computed((): EvidenceItem[] => {
   const currentProgress = gameStore.currentProgress;
-  const missionData = gameStore.currentMissionData;
-  if (!currentProgress?.markedEvidence || !missionData?.content) return [];
+  const missionContent = gameStore.currentMissionContent;
 
-  const content = missionData.content;
-  return currentProgress.markedEvidence.map(evidenceId => {
-    const email = content.emails?.find(e => e.id === evidenceId);
+  const markedEvidence = currentProgress?.markedEvidence || [];
+
+  if (!markedEvidence.length || !missionContent) return [];
+
+  const processEmailContent = (text: string): string => {
+    if (!text) return '';
+    const username = authStore.currentUser?.username || 'agent';
+    return text.replace(/{username}/g, username);
+  };
+
+  const items = markedEvidence.map(evidenceId => {
+    const email = missionContent.emails?.find((e: any) => e.id === evidenceId);
     if (email) {
+      const processedSubject = processEmailContent(email.subject || '');
+      const processedBody = processEmailContent(email.body || '');
+
       return {
         id: evidenceId,
-        title: email.subject || 'Email Evidence',
-        description: email.body?.substring(0, 100) + '...' || 'Email content',
+        title: processedSubject || 'Email Evidence',
+        description: processedBody.substring(0, 100) + (processedBody.length > 100 ? '...' : '') || 'Email content',
         type: 'Email Evidence',
         icon: '📧',
         important: false,
@@ -281,7 +302,7 @@ const evidenceItems = computed((): EvidenceItem[] => {
       };
     }
 
-    const chat = content.chatMessages?.find(c => c.id === evidenceId);
+    const chat = missionContent.chatMessages?.find((c: any) => c.id === evidenceId);
     if (chat) {
       const lastMessage = chat.messages[chat.messages.length - 1];
       return {
@@ -295,7 +316,7 @@ const evidenceItems = computed((): EvidenceItem[] => {
       };
     }
 
-    const file = content.files?.find(f => f.id === evidenceId);
+    const file = missionContent.files?.find((f: any) => f.id === evidenceId);
     if (file) {
       return {
         id: evidenceId,
@@ -318,6 +339,8 @@ const evidenceItems = computed((): EvidenceItem[] => {
       discoveredAt: new Date()
     };
   });
+
+  return items;
 });
 </script>
 

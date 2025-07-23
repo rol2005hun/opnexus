@@ -1,17 +1,5 @@
 export const characters: Character[] = [
     {
-        id: 'player_agent',
-        name: 'Agent [CLASSIFIED]',
-        role: 'Junior Systems Analyst (Cover Identity)',
-        department: 'IT Support (Cover Assignment)',
-        background: 'Digital Investigation Agency operative working undercover at Nexus-Corp. Your real identity is known only to CEO and CTO Irene Walker. Officially you are a new hire in the IT department, but you have access to monitor all corporate communications systems.',
-        personality: 'Professional, observant, analytical. Skilled in digital forensics and corporate espionage investigation. Maintains perfect cover as an eager new employee.',
-        avatar: '🕵️‍♂️',
-        accessLevel: 5,
-        suspicious: false,
-        isSuspect: false
-    },
-    {
         id: 'tech_director_001',
         name: 'Irene Walker',
         role: 'Chief Technology Officer',

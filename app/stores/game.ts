@@ -1,12 +1,16 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from './auth';
-import { getAllMissions } from '@/utils/registerMission';
+import { getAllMissions, loadMissionContent, sortMissions, filterMissionsByClearance } from '@/utils/registerMission';
+import { useMissionCompletion } from '@/composables/useMissionCompletion';
+import type { MissionContent } from '#shared/types/content/mission';
+import type { GameState, Mission, MissionProgress } from '#shared/types';
 
 export const useGameStore = defineStore('game', {
     state: (): GameState => ({
         currentMission: null,
         isInLaptop: false,
         missions: [],
+        missionContents: {},
         progress: {}
     }),
 
@@ -21,7 +25,7 @@ export const useGameStore = defineStore('game', {
             }
         },
 
-        selectMission(missionId: string) {
+        async selectMission(missionId: string) {
             const mission = this.missions.find(s => s.id === missionId);
             if (!mission || !mission.available || mission.securityClearance > this.agent.clearanceLevel) {
                 return;
@@ -29,6 +33,13 @@ export const useGameStore = defineStore('game', {
 
             this.currentMission = missionId;
             this.isInLaptop = true;
+
+            if (!this.missionContents[missionId]) {
+                const content = await loadMissionContent(missionId);
+                if (content) {
+                    this.missionContents[missionId] = content;
+                }
+            }
 
             if (!this.progress[missionId]) {
                 this.progress[missionId] = {
@@ -69,10 +80,10 @@ export const useGameStore = defineStore('game', {
 
         toggleEvidence(missionId: string, itemId: string) {
             if (!this.progress[missionId]) return;
-            
+
             const progress = this.progress[missionId];
             const isMarked = progress.markedEvidence.includes(itemId);
-            
+
             if (isMarked) {
                 progress.markedEvidence = progress.markedEvidence.filter(id => id !== itemId);
                 if (progress.evidenceFound.includes(itemId)) {
@@ -80,12 +91,12 @@ export const useGameStore = defineStore('game', {
                 }
             } else {
                 progress.markedEvidence.push(itemId);
-                
-                const mission = this.missions.find(s => s.id === missionId)?.content;
-                if (!mission) return;
-                
-                const isRealEvidence = this.isRealEvidence(mission, itemId);
-                
+
+                const missionContent = this.missionContents[missionId];
+                if (!missionContent) return;
+
+                const isRealEvidence = this.isRealEvidence(missionContent, itemId);
+
                 if (isRealEvidence && !progress.evidenceFound.includes(itemId)) {
                     progress.evidenceFound.push(itemId);
                     this.checkMissionCompletion(missionId);
@@ -109,21 +120,21 @@ export const useGameStore = defineStore('game', {
         async markSuspectConfirmed(missionId: string, suspectId: string) {
             if (!this.progress[missionId]) return;
             const progress = this.progress[missionId];
-            
-            const mission = await this.getCurrentMissionContent();
-            if (mission) {
+
+            const missionContent = this.missionContents[missionId];
+            if (missionContent) {
                 const totalEvidence = [
-                    ...mission.emails.filter(e => e.isEvidence),
-                    ...mission.chatMessages.filter(c => c.isEvidence),
-                    ...mission.files.filter(f => f.isEvidence)
+                    ...missionContent.emails.filter((e: any) => e.isEvidence),
+                    ...missionContent.chatMessages.filter((c: any) => c.isEvidence),
+                    ...missionContent.files.filter((f: any) => f.isEvidence)
                 ].length;
-                
+
                 const foundEvidence = progress.evidenceFound.length;
                 const baseScore = Math.round((foundEvidence / totalEvidence) * 100);
-                
+
                 progress.investigationScore = Math.max(0, baseScore - 10);
             }
-            
+
             progress.primarySuspectConfirmed = true;
             progress.suspectsIdentified.push(suspectId);
             this.checkMissionCompletion(missionId);
@@ -138,41 +149,30 @@ export const useGameStore = defineStore('game', {
         },
 
         async checkMissionCompletion(missionId: string) {
-            const mission = await this.getCurrentMissionContent();
-            if (!mission || !this.progress[missionId]) return;
+            const missionContent = this.missionContents[missionId];
+            if (!missionContent || !this.progress[missionId]) return;
 
             const progress = this.progress[missionId];
-            const objectives = mission.objectives || [];
-
-            const allObjectivesCompleted = objectives.every(objective => {
-                const hasRequiredEvidence = objective.requiredEvidence?.every(evidenceId =>
-                    progress.evidenceFound.includes(evidenceId)
-                ) ?? true;
-                return hasRequiredEvidence;
-            });
 
             const totalRealEvidence = [
-                ...mission.emails.filter(e => e.isEvidence),
-                ...mission.chatMessages.filter(c => c.isEvidence),
-                ...mission.files.filter(f => f.isEvidence)
+                ...missionContent.emails.filter((e: any) => e.isEvidence),
+                ...missionContent.chatMessages.filter((c: any) => c.isEvidence),
+                ...missionContent.files.filter((f: any) => f.isEvidence)
             ].length;
 
             const hasAllEvidence = progress.evidenceFound.length === totalRealEvidence;
             const hasPrimarySuspect = progress.primarySuspectConfirmed;
 
-            if (allObjectivesCompleted && hasAllEvidence && hasPrimarySuspect) {
+            if (hasAllEvidence && hasPrimarySuspect) {
                 progress.caseStatus = 'completed';
                 const { showCompletionModal } = useMissionCompletion();
                 showCompletionModal(missionId, progress.investigationScore);
             }
         },
 
-        async getCurrentMissionContent() {
+        getCurrentMissionContent(): MissionContent | null {
             if (!this.currentMission) return null;
-
-            const registerMission = (await import('@/utils/registerMission')).default;
-            const mission = await registerMission(this.currentMission);
-            return mission?.content || null;
+            return this.missionContents[this.currentMission] || null;
         }
     },
 
@@ -189,12 +189,24 @@ export const useGameStore = defineStore('game', {
             return this.missions.find(s => s.id === this.currentMission) || null;
         },
 
+        currentMissionContent(): MissionContent | null {
+            if (!this.currentMission) return null;
+            return this.missionContents[this.currentMission] || null;
+        },
+
         availableMissions(): Mission[] {
             const authStore = useAuthStore();
-            return this.missions.filter(mission =>
+
+            const filtered = this.missions.filter(mission =>
                 mission.available &&
                 authStore.canAccessMission(mission)
             );
+
+            return sortMissions(filtered, 'clearance');
+        },
+
+        getAvailableMissionsSorted: (state) => (sortBy: 'clearance' | 'difficulty' | 'alphabetical' = 'clearance') => {
+            return sortMissions(state.missions, sortBy);
         },
 
         agent() {

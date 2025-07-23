@@ -10,9 +10,13 @@ export const useMissionCompletion = () => {
     };
 
     const hideCompletionModal = () => {
+        const justCompletedMission = completedMissionId.value;
+        
         isCompletionModalVisible.value = false;
         completedMissionId.value = null;
         finalScore.value = 0;
+        
+        return justCompletedMission;
     };
 
     const getRankBasedOnScore = (score: number): { rank: string; color: string; description: string } => {
@@ -74,9 +78,4 @@ export const useMissionCompletion = () => {
         showCompletionModal,
         hideCompletionModal
     };
-};
-
-export const showCompletionModal = (missionId: string, score: number) => {
-    const { showCompletionModal: show } = useMissionCompletion();
-    show(missionId, score);
 };

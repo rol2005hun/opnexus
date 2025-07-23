@@ -4,5 +4,6 @@ export const setting: MissionSetting = {
     department: 'Software Development & Cybersecurity',
     timeframe: 'July 2025',
     context: 'Corporate espionage investigation at a defense contractor company',
-    backgroundInfo: 'A high-tech cybersecurity company has suffered an internal data breach of classified defense contracts worth $47M.'
+    backgroundInfo: 'A high-tech cybersecurity company has suffered an internal data breach of classified defense contracts worth $47M.',
+    playerEmailDomain: 'nexus-corp.com'
 };

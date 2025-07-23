@@ -84,7 +84,19 @@ const updateTime = () => {
 };
 
 const exitLaptop = () => {
+    const currentMission = gameStore.currentMission;
+    const progress = gameStore.currentProgress;
+
+    const missionId = currentMission;
+    const isCompleted = progress?.caseStatus === 'completed';
+
     gameStore.exitLaptop();
+
+    if (missionId && isCompleted) {
+        window.dispatchEvent(new CustomEvent('missionCompleted', {
+            detail: { missionId: missionId }
+        }));
+    }
 };
 
 const startDrag = (event: MouseEvent, appId: string) => {
@@ -134,17 +146,17 @@ const onMouseUp = () => {
         const app = laptopStore.apps.find(a => a.id === dragAppId.value);
         if (app) {
             const snappedPosition = laptopStore.snapToGrid(app.desktopPosition.x, app.desktopPosition.y);
-            
+
             if (snappedPosition) {
                 if (laptopStore.isPositionOccupied(snappedPosition.x, snappedPosition.y, dragAppId.value)) {
                     const availablePositions = laptopStore.getAvailableGridPositions();
                     if (availablePositions.length > 0) {
                         let closestAvailable = availablePositions[0];
                         let minDistance = Number.MAX_VALUE;
-                        
+
                         for (const pos of availablePositions) {
                             const distance = Math.sqrt(
-                                Math.pow(app.desktopPosition.x - pos.x, 2) + 
+                                Math.pow(app.desktopPosition.x - pos.x, 2) +
                                 Math.pow(app.desktopPosition.y - pos.y, 2)
                             );
                             if (distance < minDistance) {
@@ -152,7 +164,7 @@ const onMouseUp = () => {
                                 closestAvailable = pos;
                             }
                         }
-                        
+
                         if (closestAvailable) {
                             laptopStore.updateDesktopIconPosition(dragAppId.value, closestAvailable.x, closestAvailable.y);
                         }
@@ -163,10 +175,10 @@ const onMouseUp = () => {
             }
         }
     }
-    
+
     dragging.value = false;
     dragAppId.value = null;
-    
+
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
 };

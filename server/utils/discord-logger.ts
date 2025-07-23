@@ -36,7 +36,6 @@ const sendDiscordLog = async (message: string, type: 'INFO' | 'WARNING' | 'ERROR
 
         try {
             await hook.send(finalMessage);
-            console.log(`[Discord Logger] Message sent to Discord (${type}).`);
         } catch (discordError) {
             console.error('[Discord Logger] Error while sending message to Discord:', discordError);
         }

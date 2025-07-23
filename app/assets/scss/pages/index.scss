@@ -263,6 +263,85 @@
     }
 }
 
+.mission-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+
+    .control-group {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        @media (max-width: $mobile) {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+
+    .sort-controls,
+    .filter-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        label {
+            color: $text-secondary;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .control-select {
+            background: $bg-secondary;
+            border: 1px solid $border-color;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            color: $text-primary;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+
+            &:hover {
+                border-color: $accent-blue;
+            }
+
+            &:focus {
+                outline: none;
+                border-color: $accent-blue;
+                box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
+            }
+
+            option {
+                background: $bg-secondary;
+                color: $text-primary;
+            }
+        }
+    }
+
+    .mission-count {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: $bg-tertiary;
+        border-radius: 6px;
+        border: 1px solid $border-color;
+
+        .count-label {
+            color: $text-secondary;
+            font-size: 0.9rem;
+        }
+
+        .count-value {
+            color: $accent-blue;
+            font-weight: 600;
+        }
+    }
+}
+
 .missions-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -309,6 +388,31 @@
         &:hover {
             border-color: $accent-green;
             box-shadow: 0 8px 32px rgba(0, 170, 68, 0.2);
+        }
+    }
+
+    &.just-completed {
+        animation: missionCompletedCelebration 4s ease-in-out;
+        border-color: $accent-green;
+        
+        &::after {
+            content: '🎉';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            z-index: 10;
+            animation: celebrationPop 2s ease-in-out;
+            pointer-events: none;
+        }
+        
+        .mission-thumbnail .mission-icon {
+            animation: iconCelebration 3s ease-in-out;
+        }
+        
+        .completed-badge {
+            animation: badgePulse 2s ease-in-out infinite;
         }
     }
 
@@ -1188,5 +1292,127 @@
             0 0 16px rgba(239, 68, 68, 1.0),
             0 0 24px rgba(239, 68, 68, 1.0),
             0 0 32px rgba(239, 68, 68, 1.0);
+    }
+}
+
+.donate-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+
+    .donate-button {
+        display: inline-block;
+        background: linear-gradient(45deg, #FFD700, #FFA500);
+        color: #000;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 
+            0 4px 15px rgba(255, 215, 0, 0.3),
+            0 0 20px rgba(255, 215, 0, 0.1);
+        border: 2px solid rgba(255, 215, 0, 0.5);
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 20px rgba(255, 215, 0, 0.4),
+                0 0 30px rgba(255, 215, 0, 0.2);
+            background: linear-gradient(45deg, #FFA500, #FF8C00);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        bottom: 15px;
+        right: 15px;
+
+        .donate-button {
+            padding: 10px 16px;
+            font-size: 12px;
+        }
+    }
+}
+
+@keyframes missionCompletedCelebration {
+    0% {
+        box-shadow: 0 8px 32px rgba(0, 170, 68, 0.2);
+        transform: scale(1);
+    }
+    15% {
+        box-shadow: 0 12px 48px rgba(0, 170, 68, 0.6);
+        transform: scale(1.05);
+    }
+    30% {
+        box-shadow: 0 16px 64px rgba(255, 215, 0, 0.4);
+        transform: scale(1.03);
+    }
+    50% {
+        box-shadow: 0 12px 48px rgba(0, 170, 68, 0.5);
+        transform: scale(1.02);
+    }
+    100% {
+        box-shadow: 0 8px 32px rgba(0, 170, 68, 0.2);
+        transform: scale(1);
+    }
+}
+
+@keyframes celebrationPop {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.1);
+    }
+    15% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    25% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    85% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+
+@keyframes iconCelebration {
+    0%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+    10% {
+        transform: rotate(5deg) scale(1.1);
+    }
+    20% {
+        transform: rotate(-5deg) scale(1.05);
+    }
+    30% {
+        transform: rotate(3deg) scale(1.02);
+    }
+    40% {
+        transform: rotate(-2deg) scale(1);
+    }
+    50% {
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 170, 68, 0.7);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(0, 170, 68, 0);
     }
 }

@@ -3,6 +3,7 @@ import { emails } from './emails';
 import { chats } from './chats';
 import { files } from './files';
 import { missionMetadata } from './metadata';
+import type { MissionSetting, MissionContent, Suspect, DatabaseRecord, MissionApp, MissionEvent, Objective } from '../../shared/types';
 
 const setting: MissionSetting = {
     location: 'City National Bank, Downtown Financial District',
@@ -10,7 +11,8 @@ const setting: MissionSetting = {
     department: 'Digital Investigation Unit',
     timeframe: 'July 2025',
     context: 'Internal banking fraud investigation involving cryptocurrency laundering',
-    backgroundInfo: 'A sophisticated fraud scheme has been detected involving unauthorized transfers totaling $2.3M. Evidence suggests insider involvement with potential cryptocurrency conversion.'
+    backgroundInfo: 'A sophisticated fraud scheme has been detected involving unauthorized transfers totaling $2.3M. Evidence suggests insider involvement with potential cryptocurrency conversion.',
+    playerEmailDomain: 'citynational.bank'
 };
 
 const suspects: Suspect[] = [
@@ -149,7 +151,6 @@ const objectives: Objective[] = [
 
 export const bankingFraudMission: MissionContent = {
     id: 'banking-fraud-investigation',
-    missionId: 'banking-fraud-investigation',
     setting,
     characters,
     suspects,

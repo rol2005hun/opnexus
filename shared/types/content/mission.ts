@@ -6,7 +6,6 @@ import type { Objective, MissionEvent } from './investigation';
 import type { MissionApp } from '../ui/applications';
 
 export interface MissionContent extends BaseEntity {
-    missionId: string;
     setting: MissionSetting;
     characters: Character[];
     suspects: Suspect[];
@@ -26,4 +25,5 @@ export interface MissionSetting {
     timeframe: string;
     context: string;
     backgroundInfo: string;
+    playerEmailDomain: string;
 }

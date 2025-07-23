@@ -40,11 +40,42 @@
                 <p>Every case is a new challenge. Use digital tools and your investigative instincts to solve them.</p>
             </div>
 
+            <div class="mission-controls">
+                <div class="control-group">
+                    <div class="sort-controls">
+                        <label for="sort-select">Sort by:</label>
+                        <select id="sort-select" v-model="sortBy" class="control-select">
+                            <option value="clearance">Security Clearance</option>
+                            <option value="difficulty">Difficulty Level</option>
+                            <option value="alphabetical">Alphabetical</option>
+                        </select>
+                    </div>
+                    <div class="filter-controls">
+                        <label for="filter-select">Filter by:</label>
+                        <select id="filter-select" v-model="filterBy" class="control-select">
+                            <option value="all">All Missions</option>
+                            <option value="available">Available Only</option>
+                            <option value="clearance">My Clearance Level</option>
+                            <option value="difficulty-rookie">Rookie Difficulty</option>
+                            <option value="difficulty-agent">Agent Difficulty</option>
+                            <option value="difficulty-senior">Senior Agent+</option>
+                            <option value="purchased">Purchased</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="mission-count">
+                        <span class="count-label">Showing:</span>
+                        <span class="count-value">{{ sortedMissions.length }} / {{ gameStore.missions.length }}</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="missions-grid">
-                <div v-for="mission in gameStore.missions" :key="mission.id" class="mission-card" :class="{
+                <div v-for="mission in sortedMissions" :key="mission.id" class="mission-card" :class="{
                     completed: isMissionCompleted(mission.id),
                     disabled: !mission.available || !authStore.isAuthenticated,
-                    'clearance-locked': authStore.isAuthenticated && mission.securityClearance > gameStore.agent.clearanceLevel
+                    'clearance-locked': authStore.isAuthenticated && mission.securityClearance > gameStore.agent.clearanceLevel,
+                    'just-completed': showCompletionAnimation && justCompletedMissionId === mission.id
                 }"
                     @click="authStore.isAuthenticated && authStore.canAccessMission(mission) ? selectMission(mission.id) : null">
                     <div class="mission-thumbnail">
@@ -82,8 +113,7 @@
                                 <button class="briefing-btn" @click.stop="showBriefing(mission)">📋 View
                                     Briefing</button>
                             </div>
-                            <div v-else-if="mission.id === 'the-internal-leak'"
-                                class="mission-briefing">
+                            <div v-else-if="mission.id === 'the-internal-leak'" class="mission-briefing">
                                 <button class="preview-briefing-btn" @click.stop="showBriefing(mission)">👁️ Preview
                                     Briefing</button>
                             </div>
@@ -185,6 +215,13 @@
     <transition name="laptop-boot">
         <LaptopScreen v-if="authStore.isAuthenticated && gameStore.isInLaptop" />
     </transition>
+
+    <!-- Donate Button - csak ha nincs laptop módban -->
+    <div v-if="!gameStore.isInLaptop" class="donate-widget">
+        <a href="https://revolut.me/rol2005hun" target="_blank" rel="noopener noreferrer" class="donate-button">
+            ☕ Support Development
+        </a>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -192,6 +229,46 @@ const gameStore = useGameStore();
 const authStore = useAuthStore();
 const showBriefingModal = ref(false);
 const selectedMission = ref<Mission | null>(null);
+const sortBy = ref<'clearance' | 'difficulty' | 'alphabetical'>('clearance');
+const filterBy = ref<'all' | 'available' | 'clearance' | 'difficulty-rookie' | 'difficulty-agent' | 'difficulty-senior' | 'purchased' | 'completed'>('all');
+const justCompletedMissionId = ref<string | null>(null);
+const showCompletionAnimation = ref(false);
+
+const { isCompletionModalVisible, completionData } = useMissionCompletion();
+
+watch(isCompletionModalVisible, (newValue, oldValue) => {
+    if (oldValue && !newValue && completionData.value?.missionId) {
+        triggerCompletionAnimation(completionData.value.missionId);
+    }
+});
+
+const triggerCompletionAnimation = (missionId: string) => {
+    if (authStore.user && !authStore.user.gameProgress.completedMissions.includes(missionId)) {
+        authStore.user.gameProgress.completedMissions.push(missionId);
+    }
+
+    justCompletedMissionId.value = missionId;
+    showCompletionAnimation.value = true;
+
+    setTimeout(() => {
+        showCompletionAnimation.value = false;
+        justCompletedMissionId.value = null;
+    }, 4000);
+};
+
+onMounted(() => {
+    const completedMissionId = sessionStorage.getItem('justCompletedMission');
+    if (completedMissionId) {
+        sessionStorage.removeItem('justCompletedMission');
+        triggerCompletionAnimation(completedMissionId);
+    }
+
+    const handleMissionCompleted = (event: CustomEvent) => {
+        triggerCompletionAnimation(event.detail.missionId);
+    };
+
+    window.addEventListener('missionCompleted', handleMissionCompleted as EventListener);
+});
 
 const completedMissionsCount = computed(() =>
     authStore.user?.gameProgress.completedMissions.length || 0
@@ -205,9 +282,64 @@ const totalMissionsCount = computed(() =>
     gameStore.missions.length
 );
 
-// Függvény ami ellenőrzi, hogy egy adott küldetést befejezett-e a felhasználó
+const sortedMissions = computed(() => {
+    let missions = gameStore.getAvailableMissionsSorted(sortBy.value);
+
+    switch (filterBy.value) {
+        case 'available':
+            missions = missions.filter(mission => mission.available);
+            break;
+
+        case 'clearance':
+            missions = missions.filter(mission =>
+                mission.securityClearance <= gameStore.agent.clearanceLevel
+            );
+            break;
+
+        case 'difficulty-rookie':
+            missions = missions.filter(mission =>
+                mission.difficulty === 'Rookie' || mission.difficulty === 'Agent'
+            );
+            break;
+
+        case 'difficulty-agent':
+            missions = missions.filter(mission =>
+                mission.difficulty === 'Agent' || mission.difficulty === 'Senior Agent'
+            );
+            break;
+
+        case 'difficulty-senior':
+            missions = missions.filter(mission =>
+                ['Senior Agent', 'Special Agent', 'Supervisor', 'Section Chief', 'Deputy Director', 'Director'].includes(mission.difficulty)
+            );
+            break;
+
+        case 'purchased':
+            missions = missions.filter(mission =>
+                authStore.user?.gameProgress.purchasedMissions.includes(mission.id) || false
+            );
+            break;
+
+        case 'completed':
+            missions = missions.filter(mission =>
+                authStore.user?.gameProgress.completedMissions.includes(mission.id) || false
+            );
+            break;
+
+        case 'all':
+        default:
+            break;
+    }
+
+    return missions;
+});
+
 const isMissionCompleted = (missionId: string): boolean => {
-    return authStore.user?.gameProgress.completedMissions.includes(missionId) || false;
+    const localProgress = gameStore.progress[missionId];
+    const isLocallyCompleted = localProgress?.caseStatus === 'completed';
+    const isServerCompleted = authStore.user?.gameProgress.completedMissions.includes(missionId) || false;
+
+    return isLocallyCompleted || isServerCompleted;
 };
 
 const selectMission = (missionId: string) => {

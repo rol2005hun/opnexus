@@ -1,4 +1,3 @@
-import type { MissionContent } from '../content/mission';
 import type { BaseEntity, DifficultyLevel, SecurityClearanceLevel } from '../core/base';
 
 export interface Mission extends BaseEntity {
@@ -12,5 +11,4 @@ export interface Mission extends BaseEntity {
     securityClearance: SecurityClearanceLevel;
     icon: string;
     price: number;
-    content?: MissionContent;
 }

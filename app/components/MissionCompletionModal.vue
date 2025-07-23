@@ -43,7 +43,7 @@
                     <div class="support-message">
                         <h3>🎉 Enjoyed the Investigation?</h3>
                         <p>
-                            This is just the beginning! We're working on creating a full investigation agency
+                            Thank you for playing the DEMO game! This is just the beginning! We're working on creating a full investigation agency
                             experience with multiple complex cases, advanced forensic tools, and immersive missionlines.
                         </p>
                         <p>
@@ -89,8 +89,15 @@ const gameStore = useGameStore();
 const handleOverlayClick = () => { };
 
 const returnToMenu = async () => {
-    hideCompletionModal();
+    const completedMissionId = hideCompletionModal();
     gameStore.exitLaptop();
+
+    if (completedMissionId) {
+        window.dispatchEvent(new CustomEvent('missionCompleted', {
+            detail: { missionId: completedMissionId }
+        }));
+    }
+
     await navigateTo('/');
 };
 
