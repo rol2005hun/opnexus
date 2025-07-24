@@ -1430,3 +1430,50 @@
         opacity: 0.35;
     }
 }
+
+input[type="password"] {
+    &::-ms-reveal {
+        display: none;
+    }
+    
+    &::-webkit-credentials-auto-fill-button {
+        display: none !important;
+    }
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 10;
+    transition: all 0.3s ease;
+
+    .eye-icon {
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.5);
+        transition: color 0.3s ease;
+        display: block;
+    }
+
+    &:hover {
+        .eye-icon {
+            color: $text-primary;
+            transform: scale(1.1);
+        }
+    }
+
+    &:active {
+        .eye-icon {
+            transform: scale(0.95);
+        }
+    }
+}
+
+.input-wrapper {
+    position: relative;
+}

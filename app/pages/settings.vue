@@ -95,8 +95,11 @@
                                 Current Security Code
                             </label>
                             <div class="input-wrapper">
-                                <input id="currentPassword" v-model="passwordForm.currentPassword" type="password"
+                                <input id="currentPassword" v-model="passwordForm.currentPassword" :type="showCurrentPassword ? 'text' : 'password'"
                                     placeholder="••••••••••••" class="form-input" />
+                                <button type="button" class="password-toggle" @click="showCurrentPassword = !showCurrentPassword">
+                                    <span class="eye-icon">👁</span>
+                                </button>
                                 <div class="input-border"></div>
                             </div>
                         </div>
@@ -107,8 +110,11 @@
                                 New Security Code
                             </label>
                             <div class="input-wrapper">
-                                <input id="newPassword" v-model="passwordForm.newPassword" type="password"
+                                <input id="newPassword" v-model="passwordForm.newPassword" :type="showNewPassword ? 'text' : 'password'"
                                     placeholder="Minimum 6 secure characters" class="form-input" />
+                                <button type="button" class="password-toggle" @click="showNewPassword = !showNewPassword">
+                                    <span class="eye-icon">👁</span>
+                                </button>
                                 <div class="input-border"></div>
                             </div>
                         </div>
@@ -119,8 +125,11 @@
                                 Confirm Security Code
                             </label>
                             <div class="input-wrapper">
-                                <input id="confirmPassword" v-model="passwordForm.confirmPassword" type="password"
+                                <input id="confirmPassword" v-model="passwordForm.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'"
                                     placeholder="Re-enter new security code" class="form-input" />
+                                <button type="button" class="password-toggle" @click="showConfirmPassword = !showConfirmPassword">
+                                    <span class="eye-icon">👁</span>
+                                </button>
                                 <div class="input-border"></div>
                             </div>
                         </div>
@@ -200,6 +209,10 @@
 <script setup lang="ts">
 const authStore = useAuthStore();
 const router = useRouter();
+
+const showCurrentPassword = ref(false);
+const showNewPassword = ref(false);
+const showConfirmPassword = ref(false);
 
 const userProfile = reactive({
     agentName: '',

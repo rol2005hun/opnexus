@@ -35,26 +35,55 @@
                     <p v-if="completionData?.missionId === 'the-internal-leak'">
                         You successfully identified Aaron Cole as the perpetrator of the Sentinel-X data breach.
                         Through careful analysis of network logs, chat communications, and financial records,
-                        you uncovered his motivation and exposed the $75,000 payment from an unknown competitor.
+                        you uncovered his motivation and exposed the $75,000 payment from Alex Thompson.
                     </p>
                 </div>
 
                 <div class="support-section">
                     <div class="support-message">
-                        <h3>🎉 Enjoyed the Investigation?</h3>
+                        <h3>🎉 Thank you for playing the game DEMO!</h3>
                         <p>
-                            Thank you for playing the DEMO game! This is just the beginning! We're working on creating a full investigation agency
-                            experience with multiple complex cases, advanced forensic tools, and immersive missionlines.
+                            If you discovered any bugs, have ideas, or any other questions,
+                            <strong>join our Discord server</strong> or
+                            <strong>contact us via email!</strong>
                         </p>
+
+                        <div class="contact-buttons">
+                            <a href="https://discord.gg/FqdMuyhdTC" target="_blank" rel="noopener noreferrer"
+                                class="contact-btn discord-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0002 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z" />
+                                </svg>
+                                Discord
+                            </a>
+                            <a href="mailto:contact@ranzak.site" class="contact-btn email-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                    <polyline points="22,6 12,13 2,6" />
+                                </svg>
+                                Email
+                            </a>
+                        </div>
+
                         <p>
-                            <strong>Help us bring more cases to life!</strong> Your support will enable us to:
+                            <strong>Future Development Plans:</strong>
                         </p>
                         <ul>
-                            <li>📱 Develop more intricate investigation scenarios</li>
-                            <li>🔍 Add advanced digital forensics tools</li>
-                            <li>🎭 Create deeper character development and missionlines</li>
-                            <li>🌐 Build multiplayer investigation teams</li>
-                            <li>🏆 Implement achievements and career progression</li>
+                            <li>🔧 <strong>More diverse applications:</strong> Browser, Code Decoder, Terminal, System
+                                Monitor, File Explorer etc.</li>
+                            <li>🎯 <strong>More exciting missions:</strong> International espionage, Cybercrime,
+                                Counter-terrorism</li>
+                            <li>🕵️ <strong>Advanced investigation tools:</strong> DNS analysis, Digital fingerprinting,
+                                AI assistant</li>
+                            <li>🌐 <strong>Real-time network simulations:</strong> Live traffic analysis, Firewall
+                                configuration</li>
+                            <li>🎮 <strong>Multiplayer investigations:</strong> Teamwork with real agents</li>
+                            <li>🏆 <strong>Career progression system:</strong> Ranks, Specializations, Experience points
+                            </li>
+                            <li>📱 <strong>Mobile support:</strong> Potential future mobile version of the laptop
+                                experience</li>
                         </ul>
                     </div>
 
@@ -122,277 +151,5 @@ const restartCase = () => {
 </script>
 
 <style scoped lang="scss">
-.completion-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    backdrop-filter: blur(10px);
-}
-
-.completion-modal {
-    background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
-    border-radius: 20px;
-    padding: 40px;
-    max-width: 700px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow:
-        0 20px 60px rgba(0, 122, 204, 0.3),
-        0 0 100px rgba(0, 122, 204, 0.1);
-    border: 2px solid rgba(0, 122, 204, 0.3);
-    position: relative;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #007acc, #00a8ff, #007acc);
-        border-radius: 20px 20px 0 0;
-    }
-}
-
-.completion-header {
-    text-align: center;
-    margin-bottom: 30px;
-
-    .mission-complete-badge {
-        margin-bottom: 20px;
-
-        .badge-content {
-            display: inline-block;
-            background: linear-gradient(45deg, #007acc, #00a8ff);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 14px;
-            letter-spacing: 2px;
-            box-shadow: 0 4px 15px rgba(0, 122, 204, 0.4);
-
-            .mission-text,
-            .complete-text {
-                display: block;
-                line-height: 1.2;
-            }
-
-            .complete-text {
-                font-size: 16px;
-                margin-top: 2px;
-            }
-        }
-    }
-
-    .case-title {
-        color: #fff;
-        font-size: 28px;
-        font-weight: 300;
-        margin: 0;
-    }
-}
-
-.completion-content {
-    color: #e0e0e0;
-    line-height: 1.6;
-}
-
-.score-section {
-    text-align: center;
-    margin-bottom: 30px;
-    padding: 25px;
-    background: rgba(0, 122, 204, 0.1);
-    border-radius: 15px;
-    border: 1px solid rgba(0, 122, 204, 0.2);
-
-    .final-score {
-        margin-bottom: 20px;
-
-        .score-label {
-            display: block;
-            color: #b0b0b0;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .score-value {
-            display: block;
-            color: #007acc;
-            font-size: 48px;
-            font-weight: bold;
-            text-shadow: 0 0 20px rgba(0, 122, 204, 0.5);
-        }
-    }
-
-    .rank-achieved {
-        margin-bottom: 15px;
-
-        .rank-label {
-            color: #b0b0b0;
-            font-size: 16px;
-        }
-
-        .rank-value {
-            display: block;
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-    }
-
-    .rank-description {
-        color: #c0c0c0;
-        font-style: italic;
-        margin: 0;
-    }
-}
-
-.case-summary {
-    margin-bottom: 30px;
-
-    h3 {
-        color: #007acc;
-        margin-bottom: 15px;
-        font-size: 20px;
-    }
-
-    p {
-        margin: 0;
-        color: #d0d0d0;
-    }
-}
-
-.support-section {
-    background: rgba(255, 215, 0, 0.05);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 15px;
-    padding: 25px;
-    margin-bottom: 30px;
-
-    .support-message {
-        h3 {
-            color: #FFD700;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        p {
-            margin-bottom: 15px;
-            color: #e0e0e0;
-        }
-
-        ul {
-            color: #d0d0d0;
-            padding-left: 20px;
-
-            li {
-                margin-bottom: 8px;
-            }
-        }
-    }
-
-    .donation-section {
-        text-align: center;
-        margin-top: 20px;
-
-        .donate-button {
-            display: inline-block;
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #000;
-            text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-
-            &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-            }
-        }
-
-        .donation-note {
-            color: #b0b0b0;
-            font-size: 12px;
-            margin: 0;
-        }
-    }
-}
-
-.completion-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-
-    .btn-primary,
-    .btn-secondary {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        min-width: 150px;
-    }
-
-    .btn-primary {
-        background: #007acc;
-        color: white;
-
-        &:hover {
-            background: #005a99;
-            transform: translateY(-1px);
-        }
-    }
-
-    .btn-secondary {
-        background: transparent;
-        color: #007acc;
-        border: 2px solid #007acc;
-
-        &:hover {
-            background: #007acc;
-            color: white;
-        }
-    }
-}
-
-.completion-modal::-webkit-scrollbar {
-    width: 8px;
-}
-
-.completion-modal::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-}
-
-.completion-modal::-webkit-scrollbar-thumb {
-    background: rgba(0, 122, 204, 0.5);
-    border-radius: 4px;
-}
-
-.completion-modal::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 122, 204, 0.7);
-}
+@use '@/assets/scss/components/MissionCompletionModal';
 </style>

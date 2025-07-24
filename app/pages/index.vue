@@ -215,13 +215,6 @@
     <transition name="laptop-boot">
         <LaptopScreen v-if="authStore.isAuthenticated && gameStore.isInLaptop" />
     </transition>
-
-    <!-- Donate Button - csak ha nincs laptop módban -->
-    <div v-if="!gameStore.isInLaptop" class="donate-widget">
-        <a href="https://revolut.me/rol2005hun" target="_blank" rel="noopener noreferrer" class="donate-button">
-            ☕ Support Development
-        </a>
-    </div>
 </template>
 
 <script setup lang="ts">

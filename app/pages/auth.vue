@@ -81,9 +81,12 @@
                                 Security Clearance Code
                             </label>
                             <div class="input-wrapper">
-                                <input id="password" v-model="loginForm.password" type="password"
+                                <input id="password" v-model="loginForm.password" :type="showLoginPassword ? 'text' : 'password'"
                                     placeholder="••••••••••••" autocomplete="current-password" required
                                     class="form-input" />
+                                <button type="button" class="password-toggle" @click="showLoginPassword = !showLoginPassword">
+                                    <span class="eye-icon">👁</span>
+                                </button>
                                 <div class="input-border"></div>
                             </div>
                         </div>
@@ -149,9 +152,12 @@
                                 Security Clearance Code
                             </label>
                             <div class="input-wrapper">
-                                <input id="password" v-model="registerForm.password" type="password"
+                                <input id="password" v-model="registerForm.password" :type="showRegisterPassword ? 'text' : 'password'"
                                     placeholder="Minimum 6 secure characters" autocomplete="new-password" required
                                     class="form-input" />
+                                <button type="button" class="password-toggle" @click="showRegisterPassword = !showRegisterPassword">
+                                    <span class="eye-icon">👁</span>
+                                </button>
                                 <div class="input-border"></div>
                             </div>
                         </div>
@@ -203,6 +209,8 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const mode = ref<'login' | 'register'>('login');
+const showLoginPassword = ref(false);
+const showRegisterPassword = ref(false);
 
 const switchMode = (newMode: 'login' | 'register') => {
     mode.value = newMode;
