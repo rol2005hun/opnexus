@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'NEXUS - Digital Investigation Agency',
+      title: 'Operation: NEXUS - Digital Investigation Agency',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -24,24 +24,27 @@ export default defineNuxtConfig({
           name: 'keywords',
           content: 'nexus game, digital investigation, laptop simulation, cyber detective, email analysis, chat forensics, file exploration, digital evidence, investigation game, mystery solving, FBI simulation, cybercrime investigation, digital forensics game, interactive investigation, nexus agency, demo game, browser game, detective simulation'
         },
-        { name: 'author', content: 'NEXUS - Digital Investigation Agency' },
+        { name: 'author', content: 'ranzak' },
         { name: 'robots', content: 'index, follow' },
         { name: 'language', content: 'en' },
         { name: 'theme-color', content: '#007acc' },
 
         { property: 'og:type', content: 'website' },
-        { property: 'og:title', content: 'NEXUS - Digital Investigation Agency' },
+        { property: 'og:title', content: 'Operation: NEXUS - Digital Investigation Agency' },
         {
           property: 'og:description',
           content: 'Immersive laptop simulation game for digital investigations. Analyze emails, decode messages, solve cyber crimes. Experience realistic detective work in the NEXUS universe.'
         },
         { property: 'og:image', content: '/og-image.png' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:image:type', content: 'image/png' },
         { property: 'og:url', content: 'https://opnexus.netlify.app' },
-        { property: 'og:site_name', content: 'NEXUS - Digital Investigation Agency' },
+        { property: 'og:site_name', content: 'Operation: NEXUS' },
         { property: 'og:locale', content: 'en_US' },
 
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: 'NEXUS - Digital Investigation Agency' },
+        { name: 'twitter:title', content: 'Operation: NEXUS - Digital Investigation Agency' },
         {
           name: 'twitter:description',
           content: 'Play the ultimate laptop simulation for digital investigations. Solve cyber crimes, analyze evidence, decode messages in realistic cases.'
@@ -49,8 +52,8 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: '/twitter-card.png' },
         { name: 'twitter:creator', content: '@NexusAgency' },
 
-        { name: 'application-name', content: 'NEXUS - Digital Investigation Agency' },
-        { name: 'apple-mobile-web-app-title', content: 'NEXUS Agency' },
+        { name: 'application-name', content: 'Operation: NEXUS - Digital Investigation Agency' },
+        { name: 'apple-mobile-web-app-title', content: 'Operation: NEXUS' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
         { name: 'msapplication-TileColor', content: '#007acc' },
@@ -71,8 +74,8 @@ export default defineNuxtConfig({
           innerHTML: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'VideoGame',
-            'name': 'NEXUS - Digital Investigation Agency',
-            'alternateName': 'NEXUS Agency',
+            'name': 'Operation: NEXUS - Digital Investigation Agency',
+            'alternateName': 'Operation: NEXUS',
             'description': 'An immersive laptop simulation game where players become digital detectives. Analyze emails, decode encrypted messages, examine files, and solve complex cyber crimes through realistic investigation tools and techniques.',
             'genre': ['Investigation', 'Mystery', 'Simulation', 'Detective', 'Puzzle'],
             'gameLocation': 'Online',
@@ -87,7 +90,7 @@ export default defineNuxtConfig({
             },
             'publisher': {
               '@type': 'Organization',
-              'name': 'NEXUS - Digital Investigation Agency'
+              'name': 'Operation: NEXUS - Digital Investigation Agency'
             },
             'keywords': 'digital investigation, laptop simulation, cyber detective, email forensics, chat analysis, file exploration, mystery solving, interactive investigation',
             'inLanguage': 'en',
