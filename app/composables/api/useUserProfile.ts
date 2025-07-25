@@ -10,9 +10,9 @@ export interface ProfileUpdateResponse {
 }
 
 export const useUserProfile = () => {
-    const fetchProfile = async (token: string): Promise<{ success: boolean; user?: any }> => {
+    const fetchProfile = async (token: string): Promise<{ success: boolean; user?: UserProfile }> => {
         try {
-            const response = await $fetch<{ success: boolean; user?: any }>('/api/user/profile', {
+            const response = await $fetch<{ success: boolean; user?: UserProfile }>('/api/user/profile', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

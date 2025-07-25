@@ -6,10 +6,6 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false },
 
-  experimental: {
-    payloadExtraction: false
-  },
-
   app: {
     head: {
       title: 'Operation: NEXUS - Digital Investigation Agency',
@@ -113,8 +109,12 @@ export default defineNuxtConfig({
   googleFonts: {
     families: {
       'Inter': [400, 500, 600, 700],
-      'JetBrains Mono': [400, 500, 600]
-    }
+      'JetBrains Mono': [400, 500, 600, 700]
+    },
+    display: 'swap',
+    preload: true,
+    prefetch: false,
+    preconnect: false,
   },
 
   imports: {

@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import Default from '@/components/apps/Default.vue';
-import CipherChat from '@/components/apps/CipherChat.vue';
+import CipherChat from '@/components/apps/CipherChat/CipherChat.vue';
 import JobDescription from '@/components/apps/JobDescription.vue';
 import EvidenceLocker from '@/components/apps/EvidenceLocker.vue';
 import SecureMail from '@/components/apps/SecureMail.vue';

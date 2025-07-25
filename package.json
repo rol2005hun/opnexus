@@ -10,10 +10,8 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@pinia/nuxt": "^0.11.2",
-    "@sidebase/nuxt-auth": "^0.6.7",
     "bcryptjs": "^3.0.2",
     "discord-webhook-node": "^1.1.8",
     "jsonwebtoken": "^9.0.2",

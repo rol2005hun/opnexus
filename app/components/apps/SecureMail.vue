@@ -514,5 +514,5 @@ watch(() => gameStore.currentMissionData, async (newMission) => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/assets/scss/components/apps/Email';
+@use '@/assets/scss/components/apps/SecureMail';
 </style>

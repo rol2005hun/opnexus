@@ -109,7 +109,9 @@
         list-style: none;
         padding: 0;
         margin: 1rem 0;
-        counter-reset: objective-counter;        li {
+        counter-reset: objective-counter;
+
+        li {
             position: relative;
             padding: 1rem 0 1rem 3rem;
             margin-bottom: 1rem;
@@ -201,7 +203,7 @@
         p {
             margin-bottom: 1rem;
             color: $text-secondary;
-            
+
             &:last-child {
                 margin-bottom: 0;
             }
@@ -249,11 +251,11 @@
         position: relative;
 
         h4 {
-            margin-top: 0 !important;
-            background: none !important;
-            border: none !important;
-            padding: 0 !important;
-            color: $accent-blue !important;
+            margin-top: 0;
+            background: none;
+            border: none;
+            padding: 0;
+            color: $accent-blue;
         }
 
         .emphasis {
