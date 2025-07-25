@@ -1,4 +1,4 @@
-import type { BaseEntity, DifficultyLevel, SecurityClearanceLevel } from '../core/base';
+import type { BaseEntity, DifficultyLevel, SecurityClearanceLevel } from '..';
 
 export interface User extends BaseEntity {
     username: string;

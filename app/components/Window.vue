@@ -47,6 +47,7 @@ import CipherChat from '@/components/apps/CipherChat/CipherChat.vue';
 import JobDescription from '@/components/apps/JobDescription.vue';
 import EvidenceLocker from '@/components/apps/EvidenceLocker.vue';
 import SecureMail from '@/components/apps/SecureMail.vue';
+import DocumentReader from '~/components/apps/FileReader.vue';
 
 const TASKBAR_HEIGHT = 50;
 const TITLE_BAR_HEIGHT = 32;
@@ -120,7 +121,8 @@ const getAppComponent = (appId: string) => {
         secureMail: SecureMail,
         cipherChat: CipherChat,
         jobDescription: JobDescription,
-        evidenceLocker: EvidenceLocker
+        evidenceLocker: EvidenceLocker,
+        documentReader: DocumentReader
     };
 
     return componentMap[appId] || Default;

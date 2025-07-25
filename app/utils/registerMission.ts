@@ -1,6 +1,3 @@
-import type { Mission } from '#shared/types/game/mission';
-import type { MissionContent } from '#shared/types/content/mission';
-
 function getAvailableMissionIds(): readonly string[] {
     const metadataModules = import.meta.glob('../../missions/*/metadata.ts', { eager: false });
     const indexModules = import.meta.glob('../../missions/*/index.ts', { eager: false });

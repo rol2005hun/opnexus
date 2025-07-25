@@ -1,3 +1,5 @@
+import type { MissionSetting } from '../../shared/types';
+
 export const setting: MissionSetting = {
     location: 'Nexus-Corp Industries, Arlington, VA',
     organization: 'Nexus-Corp Industries',

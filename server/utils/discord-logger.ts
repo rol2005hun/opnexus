@@ -1,4 +1,4 @@
-import { Webhook } from 'discord-webhook-node';
+import { Webhook } from '@vermaysha/discord-webhook';
 import 'dotenv/config';
 
 const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
@@ -35,7 +35,8 @@ const sendDiscordLog = async (message: string, type: 'INFO' | 'WARNING' | 'ERROR
         const finalMessage = `${new Date().toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' })} ${prefix}: ${message}`;
 
         try {
-            await hook.send(finalMessage);
+            hook.setContent(finalMessage);
+            await hook.send();
         } catch (discordError) {
             console.error('[Discord Logger] Error while sending message to Discord:', discordError);
         }

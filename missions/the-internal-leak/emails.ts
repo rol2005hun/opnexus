@@ -1,3 +1,5 @@
+import type { EmailMessage } from '../../shared/types';
+
 export const emails: EmailMessage[] = [
     {
         id: 'dia_briefing',
@@ -42,7 +44,7 @@ Stay alert. Trust no one.
 
 **CLEARANCE LEVEL:** TS/SCI
 **OPERATION CODE:** CORPSHIELD-2025-07**`,
-        timestamp: '2025-07-01 06:00:00',
+        timestamp: new Date('2025-07-01 06:00:00'),
         encrypted: true,
         importance: 'high',
         isEvidence: false
@@ -60,7 +62,7 @@ Team,
 I've discovered suspicious network activity that suggests unauthorized access to our Sentinel-X project files. My security monitoring detected several anomalies over the past week:
 
 1. Unusual file access patterns outside normal working hours
-2. Large data transfers to external storage devices  
+2. Large data transfers to external storage devices
 3. Bypassing of our standard file tracking protocols
 4. Access to classified documents from unauthorized locations
 
@@ -74,7 +76,7 @@ Best regards,
 Irene Walker
 Chief Technology Officer
 Nexus-Corp Industries`,
-        timestamp: '2025-07-14 08:45:00',
+        timestamp: new Date('2025-07-14 08:45:00'),
         encrypted: false,
         importance: 'high',
         isEvidence: true,
@@ -101,7 +103,7 @@ If you're experiencing financial stress, work pressure, or personal challenges, 
 
 Best regards,
 Human Resources Department`,
-        timestamp: '2025-07-01 09:15:00',
+        timestamp: new Date('2025-07-01 09:15:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -123,17 +125,11 @@ Please find attached our Q2 financial review. Key highlights:
 Department heads, please review your budget allocations and submit any adjustment requests by July 25th.
 
 Finance Team`,
-        timestamp: '2025-07-03 14:30:00',
+        timestamp: new Date('2025-07-03 14:30:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false,
-        attachments: [
-            {
-                name: 'Q2_financial_report.pdf',
-                size: '2.1 MB',
-                type: 'application/pdf'
-            }
-        ]
+        attachments: ['file_007']
     },
     {
         id: 'email_012',
@@ -158,7 +154,7 @@ During this time:
 For urgent access needs, contact IT emergency line: ext. 9999
 
 IT Support Team`,
-        timestamp: '2025-07-10 16:45:00',
+        timestamp: new Date('2025-07-10 16:45:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -199,7 +195,7 @@ Phone: (555) 847-2931
 ---END MONITORED MESSAGE---
 
 **DIA ANALYSIS:** Subject showing severe financial pressure. Mentions "additional income sources" and "better cash flow within the next month" - potential indicator of illicit activity.`,
-        timestamp: '2025-07-02 19:30:00',
+        timestamp: new Date('2025-07-02 19:30:00'),
         encrypted: false,
         importance: 'high',
         isEvidence: true,
@@ -215,7 +211,7 @@ Phone: (555) 847-2931
 
 Following up on your security alert. I've completed the forensic analysis of our network logs and found concrete evidence:
 
-**CRITICAL FINDING:**
+🚨 CRITICAL FINDING:
 Thursday, July 10th at 03:47 AM - Someone connected a USB storage device to workstation WS-457 and copied approximately 2.3GB of Sentinel-X project files.
 
 The transfer included:
@@ -232,23 +228,12 @@ We need to act fast before more damage is done.
 
 Liam Rivera
 Cybersecurity Specialist`,
-        timestamp: '2025-07-14 14:30:00',
+        timestamp: new Date('2025-07-14 14:30:00'),
         encrypted: true,
         importance: 'high',
         isEvidence: true,
         clueIds: ['clue_002', 'clue_usb_transfer', 'clue_workstation'],
-        attachments: [
-            {
-                name: 'security_logs_july_10.pdf',
-                size: '2.4 MB',
-                type: 'application/pdf'
-            },
-            {
-                name: 'workstation_WS457_forensics.zip',
-                size: '856 KB',
-                type: 'application/zip'
-            }
-        ]
+        attachments: ['file_008']
     },
     {
         id: 'email_014',
@@ -268,7 +253,7 @@ Starting Monday July 14th, the main parking lot will undergo resurfacing.
 We apologize for any inconvenience. The new asphalt will provide better drainage and clearer parking lines.
 
 Facilities Management`,
-        timestamp: '2025-07-11 11:20:00',
+        timestamp: new Date('2025-07-11 11:20:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -290,7 +275,7 @@ These employees exemplify our core values of innovation, collaboration, and exce
 Congratulations to all winners! Your $500 gift cards and recognition certificates will be distributed at next week's all-hands meeting.
 
 Marketing Team`,
-        timestamp: '2025-06-30 15:45:00',
+        timestamp: new Date('2025-06-30 15:45:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -318,7 +303,7 @@ Please remember:
 If you need regular late-night access, please request extended hours authorization.
 
 Security Team`,
-        timestamp: '2025-07-09 09:30:00',
+        timestamp: new Date('2025-07-09 09:30:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: true,
@@ -345,7 +330,7 @@ Just remember to be careful what you're pushing!
 Chloe
 
 P.S. - Don't mention this workaround in official documentation. It's just between the dev team. 😉`,
-        timestamp: '2025-07-08 16:20:00',
+        timestamp: new Date('2025-07-08 16:20:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: true,
@@ -375,7 +360,7 @@ Failure to complete training by deadline will result in IT access suspension unt
 Questions? Contact training@nexus-corp.com
 
 Training Department`,
-        timestamp: '2025-07-15 10:15:00',
+        timestamp: new Date('2025-07-15 10:15:00'),
         encrypted: false,
         importance: 'high',
         isEvidence: false
@@ -403,7 +388,7 @@ Legal is prepared to pursue injunctive relief if intellectual property theft is 
 
 Attorney-Client Privileged Communication
 Legal Department`,
-        timestamp: '2025-07-13 16:45:00',
+        timestamp: new Date('2025-07-13 16:45:00'),
         encrypted: true,
         importance: 'high',
         isEvidence: true,
@@ -437,7 +422,7 @@ Project Manager - Sentinel-X
 "Success requires sacrifice." - Let's make it happen!
 
 P.S. Pizza and coffee will be provided for all overtime hours. Let me know what else you need to make this work.`,
-        timestamp: '2025-07-07 11:30:00',
+        timestamp: new Date('2025-07-07 11:30:00'),
         encrypted: false,
         importance: 'high',
         isEvidence: true,
@@ -462,7 +447,7 @@ RSVP not required, just show up!
 
 Social Committee
 P.S. - Yes, this includes people working on Sentinel-X. Sophie says you deserve a break! 😄`,
-        timestamp: '2025-07-16 14:20:00',
+        timestamp: new Date('2025-07-16 14:20:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -504,7 +489,7 @@ Phone: (555) LAW-HELP
 ---END MONITORED MESSAGE---
 
 **DIA ANALYSIS:** Subject under extreme financial pressure. Payment deadline July 25th aligns with timeline of data breach. Strong motive for illicit income.`,
-        timestamp: '2025-07-11 11:30:00',
+        timestamp: new Date('2025-07-11 11:30:00'),
         encrypted: false,
         importance: 'high',
         isEvidence: true,
@@ -533,7 +518,7 @@ Open enrollment for health benefits begins August 1st and ends August 15th.
 Schedule your benefits consultation with HR by calling ext. 2400.
 
 Benefits Administration`,
-        timestamp: '2025-07-17 13:15:00',
+        timestamp: new Date('2025-07-17 13:15:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -577,7 +562,7 @@ CTO, CyberShield Industries
 ---END INTERCEPTED MESSAGE---
 
 **DIA ANALYSIS:** Confirms external buyer for leaked data. CyberShield Industries is Nexus-Corp's primary competitor for the DoD contract.`,
-        timestamp: '2025-07-12 20:15:00',
+        timestamp: new Date('2025-07-12 20:15:00'),
         encrypted: true,
         importance: 'high',
         isEvidence: true,
@@ -612,7 +597,7 @@ Looking forward to sharing our continued success with you all.
 Best regards,
 Robert Harrison
 Chief Executive Officer`,
-        timestamp: '2025-07-19 08:30:00',
+        timestamp: new Date('2025-07-19 08:30:00'),
         encrypted: false,
         importance: 'high',
         isEvidence: false
@@ -635,7 +620,7 @@ Please RSVP by July 18th so we can plan accordingly.
 Looking forward to seeing everyone!
 
 Marketing Team`,
-        timestamp: '2025-07-15 09:00:00',
+        timestamp: new Date('2025-07-15 09:00:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -657,7 +642,7 @@ Please let me know when you have time to discuss.
 
 Thanks,
 The New Guy`,
-        timestamp: '2025-07-16 11:30:00',
+        timestamp: new Date('2025-07-16 11:30:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -679,27 +664,11 @@ These documents require your signature by end of week.
 
 Best regards,
 Legal Department`,
-        timestamp: '2025-07-18 14:45:00',
+        timestamp: new Date('2025-07-18 14:45:00'),
         encrypted: false,
         importance: 'high',
         isEvidence: false,
-        attachments: [
-            {
-                name: 'NDA_v2.3_updated.pdf',
-                size: '445 KB',
-                type: 'application/pdf'
-            },
-            {
-                name: 'clearance_renewal_form.docx',
-                size: '128 KB',
-                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            },
-            {
-                name: 'legal_compliance_guidelines.pdf',
-                size: '1.1 MB',
-                type: 'application/pdf'
-            }
-        ]
+        attachments: ['file_010', 'file_011']
     },
     {
         id: 'email_normal_001',
@@ -718,7 +687,7 @@ Friendly reminder to please clean up after yourselves in the office kitchen:
 Thanks for keeping our shared space pleasant for everyone!
 
 Building Management`,
-        timestamp: '2025-07-19 08:30:00',
+        timestamp: new Date('2025-07-19 08:30:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -739,7 +708,7 @@ Join us this Friday at 6 PM in the main conference room for The Matrix movie mar
 RSVP if you're planning to attend so we order enough food.
 
 Fun Committee`,
-        timestamp: '2025-07-17 14:20:00',
+        timestamp: new Date('2025-07-17 14:20:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false
@@ -766,7 +735,7 @@ The parking lot will be repaved next week (July 28-30). During this time:
 Sorry for the inconvenience!
 
 Facilities Management`,
-        timestamp: '2025-07-21 09:45:00',
+        timestamp: new Date('2025-07-21 09:45:00'),
         encrypted: false,
         importance: 'normal',
         isEvidence: false

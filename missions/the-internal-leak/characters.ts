@@ -1,3 +1,5 @@
+import type { Character } from '../../shared/types';
+
 export const characters: Character[] = [
     {
         id: 'tech_director_001',
@@ -21,7 +23,13 @@ export const characters: Character[] = [
         avatar: '👨‍💻',
         accessLevel: 7,
         suspicious: true,
-        isSuspect: true
+        isSuspect: true,
+        suspicionLevel: 9,
+        alibi: 'Claims he was working late on project deadline',
+        motive: 'Financial pressure from divorce settlement',
+        connections: ['marcus_webb'],
+        evidenceAgainst: ['file_004', 'chat_001', 'chat_002', 'file_003'],
+        evidenceFor: []
     },
     {
         id: 'chloe_miller',
@@ -60,7 +68,61 @@ export const characters: Character[] = [
         isSuspect: true
     },
     {
-        id: 'competitor_contact_006',
+        id: 'sarah_chen',
+        name: 'Sarah Chen',
+        role: 'DevOps Engineer',
+        department: 'Infrastructure Team',
+        background: 'Skilled DevOps engineer responsible for deployment pipelines and system configurations. Recently passed over for a senior position. Has comprehensive access to build and deployment systems.',
+        personality: 'Technical, detail-oriented, but harboring resentment about career progression.',
+        avatar: '⚙️',
+        accessLevel: 7,
+        suspicious: true,
+        isSuspect: true,
+        suspicionLevel: 8,
+        alibi: 'Modified system configurations for project requirements',
+        motive: 'Passed over for promotion, potential insider threat',
+        connections: ['david_kim'],
+        evidenceAgainst: ['email_004', 'chat_013', 'chat_014'],
+        evidenceFor: ['email_006']
+    },
+    {
+        id: 'david_kim',
+        name: 'David Kim',
+        role: 'System Administrator',
+        department: 'Infrastructure Team',
+        background: 'Experienced system administrator with deep knowledge of internal systems. Quiet and methodical worker. Has administrative access to most internal systems and databases.',
+        personality: 'Reserved, methodical, pays attention to details. Rarely speaks up in meetings.',
+        avatar: '🔧',
+        accessLevel: 8,
+        suspicious: true,
+        isSuspect: true,
+        suspicionLevel: 7,
+        alibi: 'Regular system maintenance and updates',
+        motive: 'Unknown - possibly working with external actors',
+        connections: ['sarah_chen'],
+        evidenceAgainst: ['email_004', 'chat_009', 'chat_014'],
+        evidenceFor: []
+    },
+    {
+        id: 'elena_rodriguez',
+        name: 'Elena Rodriguez',
+        role: 'Business Analyst',
+        department: 'Strategic Planning',
+        background: 'Strategic business analyst working on competitive intelligence and market analysis. Has access to sensitive strategic documents and client communications.',
+        personality: 'Ambitious, strategic thinker, focused on career advancement.',
+        avatar: '📊',
+        accessLevel: 5,
+        suspicious: true,
+        isSuspect: true,
+        suspicionLevel: 6,
+        alibi: 'Working to meet client deadlines',
+        motive: 'Pressure from external client, career advancement',
+        connections: ['external_client'],
+        evidenceAgainst: ['email_003', 'email_007'],
+        evidenceFor: ['chat_010']
+    },
+    {
+        id: 'marcus_webb',
         name: 'Dr. Marcus Webb',
         role: 'CTO at CyberShield Industries',
         department: 'External - Competitor',
@@ -68,7 +130,13 @@ export const characters: Character[] = [
         personality: 'Charming, competitive, ambitious. Maintains friendly relationships despite business rivalry.',
         avatar: '🎯',
         accessLevel: 0,
-        suspicious: false,
-        isSuspect: false
+        suspicious: true,
+        isSuspect: true,
+        suspicionLevel: 5,
+        alibi: 'Investigating security breaches',
+        motive: 'Possible cover-up of involvement',
+        connections: ['aaron_cole'],
+        evidenceAgainst: ['chat_007', 'email_002'],
+        evidenceFor: []
     }
 ];

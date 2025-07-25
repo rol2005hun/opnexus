@@ -1,4 +1,4 @@
-import type { BaseEntity } from '../core/base';
+import type { BaseEntity } from '..';
 
 export interface Chat extends BaseEntity {
     name: string;
@@ -24,6 +24,7 @@ export interface ChatMessage extends BaseEntity {
     timestamp: Date;
     sent: boolean;
     isPlayerMessage?: boolean;
+    attachments?: string[];
 }
 
 export interface ChatFilter {

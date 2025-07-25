@@ -1,7 +1,7 @@
 import { connectToDatabase } from '@@/server/utils/database';
 import { User } from '@@/server/api/models/User';
 import { verifyToken, extractTokenFromHeader } from '@@/server/utils/jwt';
-import { success, error, warn, info } from '@@/server/utils/discord-logger';
+import { success, error, warn } from '@@/server/utils/discord-logger';
 
 export default defineEventHandler(async (event) => {
     if (event.method !== 'POST') {

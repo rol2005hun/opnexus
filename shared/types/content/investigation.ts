@@ -1,4 +1,4 @@
-import type { BaseEntity } from '../core/base';
+import type { BaseEntity } from '..';
 
 export interface Objective extends BaseEntity {
     title: string;
@@ -9,7 +9,7 @@ export interface Objective extends BaseEntity {
 }
 
 export interface MissionEvent extends BaseEntity {
-    timestamp: string;
+    timestamp: Date;
     title: string;
     description: string;
     participants: string[];

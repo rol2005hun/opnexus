@@ -1,4 +1,4 @@
-import type { BaseEntity } from '../core/base';
+import type { BaseEntity } from '..';
 
 export interface LaptopApp extends BaseEntity {
     name: string;
@@ -21,4 +21,5 @@ export interface LaptopState {
     apps: LaptopApp[];
     highestZIndex: number;
     wallpaper: string;
+    currentDocument: string | null;
 }

@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia';
+import { useGameStore } from './game';
 
 export const useLaptopStore = defineStore('laptop', {
     state: (): LaptopState => ({
         highestZIndex: 100,
         wallpaper: '',
+        currentDocument: null,
         apps: [
             {
                 id: 'secureMail',
@@ -74,6 +76,18 @@ export const useLaptopStore = defineStore('laptop', {
                 position: { x: 350, y: 350 },
                 size: { width: 850, height: 650 },
                 desktopPosition: { x: 105, y: 105 },
+                minimized: false,
+                maximized: false
+            },
+            {
+                id: 'documentReader',
+                name: 'File Viewer',
+                icon: '📄',
+                isOpen: false,
+                zIndex: 100,
+                position: { x: 400, y: 400 },
+                size: { width: 900, height: 700 },
+                desktopPosition: { x: 210, y: 105 },
                 minimized: false,
                 maximized: false
             }
@@ -302,6 +316,16 @@ export const useLaptopStore = defineStore('laptop', {
                 if (excludeAppId && app.id === excludeAppId) return false;
                 return app.desktopPosition.x === x && app.desktopPosition.y === y;
             });
+        },
+
+        openDocumentInReader(fileId: string) {
+            this.openApp('documentReader');
+            this.currentDocument = fileId;
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('openDocument', { 
+                    detail: { fileId } 
+                }));
+            }
         }
     },
 
@@ -320,6 +344,19 @@ export const useLaptopStore = defineStore('laptop', {
 
         taskbarApps(): LaptopApp[] {
             return this.apps.filter(app => app.isOpen);
+        },
+
+        availableApps(): LaptopApp[] {
+            const gameStore = useGameStore();
+            const missionContent = gameStore.currentMissionContent;
+            
+            if (!missionContent?.availableApps) {
+                return this.apps;
+            }
+            
+            return this.apps.filter(app => 
+                missionContent.availableApps.includes(app.id)
+            );
         }
     }
 });

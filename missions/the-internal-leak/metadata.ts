@@ -1,31 +1,36 @@
+import type { Mission } from '../../shared/types';
+
 export const missionMetadata: Mission = {
     id: 'the-internal-leak',
     title: 'The Internal Leak',
     description: 'Nexus-Corp hired the DIA to investigate a suspected data breach. Working undercover as a new employee, discover who is leaking classified defense project information.',
     briefing: `
-        <div class="classified-tag">CLASSIFIED</div>
-        <div class="classified-tag">DIGITAL INVESTIGATION AGENCY</div>
-        
-        <h3>🕵️‍♂️ OPERATION: CORPORATE INFILTRATION</h3>
+{classified-tag}CLASSIFIED{/}
+{classified-tag}DIGITAL INVESTIGATION AGENCY{/}
 
-        <h4>📋 Mission Overview</h4>
-        <p><span class="company">Nexus-Corp Industries</span>, a major defense contractor, contacted the DIA after discovering suspicious network activity suggesting internal data theft of their classified <strong>Sentinel-X project</strong>.</p>
+### 🕵️‍♂️ OPERATION: CORPORATE INFILTRATION
 
-        <h4>🎭 Your Cover</h4>
-        <p>You are now employed as a <strong>junior analyst</strong> at <span class="company">Nexus-Corp</span>. Management believes you are a legitimate new hire. <span class="danger">Only the CEO knows your true identity.</span></p>
+#### 📋 Mission Overview
 
-        <h4>🔐 Access Granted</h4>
-        <ul>
-            <li>All internal corporate email servers</li>
-            <li>Company-wide chat systems and communications</li>
-            <li>File access logs and security monitoring data</li>
-        </ul>
+{company}Nexus-Corp Industries{/}, a major defense contractor, contacted the DIA after discovering suspicious network activity suggesting internal data theft of their classified **Sentinel-X project**.
 
-        <h4>🎯 Objective</h4>
-        <p>Analyze intercepted communications, identify the leak, and gather evidence of corporate espionage. The stolen data is worth <span class="money">$47M</span> and contains classified defense technology.</p>
+#### 🎭 Your Cover
 
-        <h4>⚠️ Remember</h4>
-        <p class="warning">Maintain your cover. <strong>Nobody can know you're DIA.</strong></p>
+You are now employed as a **junior analyst** at {company}Nexus-Corp{/}. Management believes you are a legitimate new hire. ::span{danger}Only the CEO knows your true identity.::
+
+#### 🔐 Access Granted
+
+- All internal corporate email servers
+- Company-wide chat systems and communications
+- File access logs and security monitoring data
+
+#### 🎯 Objective
+
+Analyze intercepted communications, identify the leak, and gather evidence of corporate espionage. The stolen data is worth {money}$47M{/} and contains classified defense technology.
+
+#### ⚠️ Remember
+
+::div{warning}Maintain your cover. **Nobody can know you're DIA.**::
     `,
     thumbnail: '/missions/leak.jpg',
     difficulty: 'Rookie',

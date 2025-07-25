@@ -45,8 +45,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Character } from '#shared/types';
-
 interface Props {
     show: boolean;
     availableCharacters: Character[];

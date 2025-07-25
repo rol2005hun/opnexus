@@ -1,3 +1,5 @@
+import type { Objective } from '../../shared/types';
+
 export const objectives: Objective[] = [
     {
         id: 'obj_001',

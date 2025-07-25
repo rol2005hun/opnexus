@@ -1,4 +1,4 @@
-import type { BaseEntity } from '../core/base';
+import type { BaseEntity } from '..';
 
 export interface MissionApp extends BaseEntity {
     name: string;

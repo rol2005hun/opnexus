@@ -3,7 +3,6 @@ import { connectToDatabase } from '@@/server/utils/database';
 import { User } from '@@/server/api/models/User';
 import { generateToken } from '@@/server/utils/jwt';
 import { success, error, warn, info } from '@@/server/utils/discord-logger';
-import { DifficultyLevel } from '#shared/types/core/base';
 
 export default defineEventHandler(async (event) => {
     if (event.method !== 'POST') {

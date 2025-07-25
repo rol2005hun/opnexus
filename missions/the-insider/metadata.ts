@@ -1,5 +1,3 @@
-import type { Mission } from '@/stores/game';
-
 export const missionMetadata: Mission = {
     id: 'the-insider',
     title: 'The Insider',

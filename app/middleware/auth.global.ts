@@ -1,5 +1,3 @@
-import { useGameStore } from '@/stores/game';
-
 export default defineNuxtRouteMiddleware(async (to, from) => {
     const authStore = useAuthStore();
     const gameStore = useGameStore();

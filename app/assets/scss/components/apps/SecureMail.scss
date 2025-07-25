@@ -316,18 +316,18 @@
             }
         }
 
-        .email-body {
+        :deep(.email-body) {
             line-height: 1.6;
             color: $text-primary;
             word-wrap: break-word;
             overflow-wrap: break-word;
 
-            :deep(p) {
+            p {
                 margin-bottom: 1rem;
             }
 
-            :deep(ul),
-            :deep(ol) {
+            ul,
+            ol {
                 margin-bottom: 1rem;
                 margin-left: 0;
                 padding-left: 2rem;
@@ -338,20 +338,20 @@
                 }
             }
 
-            :deep(ul) {
+            ul {
                 list-style-type: disc;
             }
 
-            :deep(ol) {
+            ol {
                 list-style-type: decimal;
             }
 
-            :deep(strong) {
+            strong {
                 color: $accent-orange;
                 font-weight: 600;
             }
 
-            :deep(br) {
+            br {
                 margin-bottom: 0.5rem;
             }
         }
@@ -373,10 +373,26 @@
                 border-radius: 6px;
                 margin-bottom: 8px;
                 cursor: pointer;
-                transition: background 0.2s ease;
+                transition: all 0.2s ease;
+                position: relative;
 
                 &:hover {
                     background: color.adjust($bg-secondary, $lightness: 5%);
+                }
+
+                &.clickable {
+                    border: 1px solid rgba($accent-blue, 0.3);
+                    
+                    &:hover {
+                        background: rgba($accent-blue, 0.1);
+                        border-color: $accent-blue;
+                        transform: translateY(-1px);
+                    }
+                    
+                    .attachment-name {
+                        color: $accent-blue;
+                        font-weight: 500;
+                    }
                 }
 
                 .attachment-icon {
@@ -386,11 +402,22 @@
                 .attachment-name {
                     flex: 1;
                     font-size: 0.9rem;
+                    transition: color 0.2s ease;
                 }
 
                 .attachment-size {
                     font-size: 0.8rem;
                     color: $text-muted;
+                }
+
+                .open-hint {
+                    font-size: 0.7rem;
+                    color: $accent-blue;
+                    background: rgba($accent-blue, 0.1);
+                    padding: 2px 6px;
+                    border-radius: 3px;
+                    margin-left: auto;
+                    font-weight: 500;
                 }
             }
         }

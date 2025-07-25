@@ -1,6 +1,4 @@
-import type { Mission } from './mission';
-import type { MissionProgress } from './progress';
-import type { MissionContent } from '../content/mission';
+import type { Mission, MissionContent, MissionProgress } from '..';
 
 export interface GameState {
     currentMission: string | null;

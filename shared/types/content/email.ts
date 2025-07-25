@@ -1,4 +1,4 @@
-import type { BaseEntity } from '../core/base';
+import type { BaseEntity } from '..';
 
 export interface EmailMessage extends BaseEntity {
   from: string;
@@ -6,11 +6,11 @@ export interface EmailMessage extends BaseEntity {
   cc?: string[];
   subject: string;
   body: string;
-  timestamp: string;
+  timestamp: Date;
   encrypted: boolean;
   importance: 'low' | 'normal' | 'high';
   isEvidence: boolean;
-  attachments?: EmailAttachment[];
+  attachments?: string[];
   clueIds?: string[];
   folder?: 'inbox' | 'sent' | 'drafts' | 'trash' | 'important';
 }
@@ -20,6 +20,7 @@ export interface EmailAttachment {
   size: string;
   type: string;
   content?: string;
+  fileId?: string;
 }
 
 export interface ProcessedEmail extends BaseEntity {

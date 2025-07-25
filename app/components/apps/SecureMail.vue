@@ -68,7 +68,7 @@
           <div class="email-meta">
             <div><strong>From:</strong> {{ displayEmailAddress(selectedEmailData.sender) }}</div>
             <div><strong>To:</strong> {{ displayRecipients(selectedEmailData) }}</div>
-            <div><strong>Date:</strong> {{ formatDateTime(selectedEmailData.timestamp) }}</div>
+            <div><strong>Date:</strong> {{ useDate().formatDate(selectedEmailData.timestamp) }}</div>
           </div>
         </div>
 
@@ -76,10 +76,14 @@
 
         <div v-if="selectedEmailData.attachments?.length" class="email-attachments">
           <h4>Attachments:</h4>
-          <div v-for="attachment in selectedEmailData.attachments" :key="attachment.name" class="attachment">
+          <div v-for="attachment in selectedEmailData.attachments" :key="attachment.name" 
+               class="attachment" 
+               @click="openAttachment(attachment)"
+               :class="{ 'clickable': isDocumentAttachment(attachment) }">
             <span class="attachment-icon">📄</span>
             <span class="attachment-name">{{ attachment.name }}</span>
             <span class="attachment-size">{{ attachment.size }}</span>
+            <span v-if="isDocumentAttachment(attachment)" class="open-hint">Click to open</span>
           </div>
         </div>
       </div>
@@ -175,7 +179,23 @@ const processEmailAddress = (address: string): string => {
 
 const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
   return rawEmails.map(email => {
-    const processedAttachments: EmailAttachment[] = email.attachments || [];
+    const processedAttachments: EmailAttachment[] = (email.attachments || []).map(fileId => {
+      const file = currentMissionContent.value?.files?.find(f => f.id === fileId);
+      if (file) {
+        return {
+          name: file.name,
+          size: file.size || 'Unknown size',
+          type: file.type || 'document',
+          fileId: file.id
+        };
+      }
+      return {
+        name: `Document ${fileId}`,
+        size: 'Unknown size',
+        type: 'document',
+        fileId: fileId
+      };
+    });
 
     const processedFrom = processEmailAddress(email.from);
     const processedTo = email.to.map(addr => processEmailAddress(addr));
@@ -458,10 +478,6 @@ const sendEmail = () => {
   showCompose.value = false;
 };
 
-const formatDateTime = (date: Date) => {
-  return date.toLocaleString('en-US');
-};
-
 const formatEmailContent = (content: string): string => {
   return content
     .replace(/\n/g, '<br>')
@@ -497,6 +513,36 @@ function displayRecipients(email: ProcessedEmail): string {
 function displaySender(email: ProcessedEmail): string {
   return displayEmailAddress(email.sender);
 }
+
+const isDocumentAttachment = (attachment: EmailAttachment): boolean => {
+  const documentExtensions = ['.pdf', '.doc', '.docx', '.txt', '.rtf'];
+  return documentExtensions.some(ext => 
+    attachment.name.toLowerCase().endsWith(ext)
+  );
+};
+
+const openAttachment = async (attachment: EmailAttachment) => {
+  if (!isDocumentAttachment(attachment)) {
+    return;
+  }
+  
+  if (attachment.fileId) {
+    const laptopStore = useLaptopStore();
+    laptopStore.openDocumentInReader(attachment.fileId);
+  } else {
+    if (currentMissionContent.value?.files) {
+      const matchedFile = currentMissionContent.value.files.find(file => 
+        file.name === attachment.name || 
+        file.name.toLowerCase() === attachment.name.toLowerCase()
+      );
+      
+      if (matchedFile) {
+        const laptopStore = useLaptopStore();
+        laptopStore.openDocumentInReader(matchedFile.id);
+      }
+    }
+  }
+};
 
 onMounted(async () => {
   currentMissionContent.value = await gameStore.getCurrentMissionContent();

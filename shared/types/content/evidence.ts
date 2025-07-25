@@ -1,10 +1,10 @@
-import type { BaseEntity } from '../core/base';
+import type { BaseEntity } from '..';
 
 export interface FileDocument extends BaseEntity {
     name: string;
     type: 'document' | 'spreadsheet' | 'image' | 'video' | 'audio' | 'archive';
     size: string;
-    lastModified: string;
+    lastModified: Date;
     author: string;
     content: string | any;
     encrypted: boolean;
@@ -17,7 +17,7 @@ export interface DatabaseRecord extends BaseEntity {
     database: string;
     table: string;
     record: Record<string, any>;
-    timestamp: string;
+    timestamp: Date;
     modifiedBy: string;
     isAnomaly: boolean;
     isEvidence: boolean;
@@ -36,7 +36,7 @@ export interface EvidenceConversation extends BaseEntity {
 export interface EvidenceMessage extends BaseEntity {
     sender: string;
     content: string;
-    timestamp: string;
+    timestamp: Date;
     attachments?: EvidenceAttachment[];
     isClue?: boolean;
 }
@@ -46,4 +46,5 @@ export interface EvidenceAttachment {
     type: string;
     url?: string;
     content?: string;
+    fileId?: string;
 }

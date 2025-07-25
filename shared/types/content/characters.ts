@@ -1,4 +1,4 @@
-import type { BaseEntity } from '../core/base';
+import type { BaseEntity } from '..';
 
 export interface Character extends BaseEntity {
     name: string;
@@ -12,15 +12,12 @@ export interface Character extends BaseEntity {
     suspicious: boolean;
     isSuspect: boolean;
     isPlayer?: boolean;
-}
-
-export interface Suspect extends Character {
-    suspicionLevel: number;
+    suspicionLevel?: number;
     alibi?: string;
     motive?: string;
     opportunity?: string;
     method?: string;
-    connections: string[];
+    connections?: string[];
     lastSeen?: string;
     evidenceAgainst?: string[];
     evidenceFor?: string[];

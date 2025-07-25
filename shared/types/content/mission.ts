@@ -1,19 +1,14 @@
-import type { BaseEntity } from '../core/base';
-import type { EmailMessage } from './email';
-import type { Character, Suspect } from './characters';
-import type { EvidenceConversation, FileDocument, DatabaseRecord } from './evidence';
-import type { Objective, MissionEvent } from './investigation';
-import type { MissionApp } from '../ui/applications';
+import type { BaseEntity, Character, EmailMessage, EvidenceConversation, FileDocument, DatabaseRecord, MissionApp, Objective, MissionEvent } from '..';
 
 export interface MissionContent extends BaseEntity {
     setting: MissionSetting;
     characters: Character[];
-    suspects: Suspect[];
     emails: EmailMessage[];
     chatMessages: EvidenceConversation[];
     files: FileDocument[];
     records: DatabaseRecord[];
-    customApps: MissionApp[];
+    availableApps: string[];
+    customApps?: MissionApp[];
     objectives: Objective[];
     timeline: MissionEvent[];
 }

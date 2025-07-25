@@ -119,8 +119,8 @@ export default defineNuxtConfig({
 
   imports: {
     dirs: [
-      'shared/utils/**',
-      'shared/types/**',
+      '../shared/utils/**',
+      '../shared/types/**',
       'composables/**'
     ]
   },
@@ -159,5 +159,10 @@ export default defineNuxtConfig({
         }
       }
     }
+  },
+
+  typescript: {
+    typeCheck: true,
+    strict: true,
   }
 });

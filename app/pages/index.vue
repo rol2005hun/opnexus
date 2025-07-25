@@ -154,14 +154,15 @@
                         <h3>{{ selectedMission.title }}</h3>
                         <div class="clearance-info">
                             <span class="clearance-level">Security Clearance: {{ selectedMission.securityClearance
-                            }}</span>
+                                }}</span>
                             <span class="difficulty">{{ selectedMission.difficulty }}</span>
                         </div>
                     </div>
 
                     <div class="mission-briefing">
                         <h4>Mission Briefing:</h4>
-                        <div v-html="selectedMission.briefing" class="classified-briefing"></div>
+                        <div v-html="useMarkdown().formatMarkdown(selectedMission.briefing)"
+                            class="classified-briefing"></div>
                     </div>
 
                     <div class="mission-objectives">

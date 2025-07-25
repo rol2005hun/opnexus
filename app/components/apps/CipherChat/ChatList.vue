@@ -44,8 +44,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Chat } from '#shared/types';
-
 interface Props {
     chats: Chat[];
     activeChat: string | null;

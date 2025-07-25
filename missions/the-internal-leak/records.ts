@@ -1,3 +1,5 @@
+import type { DatabaseRecord } from '../../shared/types';
+
 export const records: DatabaseRecord[] = [
     {
         id: 'record_001',
@@ -10,7 +12,7 @@ export const records: DatabaseRecord[] = [
             action: 'entry',
             timestamp: '2025-07-10 03:35:00'
         },
-        timestamp: '2025-07-10 03:35:00',
+        timestamp: new Date('2025-07-10 03:35:00'),
         modifiedBy: 'system',
         isAnomaly: true,
         isEvidence: false

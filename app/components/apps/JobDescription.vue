@@ -11,7 +11,10 @@
     <div class="job-description-content" v-if="currentMissionContent">
       <div class="investigation-brief">
         <h3>🎯 Mission Assignment</h3>
-        <p>
+        <div class="mission-briefing" v-if="missionMetadata?.briefing"
+          v-html="useMarkdown().formatMarkdown(missionMetadata.briefing)"></div>
+
+        <p v-else>
           Agent, you have been assigned to investigate a suspected data breach at <strong>{{
             currentMissionContent.setting.organization }}</strong>.
         </p>
@@ -85,10 +88,16 @@
 const gameStore = useGameStore();
 
 const currentMissionContent = ref<MissionContent | null>(null);
+const missionMetadata = ref<any>(null);
 
 const initializeJobDescription = async () => {
   try {
     currentMissionContent.value = await gameStore.getCurrentMissionContent();
+
+    if (gameStore.currentMission) {
+      const { missionMetadata: metadata } = await import(`@/missions/${gameStore.currentMission}/metadata.ts`);
+      missionMetadata.value = metadata;
+    }
   } catch (error) {
     console.error('JobDescription: Error loading mission content:', error);
   }

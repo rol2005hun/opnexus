@@ -18,7 +18,6 @@
 import ChatList from '@/components/apps/CipherChat/ChatList.vue';
 import MessageArea from '@/components/apps/CipherChat/MessageArea.vue';
 import NewChatDialog from '@/components/apps/CipherChat/NewChatDialog.vue';
-import type { Chat, ChatMessage, Character, EvidenceConversation, MissionContent } from '#shared/types';
 
 const gameStore = useGameStore();
 const authStore = useAuthStore();
@@ -78,7 +77,8 @@ const convertEvidenceToChats = (evidenceConversations: EvidenceConversation[]): 
         content: msg.content,
         timestamp: new Date(msg.timestamp),
         sent: msg.sender === playerName.value,
-        isPlayerMessage: msg.sender === playerName.value
+        isPlayerMessage: msg.sender === playerName.value,
+        attachments: (msg.attachments || []).map(attachment => attachment.fileId || attachment.name || '')
       })),
       isOwnChat: conv.participants.includes(playerName.value),
       canSendMessage: false,

@@ -1,9 +1,5 @@
 import { defineStore } from 'pinia';
-import { useAuthStore } from './auth';
-import { getAllMissions, loadMissionContent, sortMissions, filterMissionsByClearance } from '@/utils/registerMission';
-import { useMissionCompletion } from '@/composables/useMissionCompletion';
-import type { MissionContent } from '#shared/types/content/mission';
-import type { GameState, Mission, MissionProgress } from '#shared/types';
+import { getAllMissions, loadMissionContent, sortMissions } from '@/utils/registerMission';
 
 export const useGameStore = defineStore('game', {
     state: (): GameState => ({

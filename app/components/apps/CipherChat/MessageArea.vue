@@ -25,7 +25,7 @@
             </div>
 
             <div class="messages" ref="messagesContainer">
-                <div v-for="message in chat.messages" :key="message.id" class="message"
+                <div v-for="message in processedMessages" :key="message.id" class="message"
                     :class="{ sent: message.sent, received: !message.sent }">
                     <div v-if="(!chat.isOwnChat || chat.type === 'group') && !message.sent" class="message-sender">
                         {{ message.sender }}
@@ -33,6 +33,18 @@
                     <div class="message-content">
                         {{ message.content }}
                     </div>
+                    
+                    <div v-if="message.processedAttachments?.length" class="message-attachments">
+                        <div v-for="attachment in message.processedAttachments" :key="attachment.name" 
+                             class="message-attachment"
+                             @click="openAttachment(attachment)"
+                             :class="{ 'clickable': isDocumentAttachment(attachment) }">
+                            <span class="attachment-icon">📎</span>
+                            <span class="attachment-name">{{ attachment.name }}</span>
+                            <span v-if="isDocumentAttachment(attachment)" class="open-hint">📄</span>
+                        </div>
+                    </div>
+                    
                     <div class="message-time">{{ formatTime(message.timestamp) }}</div>
                 </div>
             </div>
@@ -56,8 +68,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Chat } from '#shared/types';
-
 interface Props {
     chat: Chat | null;
     playerName: string;
@@ -74,6 +84,36 @@ const emit = defineEmits<Emits>();
 
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement>();
+
+const gameStore = useGameStore();
+
+const processedMessages = computed(() => {
+    if (!props.chat?.messages) return [];
+    
+    return props.chat.messages.map(message => {
+        const processedAttachments = (message.attachments || []).map(fileId => {
+            const file = gameStore.currentMissionContent?.files?.find(f => f.id === fileId);
+            if (file) {
+                return {
+                    name: file.name,
+                    type: file.type || 'document',
+                    fileId: file.id
+                };
+            }
+
+            return {
+                name: `Document ${fileId}`,
+                type: 'document',
+                fileId: fileId
+            };
+        });
+        
+        return {
+            ...message,
+            processedAttachments
+        };
+    });
+});
 
 const sendMessage = () => {
     if (!newMessage.value.trim() || !props.chat?.canSendMessage) return;
@@ -121,6 +161,39 @@ const getStatusClass = (status: string) => {
             return 'status-busy';
         default:
             return 'status-default';
+    }
+};
+
+const isDocumentAttachment = (attachment: any): boolean => {
+    const documentExtensions = ['.pdf', '.doc', '.docx', '.txt', '.rtf'];
+    return documentExtensions.some(ext => 
+        attachment.name.toLowerCase().endsWith(ext)
+    );
+};
+
+const openAttachment = async (attachment: any) => {
+    if (!isDocumentAttachment(attachment)) {
+        return;
+    }
+    
+    if (attachment.fileId) {
+        const laptopStore = useLaptopStore();
+        laptopStore.openDocumentInReader(attachment.fileId);
+    } else {
+        const gameStore = useGameStore();
+        const missionContent = gameStore.currentMissionContent;
+        
+        if (missionContent?.files) {
+            const matchedFile = missionContent.files.find(file => 
+                file.name === attachment.name || 
+                file.name.toLowerCase() === attachment.name.toLowerCase()
+            );
+            
+            if (matchedFile) {
+                const laptopStore = useLaptopStore();
+                laptopStore.openDocumentInReader(matchedFile.id);
+            }
+        }
     }
 };
 

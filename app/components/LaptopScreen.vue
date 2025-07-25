@@ -4,7 +4,7 @@
             <div class="screen">
                 <div class="desktop">
                     <div class="desktop-icons">
-                        <div v-for="app in laptopStore.apps" :key="app.id" class="desktop-icon"
+                        <div v-for="app in laptopStore.availableApps" :key="app.id" class="desktop-icon"
                             :class="{ 'dragging': dragging && dragAppId === app.id }" :style="{
                                 position: 'absolute',
                                 left: app.desktopPosition.x + 'px',
