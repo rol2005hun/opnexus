@@ -1,3 +1,5 @@
+import { Mission } from "../../shared/types";
+
 export const missionMetadata: Mission = {
     id: 'digital-ghost',
     title: 'Digital Ghost', 
@@ -6,10 +8,8 @@ export const missionMetadata: Mission = {
     thumbnail: '/missions/ghost.jpg',
     difficulty: 'Special Agent',
     estimatedTime: '150-200 mins',
-    completed: false,
     available: false,
     securityClearance: 6,
     icon: '👻',
-    price: 1,
-    isPaid: true
+    price: 1
 };

@@ -1,10 +1,10 @@
 export * from './auth/session';
 export * from './auth/user';
 
-export * from './content/characters';
+export * from './content/character';
 export * from './content/chat';
 export * from './content/email';
-export * from './content/evidence';
+export * from './content/file';
 export * from './content/investigation';
 export * from './content/mission';
 

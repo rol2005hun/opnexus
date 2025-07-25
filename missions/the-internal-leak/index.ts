@@ -8,7 +8,7 @@ import { records } from './records';
 import { availableApps, customApps } from './apps';
 import { timeline } from './timeline';
 import { objectives } from './objectives';
-import type { MissionContent } from '../../shared/types/content/mission';
+import type { MissionContent } from '../../shared/types';
 
 export const missionContent: MissionContent = {
     id: 'the-internal-leak',

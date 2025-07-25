@@ -19,7 +19,7 @@ export const timeline: MissionEvent[] = [
         participants: ['Aaron Cole'],
         location: 'Nexus-Corp Main Building',
         isPublic: false,
-        revealedBy: ['file_004']
+        revealedBy: ['file_003']
     },
     {
         id: 'event_003',
@@ -29,6 +29,6 @@ export const timeline: MissionEvent[] = [
         participants: ['Aaron Cole', 'Unknown Contact'],
         location: 'SecureChat Platform',
         isPublic: false,
-        revealedBy: ['chat_002', 'file_003']
+        revealedBy: ['chat_002', 'file_002']
     }
 ];

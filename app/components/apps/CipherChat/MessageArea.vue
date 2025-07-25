@@ -33,18 +33,17 @@
                     <div class="message-content">
                         {{ message.content }}
                     </div>
-                    
-                    <div v-if="message.processedAttachments?.length" class="message-attachments">
-                        <div v-for="attachment in message.processedAttachments" :key="attachment.name" 
-                             class="message-attachment"
-                             @click="openAttachment(attachment)"
-                             :class="{ 'clickable': isDocumentAttachment(attachment) }">
+
+                    <div v-if="useAttachment().getAttachments(message.attachments).length" class="message-attachments">
+                        <div v-for="file in useAttachment().getAttachments(message.attachments)" :key="file.id"
+                            class="message-attachment" @click="openFileAttachment(file)"
+                            :class="{ 'clickable': true }">
                             <span class="attachment-icon">📎</span>
-                            <span class="attachment-name">{{ attachment.name }}</span>
-                            <span v-if="isDocumentAttachment(attachment)" class="open-hint">📄</span>
+                            <span class="attachment-name">{{ file.name }}</span>
+                            <span class="open-hint">📄</span>
                         </div>
                     </div>
-                    
+
                     <div class="message-time">{{ formatTime(message.timestamp) }}</div>
                 </div>
             </div>
@@ -89,30 +88,7 @@ const gameStore = useGameStore();
 
 const processedMessages = computed(() => {
     if (!props.chat?.messages) return [];
-    
-    return props.chat.messages.map(message => {
-        const processedAttachments = (message.attachments || []).map(fileId => {
-            const file = gameStore.currentMissionContent?.files?.find(f => f.id === fileId);
-            if (file) {
-                return {
-                    name: file.name,
-                    type: file.type || 'document',
-                    fileId: file.id
-                };
-            }
-
-            return {
-                name: `Document ${fileId}`,
-                type: 'document',
-                fileId: fileId
-            };
-        });
-        
-        return {
-            ...message,
-            processedAttachments
-        };
-    });
+    return props.chat.messages;
 });
 
 const sendMessage = () => {
@@ -164,37 +140,9 @@ const getStatusClass = (status: string) => {
     }
 };
 
-const isDocumentAttachment = (attachment: any): boolean => {
-    const documentExtensions = ['.pdf', '.doc', '.docx', '.txt', '.rtf'];
-    return documentExtensions.some(ext => 
-        attachment.name.toLowerCase().endsWith(ext)
-    );
-};
-
-const openAttachment = async (attachment: any) => {
-    if (!isDocumentAttachment(attachment)) {
-        return;
-    }
-    
-    if (attachment.fileId) {
-        const laptopStore = useLaptopStore();
-        laptopStore.openDocumentInReader(attachment.fileId);
-    } else {
-        const gameStore = useGameStore();
-        const missionContent = gameStore.currentMissionContent;
-        
-        if (missionContent?.files) {
-            const matchedFile = missionContent.files.find(file => 
-                file.name === attachment.name || 
-                file.name.toLowerCase() === attachment.name.toLowerCase()
-            );
-            
-            if (matchedFile) {
-                const laptopStore = useLaptopStore();
-                laptopStore.openDocumentInReader(matchedFile.id);
-            }
-        }
-    }
+const openFileAttachment = async (file: FileDocument) => {
+    const laptopStore = useLaptopStore();
+    laptopStore.openDocumentInReader(file.id);
 };
 
 watch(() => props.chat, () => {

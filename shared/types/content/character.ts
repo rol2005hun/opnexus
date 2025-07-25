@@ -6,8 +6,7 @@ export interface Character extends BaseEntity {
     department: string;
     background: string;
     personality: string;
-    photo?: string;
-    avatar?: string;
+    avatar: string;
     accessLevel: number;
     suspicious: boolean;
     isSuspect: boolean;

@@ -93,9 +93,9 @@ export const emails: EmailMessage[] = [
 ### Step 5: Chat Messages (`chats.ts`)
 
 ```typescript
-import type { ChatConversation } from '@/types/content';
+import type { Chat } from '@/types/content';
 
-export const chats: ChatConversation[] = [
+export const chats: Chat[] = [
     {
         id: 'chat_unique_id',
         participants: ['Name1', 'Name2'],

@@ -88,7 +88,7 @@ export async function getAllMissions(): Promise<Mission[]> {
     try {
         const missions = await Promise.all(missionPromises);
         const validMissions = missions.filter((mission): mission is Mission => mission !== null);
-        
+
         return sortMissions(validMissions, 'clearance');
     } catch (error) {
         console.error('Failed to load missions:', error);
@@ -103,7 +103,7 @@ export function sortMissions(missions: Mission[], sortBy: 'clearance' | 'difficu
                 if (a.securityClearance !== b.securityClearance) {
                     return a.securityClearance - b.securityClearance;
                 }
-                
+
                 const difficultyOrder = {
                     'Rookie': 1,
                     'Agent': 2,
@@ -114,12 +114,12 @@ export function sortMissions(missions: Mission[], sortBy: 'clearance' | 'difficu
                     'Deputy Director': 7,
                     'Director': 8
                 };
-                
+
                 const aDiff = difficultyOrder[a.difficulty] || 0;
                 const bDiff = difficultyOrder[b.difficulty] || 0;
-                
+
                 return aDiff - bDiff;
-                
+
             case 'difficulty':
                 const diffOrder = {
                     'Rookie': 1,
@@ -131,19 +131,19 @@ export function sortMissions(missions: Mission[], sortBy: 'clearance' | 'difficu
                     'Deputy Director': 7,
                     'Director': 8
                 };
-                
+
                 const aDiffOnly = diffOrder[a.difficulty] || 0;
                 const bDiffOnly = diffOrder[b.difficulty] || 0;
-                
+
                 if (aDiffOnly !== bDiffOnly) {
                     return aDiffOnly - bDiffOnly;
                 }
-                
+
                 return a.securityClearance - b.securityClearance;
-                
+
             case 'alphabetical':
                 return a.title.localeCompare(b.title);
-                
+
             default:
                 return 0;
         }

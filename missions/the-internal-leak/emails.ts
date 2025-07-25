@@ -1,6 +1,6 @@
-import type { EmailMessage } from '../../shared/types';
+import type { Email } from '../../shared/types';
 
-export const emails: EmailMessage[] = [
+export const emails: Email[] = [
     {
         id: 'dia_briefing',
         from: 'operations@dia.classified.gov',
@@ -129,7 +129,7 @@ Finance Team`,
         encrypted: false,
         importance: 'normal',
         isEvidence: false,
-        attachments: ['file_007']
+        attachments: ['file_005']
     },
     {
         id: 'email_012',
@@ -233,7 +233,7 @@ Cybersecurity Specialist`,
         importance: 'high',
         isEvidence: true,
         clueIds: ['clue_002', 'clue_usb_transfer', 'clue_workstation'],
-        attachments: ['file_008']
+        attachments: ['file_006']
     },
     {
         id: 'email_014',
@@ -668,7 +668,7 @@ Legal Department`,
         encrypted: false,
         importance: 'high',
         isEvidence: false,
-        attachments: ['file_010', 'file_011']
+        attachments: ['file_008', 'file_009']
     },
     {
         id: 'email_normal_001',

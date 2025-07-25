@@ -1,3 +1,5 @@
+import { Mission } from "../../shared/types";
+
 export const missionMetadata: Mission = {
     id: 'banking-fraud-investigation',
     title: 'Banking Fraud Investigation',

@@ -1,10 +1,10 @@
-import type { BaseEntity, Character, EmailMessage, EvidenceConversation, FileDocument, DatabaseRecord, MissionApp, Objective, MissionEvent } from '..';
+import type { BaseEntity, Character, Email, Chat, FileDocument, DatabaseRecord, MissionApp, Objective, MissionEvent } from '..';
 
 export interface MissionContent extends BaseEntity {
     setting: MissionSetting;
     characters: Character[];
-    emails: EmailMessage[];
-    chatMessages: EvidenceConversation[];
+    emails: Email[];
+    chatMessages: Chat[];
     files: FileDocument[];
     records: DatabaseRecord[];
     availableApps: string[];

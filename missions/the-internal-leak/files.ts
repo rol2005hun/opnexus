@@ -36,56 +36,13 @@ DEADLINE: August 15, 2025
 **WARNING: UNAUTHORIZED DISCLOSURE PUNISHABLE BY LAW**`,
         encrypted: true,
         accessLevel: 9,
-        isEvidence: false,
+        isEvidence: true,
         relatedTo: ['aaron_cole', 'irene_walker', 'sophie_tanaka']
     },
     {
         id: 'file_002',
-        name: 'dod_contract_specs.docx',
+        name: 'financial_offshore_transfer.pdf',
         type: 'document',
-        size: '2.1 MB',
-        lastModified: new Date('2025-07-10 03:46:00'),
-        author: 'Department of Defense',
-        content: `DEPARTMENT OF DEFENSE
-CONTRACT SPECIFICATIONS - SENTINEL-X CYBERSECURITY PLATFORM
-
-Contract Number: DOD-2025-SC-7841
-Prime Contractor: Nexus-Corp Industries
-Contract Value: $47,000,000
-
-REQUIREMENTS:
-1. Multi-layered defense system capable of protecting classified networks
-2. Real-time threat detection with 99%+ accuracy
-3. Quantum-resistant encryption implementation
-4. 24/7 monitoring and automated response capabilities
-5. Full source code and documentation delivery
-
-SECURITY CLEARANCE REQUIREMENTS:
-- All personnel must have SECRET clearance minimum
-- Code repositories must be air-gapped from internet
-- Regular security audits every 90 days
-
-COMPETING BIDDERS:
-- CyberShield Industries (primary competitor)
-- SecureNet Solutions
-- DefenseTech Corp
-
-EVALUATION CRITERIA:
-- Technical capability (40%)
-- Cost effectiveness (30%)
-- Security implementation (20%)
-- Timeline adherence (10%)
-
-**CONFIDENTIAL - FOR AUTHORIZED PERSONNEL ONLY**`,
-        encrypted: true,
-        accessLevel: 8,
-        isEvidence: false,
-        relatedTo: ['irene_walker', 'sophie_tanaka', 'marcus_webb']
-    },
-    {
-        id: 'file_003',
-        name: 'financial_offshore_transfer.xlsx',
-        type: 'spreadsheet',
         size: '156 KB',
         lastModified: new Date('2025-07-10 04:12:00'),
         author: 'Unknown',
@@ -111,11 +68,11 @@ Status: COMPLETED
 Authorized by: Dr. Marcus Webb, CTO`,
         encrypted: true,
         accessLevel: 7,
-        isEvidence: false,
+        isEvidence: true,
         relatedTo: ['aaron_cole', 'marcus_webb']
     },
     {
-        id: 'file_004',
+        id: 'file_003',
         name: 'network_access_logs.txt',
         type: 'document',
         size: '890 KB',
@@ -154,7 +111,7 @@ System Administrator: Liam Rivera`,
         relatedTo: ['aaron_cole', 'liam_rivera', 'irene_walker']
     },
     {
-        id: 'file_005',
+        id: 'file_004',
         name: 'divorce_settlement_demand.pdf',
         type: 'document',
         size: '1.2 MB',
@@ -196,54 +153,11 @@ Margaret Bradley, Esq.
 Senior Partner`,
         encrypted: false,
         accessLevel: 3,
-        isEvidence: false,
+        isEvidence: true,
         relatedTo: ['aaron_cole']
     },
     {
-        id: 'file_006',
-        name: 'competitor_analysis_cybershield.pptx',
-        type: 'document',
-        size: '8.9 MB',
-        lastModified: new Date('2025-07-12 16:20:00'),
-        author: 'CyberShield Strategy Team',
-        content: `CYBERSHIELD INDUSTRIES - INTERNAL STRATEGY PRESENTATION
-"DEFEATING NEXUS-CORP'S SENTINEL-X BID"
-
-SLIDE 1: OVERVIEW
-Mission: Secure the $47M DOD cybersecurity contract
-Primary Competitor: Nexus-Corp Industries
-
-SLIDE 2: INTELLIGENCE GATHERED
-Source: Acquired Nexus-Corp technical documentation
-Date Received: July 10, 2025
-Content: Core algorithms, contract specs, timeline
-
-SLIDE 3: NEXUS-CORP WEAKNESSES IDENTIFIED
-1. Quantum encryption vulnerability during handshake
-2. Aggressive timeline (August 15 deadline)
-3. Budget constraints causing quality shortcuts
-4. Internal security breaches
-
-SLIDE 4: OUR COMPETITIVE ADVANTAGE
-- Superior encryption without handshake vulnerability
-- More realistic timeline allowing proper testing
-- 15% cost savings compared to Nexus-Corp
-- Proven track record with DOD contracts
-
-SLIDE 5: WINNING STRATEGY
-- Highlight Nexus-Corp's security weaknesses
-- Demonstrate our superior technical solution
-- Emphasize cost savings and timeline reliability
-- Leverage our inside knowledge of their approach
-
-**CONFIDENTIAL - STRATEGIC ADVANTAGE MATERIAL**`,
-        encrypted: true,
-        accessLevel: 8,
-        isEvidence: false,
-        relatedTo: ['marcus_webb', 'aaron_cole']
-    },
-    {
-        id: 'file_007',
+        id: 'file_005',
         name: 'Q2_financial_report.pdf',
         type: 'document',
         size: '2.1 MB',
@@ -289,7 +203,7 @@ SLIDE 5: WINNING STRATEGY
         relatedTo: ['finance_team']
     },
     {
-        id: 'file_008',
+        id: 'file_006',
         name: 'security_logs_july_10.pdf',
         type: 'document',
         size: '2.4 MB',
@@ -349,7 +263,7 @@ Suspicious network activity detected on workstation **WS457**
         relatedTo: ['aaron_cole', 'liam_rivera']
     },
     {
-        id: 'file_009',
+        id: 'file_007',
         name: 'workstation_WS457_forensics.zip',
         type: 'archive',
         size: '856 KB',
@@ -414,7 +328,7 @@ This workstation shows clear evidence of:
         relatedTo: ['aaron_cole', 'liam_rivera']
     },
     {
-        id: 'file_010',
+        id: 'file_008',
         name: 'NDA_v2.3_updated.pdf',
         type: 'document',
         size: '445 KB',
@@ -484,7 +398,7 @@ This agreement remains in effect for **5 years** following employment terminatio
         relatedTo: ['legal_department']
     },
     {
-        id: 'file_011',
+        id: 'file_009',
         name: 'clearance_renewal_form.docx',
         type: 'document',
         size: '128 KB',
@@ -560,367 +474,5 @@ Continued access required for ongoing defense projects.
         accessLevel: 6,
         isEvidence: false,
         relatedTo: ['security_office']
-    },
-    {
-        id: 'file_005',
-        name: 'source_code_archive.zip',
-        type: 'archive',
-        size: '125 MB',
-        lastModified: new Date('2025-07-10 03:50:00'),
-        author: 'Aaron Cole',
-        content: `ARCHIVED SOURCE CODE - SENTINEL-X PROJECT
-
-This archive contains:
-- Core security algorithms (C++)
-- Threat detection neural networks (Python)
-- UI components (React/TypeScript)
-- Database schemas (PostgreSQL)
-- API documentation (OpenAPI 3.0)
-
-Total files: 2,847
-Total lines of code: 487,293
-
-**WARNING: This code is classified and proprietary to Nexus-Corp Industries**
-**Unauthorized distribution is strictly prohibited**
-
-Archive created: 2025-07-10 03:50:00 UTC
-Created by: A.Cole (Employee ID: NC-2847)
-Compression: 7-Zip AES-256`,
-        encrypted: true,
-        accessLevel: 9,
-        isEvidence: true,
-        relatedTo: ['aaron_cole', 'marcus_webb']
-    },
-    {
-        id: 'file_006',
-        name: 'security_scan_report.log',
-        type: 'document',
-        size: '4.2 MB',
-        lastModified: new Date('2025-07-08 09:25:00'),
-        author: 'SecurityBot v3.1',
-        content: `NEXUS-CORP SECURITY SCAN REPORT
-Generated: 2025-07-08 09:25:00
-
-SCAN SUMMARY:
-- Files scanned: 1,247,892
-- Threats detected: 7
-- False positives: 12
-- Clean files: 1,247,873
-
-FLAGGED FILES:
-1. /projects/sentinel-x/src/encryption/temp_backup.dat
-   Risk Level: HIGH
-   Reason: Unencrypted sensitive data
-   
-2. /users/acole/downloads/financial_docs.zip
-   Risk Level: MEDIUM
-   Reason: Suspicious file patterns
-   
-3. /shared/backups/old_passwords.txt
-   Risk Level: HIGH
-   Reason: Plain text credentials
-
-RECOMMENDED ACTIONS:
-- Encrypt sensitive backup files
-- Review download policies
-- Implement automatic password rotation
-
-Scan completed in 47 minutes.`,
-        encrypted: false,
-        accessLevel: 5,
-        isEvidence: false,
-        relatedTo: ['david_kim', 'elena_rodriguez']
-    },
-    {
-        id: 'file_007',
-        name: 'backup_summary_20250708.txt',
-        type: 'document',
-        size: '128 KB',
-        lastModified: new Date('2025-07-08 07:30:00'),
-        author: 'Backup System',
-        content: `NEXUS-CORP BACKUP SUMMARY
-Date: July 8, 2025
-Backup Window: 02:00 - 05:00 UTC
-
-BACKUP STATISTICS:
-- Total data processed: 2.4 TB
-- Backup duration: 3h 12m
-- Success rate: 99.7%
-- Failed items: 23 (see details below)
-
-SUCCESSFUL BACKUPS:
-✓ User data (480 GB)
-✓ Project files (1.2 TB)
-✓ Database snapshots (320 GB)
-✓ System configurations (45 GB)
-✓ Security logs (180 GB)
-
-FAILED ITEMS:
-× /projects/sentinel-x/temp/large_dataset.bin (file locked)
-× /users/acole/personal/encrypted_archive.7z (permission denied)
-× /shared/media/presentation_videos/* (network timeout)
-
-VERIFICATION STATUS:
-- Integrity checks: PASSED
-- Recovery test: PASSED
-- Compression ratio: 67%
-
-Next backup scheduled: July 9, 2025 02:00 UTC`,
-        encrypted: false,
-        accessLevel: 4,
-        isEvidence: false,
-        relatedTo: ['anna_lee', 'david_kim']
-    },
-    {
-        id: 'file_008',
-        name: 'project_alpha_specs_v2.docx',
-        type: 'document',
-        size: '3.7 MB',
-        lastModified: new Date('2025-07-07 09:45:00'),
-        author: 'Laura Smith',
-        content: `PROJECT ALPHA - TECHNICAL SPECIFICATIONS v2.0
-
-PROJECT OVERVIEW:
-Project Alpha is a next-generation customer relationship management system designed to integrate with our existing security infrastructure.
-
-TECHNICAL REQUIREMENTS:
-1. Database Integration
-   - PostgreSQL 14+ compatibility
-   - Real-time synchronization with Sentinel-X
-   - Encrypted data at rest and in transit
-
-2. User Interface
-   - Modern responsive design
-   - Accessibility compliance (WCAG 2.1 AA)
-   - Multi-language support
-
-3. Security Features
-   - Single sign-on integration
-   - Role-based access control
-   - Audit logging for all actions
-
-4. Performance Requirements
-   - Response time < 200ms for 95% of requests
-   - Support for 1000+ concurrent users
-   - 99.9% uptime SLA
-
-TIMELINE:
-- Phase 1: Core development (6 weeks)
-- Phase 2: Security integration (3 weeks)
-- Phase 3: Testing and deployment (2 weeks)
-
-BUDGET: $280,000`,
-        encrypted: false,
-        accessLevel: 3,
-        isEvidence: false,
-        relatedTo: ['laura_smith', 'michael_chang']
-    },
-    {
-        id: 'file_009',
-        name: 'test_results_july2025.xlsx',
-        type: 'spreadsheet',
-        size: '890 KB',
-        lastModified: new Date('2025-07-07 10:00:00'),
-        author: 'Gary Johnson',
-        content: `PROJECT ALPHA TESTING RESULTS - JULY 2025
-
-TEST SUMMARY:
-Total Test Cases: 847
-Passed: 831 (98.1%)
-Failed: 16 (1.9%)
-Blocked: 0
-
-CRITICAL BUGS: 0
-HIGH PRIORITY: 3
-MEDIUM PRIORITY: 8
-LOW PRIORITY: 5
-
-PERFORMANCE METRICS:
-Average Response Time: 142ms
-Peak Load Handling: 1,250 users
-Memory Usage: 2.1GB average
-CPU Usage: 23% average
-
-FAILED TEST CASES:
-TC-234: Login timeout on slow networks
-TC-456: PDF export formatting issue
-TC-789: Calendar sync delay
-
-SECURITY TESTS:
-✓ SQL Injection prevention
-✓ XSS protection
-✓ CSRF token validation
-✓ Authentication bypass attempts
-✓ Data encryption verification
-
-Overall Quality Score: 97.2%
-Recommendation: READY FOR DEPLOYMENT`,
-        encrypted: false,
-        accessLevel: 3,
-        isEvidence: false,
-        relatedTo: ['gary_johnson', 'michael_chang']
-    },
-    {
-        id: 'file_010',
-        name: 'ui_mockups_final.png',
-        type: 'image',
-        size: '12.4 MB',
-        lastModified: new Date('2025-07-07 09:30:00'),
-        author: 'Nina Patel',
-        content: `UI MOCKUP COLLECTION - PROJECT ALPHA
-
-This file contains high-resolution mockups for:
-- Login/Authentication screens
-- Dashboard layouts
-- Data entry forms
-- Reporting interfaces
-- Mobile responsive designs
-
-Design specifications:
-- Color scheme: Corporate blue (#007acc) primary
-- Typography: Inter font family
-- Icon set: Feather icons
-- Grid system: 12-column responsive
-- Breakpoints: Mobile (320px), Tablet (768px), Desktop (1024px+)
-
-Client feedback summary:
-"Clean, professional design that aligns perfectly with our brand guidelines. The user flow is intuitive and the accessibility features are well thought out."
-
-Approval status: APPROVED
-Next steps: Development handoff`,
-        encrypted: false,
-        accessLevel: 3,
-        isEvidence: false,
-        relatedTo: ['nina_patel', 'michael_chang']
-    },
-    {
-        id: 'file_011',
-        name: 'design_concepts_draft.psd',
-        type: 'image',
-        size: '45.2 MB',
-        lastModified: new Date('2025-07-04 10:30:00'),
-        author: 'Jessica Clark',
-        content: `MARKETING DESIGN CONCEPTS - DRAFT VERSION
-
-Project: New Product Launch Campaign
-Designer: Jessica Clark
-Date: July 4, 2025
-
-Design Elements:
-- Logo variations (primary, secondary, monochrome)
-- Color palette: Deep blue (#1a365d), Accent blue (#007acc), Silver (#c2c8d4)
-- Typography: Montserrat (headings), Open Sans (body)
-- Photography style: Professional, tech-focused
-- Layout concepts for digital and print media
-
-Included designs:
-1. Website banner concepts (1920x1080)
-2. Social media templates (Instagram, LinkedIn, Twitter)
-3. Print advertisement layouts (A4, Letter)
-4. Business card templates
-5. Email signature designs
-
-Software: Adobe Photoshop CC 2024
-Resolution: 300 DPI for print, 72 DPI for web
-Color space: RGB (digital), CMYK (print)
-
-Status: DRAFT - Awaiting client feedback`,
-        encrypted: false,
-        accessLevel: 2,
-        isEvidence: false,
-        relatedTo: ['jessica_clark', 'christina_bell']
-    },
-    {
-        id: 'file_012',
-        name: 'q3_marketing_budget.xlsx',
-        type: 'spreadsheet',
-        size: '487 KB',
-        lastModified: new Date('2025-07-06 08:45:00'),
-        author: 'Mark Thompson',
-        content: `Q3 2025 MARKETING BUDGET BREAKDOWN
-
-TOTAL BUDGET: $180,000
-
-DIGITAL ADVERTISING:
-- Google Ads: $45,000 (25%)
-- LinkedIn Sponsored Content: $32,000 (18%)
-- Facebook/Instagram: $28,000 (16%)
-- YouTube Pre-roll: $15,000 (8%)
-
-CONTENT CREATION:
-- Video Production: $25,000 (14%)
-- Photography: $8,000 (4%)
-- Copywriting: $6,000 (3%)
-- Graphic Design: $4,000 (2%)
-
-EVENTS & CONFERENCES:
-- Trade Show Participation: $12,000 (7%)
-- Networking Events: $3,000 (2%)
-- Webinar Hosting: $2,000 (1%)
-
-PREVIOUS QUARTER COMPARISON:
-Q2 Budget: $165,000
-Q3 Budget: $180,000
-Increase: $15,000 (9%)
-
-ROI TARGETS:
-- Lead Generation: 150% increase
-- Brand Awareness: 40% lift
-- Conversion Rate: 25% improvement
-
-Budget allocation optimized for maximum digital reach.`,
-        encrypted: false,
-        accessLevel: 3,
-        isEvidence: false,
-        relatedTo: ['mark_thompson', 'christina_bell']
-    },
-    {
-        id: 'file_013',
-        name: 'q2_analytics_report.pdf',
-        type: 'document',
-        size: '2.8 MB',
-        lastModified: new Date('2025-07-06 10:15:00'),
-        author: 'Robert Davis',
-        content: `NEXUS-CORP MARKETING ANALYTICS REPORT
-Q2 2025 PERFORMANCE SUMMARY
-
-EXECUTIVE SUMMARY:
-Q2 2025 marked significant growth across all marketing channels, with engagement rates reaching new highs and conversion metrics exceeding targets.
-
-KEY METRICS:
-Website Traffic:
-- Unique visitors: 47,892 (+23% vs Q1)
-- Page views: 189,473 (+31% vs Q1)
-- Bounce rate: 32% (-8% vs Q1)
-- Session duration: 4:32 average (+15% vs Q1)
-
-Social Media Performance:
-- LinkedIn followers: +2,847 new
-- Instagram engagement: 8.4% average
-- Twitter impressions: 245,000
-- YouTube watch time: 1,247 hours
-
-Campaign Performance:
-- Email open rate: 24.7% (industry avg: 21.3%)
-- Click-through rate: 6.2% (industry avg: 4.8%)
-- Lead conversion: 18.5% (+4.2% vs Q1)
-- Cost per lead: $47 (-12% vs Q1)
-
-TOP PERFORMING CONTENT:
-1. "Future of Cybersecurity" whitepaper (2,847 downloads)
-2. Product demo videos (89% completion rate)
-3. Customer success stories (74% engagement)
-
-RECOMMENDATIONS:
-- Increase video content production
-- Expand LinkedIn advertising
-- Develop industry partnership content
-- Optimize mobile user experience
-
-Next quarter outlook: POSITIVE`,
-        encrypted: false,
-        accessLevel: 3,
-        isEvidence: false,
-        relatedTo: ['robert_davis', 'christina_bell']
     }
 ];

@@ -1,3 +1,5 @@
+import { Mission } from "../../shared/types";
+
 export const missionMetadata: Mission = {
     id: 'operation-blackout',
     title: 'Operation: Blackout',
@@ -6,10 +8,8 @@ export const missionMetadata: Mission = {
     thumbnail: '/missions/blackout.jpg',
     difficulty: 'Senior Agent',
     estimatedTime: '90-120 mins',
-    completed: false,
     available: false,
     securityClearance: 3,
     icon: '⚡',
-    price: 1,
-    isPaid: true
+    price: 1
 };

@@ -64,46 +64,40 @@ const shortClassExtension = {
   }
 };
 
-export const useMarkdown = () => {
-  const formatMarkdown = (
-    content: string,
-    useCustomClasses: boolean = true,
-    options: { breaks?: boolean; gfm?: boolean } = {}
-  ): string => {
-    if (!content) return '';
+export const formatMarkdown = (
+  content: string,
+  useCustomClasses: boolean = true,
+  options: { breaks?: boolean; gfm?: boolean } = {}
+): string => {
+  if (!content) return '';
 
-    try {
-      if (useCustomClasses) {
-        marked.use({
-          extensions: [universalClassExtension, shortClassExtension]
-        });
-      }
-
-      const result = marked(content, {
-        breaks: options.breaks ?? false,
-        gfm: options.gfm ?? true
+  try {
+    if (useCustomClasses) {
+      marked.use({
+        extensions: [universalClassExtension, shortClassExtension]
       });
-
-      if (typeof result === 'string') {
-        return result;
-      } else {
-        console.warn('Markdown parsing returned a Promise, using fallback formatting');
-        throw new Error('Async parsing not supported');
-      }
-    } catch (error) {
-      console.error('Error parsing markdown:', error);
-
-      let formatted = content.replace(/\n/g, '<br>');
-      formatted = formatted.replace(/(<br>\s*){2,}/g, '</p><p>');
-      formatted = `<p>${formatted}</p>`;
-      formatted = formatted.replace(/<p><\/p>/g, '');
-      formatted = formatted.replace(/<p><br><\/p>/g, '');
-
-      return formatted;
     }
-  };
 
-  return {
-    formatMarkdown
-  };
+    const result = marked(content, {
+      breaks: options.breaks ?? false,
+      gfm: options.gfm ?? true
+    });
+
+    if (typeof result === 'string') {
+      return result;
+    } else {
+      console.warn('Markdown parsing returned a Promise, using fallback formatting');
+      throw new Error('Async parsing not supported');
+    }
+  } catch (error) {
+    console.error('Error parsing markdown:', error);
+
+    let formatted = content.replace(/\n/g, '<br>');
+    formatted = formatted.replace(/(<br>\s*){2,}/g, '</p><p>');
+    formatted = `<p>${formatted}</p>`;
+    formatted = formatted.replace(/<p><\/p>/g, '');
+    formatted = formatted.replace(/<p><br><\/p>/g, '');
+
+    return formatted;
+  }
 };

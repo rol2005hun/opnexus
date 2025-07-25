@@ -57,42 +57,30 @@ const getCharacterAvatar = (name: string): string => {
   return femaleNames.includes(firstName) ? '👩‍💼' : '👨‍💼';
 };
 
-const convertEvidenceToChats = (evidenceConversations: EvidenceConversation[]): Chat[] => {
-  return evidenceConversations.map(conv => {
-    const lastMessage = conv.messages[conv.messages.length - 1];
+const enrichChatData = (chat: Chat): Chat => {
+  const lastMessage = chat.messages[chat.messages.length - 1];
 
-    return {
-      id: conv.id,
-      name: conv.title || conv.groupName || conv.participants.join(', '),
-      avatar: getCharacterAvatar(conv.participants[0] || ''),
-      participants: conv.participants,
-      type: conv.participants.length > 2 ? 'group' : 'private' as 'private' | 'group',
-      status: 'offline' as 'online' | 'offline' | 'away' | 'busy',
-      lastMessage: lastMessage?.content || '',
-      lastMessageTime: new Date(lastMessage?.timestamp || Date.now()),
-      unreadCount: 0,
-      messages: conv.messages.map(msg => ({
-        id: msg.id,
-        sender: msg.sender,
-        content: msg.content,
-        timestamp: new Date(msg.timestamp),
-        sent: msg.sender === playerName.value,
-        isPlayerMessage: msg.sender === playerName.value,
-        attachments: (msg.attachments || []).map(attachment => attachment.fileId || attachment.name || '')
-      })),
-      isOwnChat: conv.participants.includes(playerName.value),
-      canSendMessage: false,
-      canView: true,
-      isEvidence: conv.isEvidence,
-      platform: conv.platform
-    };
-  });
+  return {
+    ...chat,
+    name: chat.name || chat.title || chat.groupName || chat.participants.join(', '),
+    avatar: chat.avatar || getCharacterAvatar(chat.participants[0] || ''),
+    type: chat.type || (chat.participants.length > 2 ? 'group' : 'private'),
+    status: chat.status || 'offline',
+    lastMessage: chat.lastMessage || lastMessage?.content || '',
+    lastMessageTime: chat.lastMessageTime || new Date(lastMessage?.timestamp || Date.now()),
+    unreadCount: chat.unreadCount || 0,
+    isOwnChat: chat.isOwnChat !== undefined ? chat.isOwnChat : chat.participants.includes(playerName.value),
+    canSendMessage: chat.canSendMessage !== undefined ? chat.canSendMessage : false,
+    canView: chat.canView !== undefined ? chat.canView : true,
+    isEvidence: chat.isEvidence,
+    platform: chat.platform
+  };
 };
 
 const allChats = computed((): Chat[] => {
   if (!currentMissionContent.value) return [];
 
-  const missionChats = convertEvidenceToChats(currentMissionContent.value.chatMessages);
+  const missionChats = currentMissionContent.value.chatMessages.map(enrichChatData);
   return [...missionChats, ...customChats.value];
 });
 
@@ -139,8 +127,8 @@ const filteredChats = computed(() => {
   }
 
   return chats.sort((a, b) => {
-    const timeA = new Date(a.lastMessageTime).getTime();
-    const timeB = new Date(b.lastMessageTime).getTime();
+    const timeA = new Date(a.lastMessageTime || 0).getTime();
+    const timeB = new Date(b.lastMessageTime || 0).getTime();
     return timeB - timeA;
   });
 });
@@ -154,7 +142,7 @@ const selectChat = (chatId: string) => {
   activeChat.value = chatId;
   const chat = allChats.value.find(c => c.id === chatId);
 
-  if (chat && chat.unreadCount > 0 && gameStore.currentMission) {
+  if (chat && (chat.unreadCount || 0) > 0 && gameStore.currentMission) {
     chat.unreadCount = 0;
     gameStore.markMessageRead(gameStore.currentMission, chatId);
 

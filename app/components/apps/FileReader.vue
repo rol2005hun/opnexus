@@ -2,11 +2,17 @@
     <div class="document-reader">
         <div class="document-reader-header">
             <div class="document-info" v-if="currentFile">
-                <h2>{{ currentFile.name }}</h2>
+                <div class="header-main">
+                    <h2>{{ currentFile.name }}</h2>
+                    <button v-if="currentFile" class="mark-evidence-btn" :class="{ 'marked': isMarkedAsEvidence(currentFile.id) }"
+                        @click="toggleEvidence(currentFile.id)">
+                        {{ isMarkedAsEvidence(currentFile.id) ? '🔍 Evidence' : '🔍 Mark as Evidence' }}
+                    </button>
+                </div>
                 <div class="document-meta">
                     <span class="file-type">{{ getFileTypeLabel(currentFile.type) }}</span>
                     <span class="file-size">{{ currentFile.size }}</span>
-                    <span class="last-modified">Modified: {{ useDate().formatDate(currentFile.lastModified) }}</span>
+                    <span class="last-modified">Modified: {{ formatDate(currentFile.lastModified) }}</span>
                     <span class="author">Author: {{ currentFile.author }}</span>
                 </div>
             </div>
@@ -17,14 +23,14 @@
         </div>
 
         <div class="document-content" v-if="currentFile">
-            <div class="content-wrapper" v-html="useMarkdown().formatMarkdown(currentFile.content)"></div>
+            <div class="content-wrapper" v-html="formatMarkdown(currentFile.content)"></div>
         </div>
 
         <div class="no-content" v-else>
             <div class="empty-state">
                 <div class="empty-icon">📄</div>
                 <h3>No Document Open</h3>
-                <p>Open a document from Email attachments, Chat attachments, or File Explorer to view it here.</p>
+                <p>Open a document from Email attachments, or Chat attachments to view it here.</p>
             </div>
         </div>
     </div>
@@ -54,6 +60,16 @@ const getFileTypeLabel = (type: string): string => {
         'archive': 'Archive'
     };
     return typeLabels[type] || 'File';
+};
+
+const isMarkedAsEvidence = (fileId: string) => {
+    if (!gameStore.currentMissionData || !gameStore.currentProgress) return false;
+    return gameStore.currentProgress.markedEvidence.includes(fileId);
+};
+
+const toggleEvidence = (fileId: string) => {
+    if (!gameStore.currentMissionData) return;
+    gameStore.toggleEvidence(gameStore.currentMissionData.id, fileId);
 };
 
 const handleOpenDocument = (event: CustomEvent) => {

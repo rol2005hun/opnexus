@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!gameStore.isInLaptop" class="floating-buttons">
+    <div v-if="!useGameStore().isInLaptop" class="floating-buttons">
         <div class="contact-widgets">
             <a href="https://discord.gg/FqdMuyhdTC" class="contact-widget discord" title="Join Discord">
                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -23,10 +23,6 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-const gameStore = useGameStore();
-</script>
 
 <style lang="scss" scoped>
 @use '@/assets/scss/components/FloatingButtons';

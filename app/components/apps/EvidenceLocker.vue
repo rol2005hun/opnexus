@@ -84,7 +84,7 @@
             <div class="timeline-content-item">
               <div class="timeline-header">
                 <h4>{{ event.title }}</h4>
-                <span class="timeline-time">{{ useDate().formatDate(event.timestamp) }}</span>
+                <span class="timeline-time">{{ formatDate(event.timestamp) }}</span>
               </div>
               <p class="timeline-description">{{ event.description }}</p>
               <div class="timeline-meta">
@@ -150,10 +150,6 @@
 </template>
 
 <script setup lang="ts">
-import { useScoring } from '@/composables/api/useScoring';
-import { useMissionCompletion } from '@/composables/useMissionCompletion';
-import formatTime from '@/utils/formatTime';
-
 const gameStore = useGameStore();
 const authStore = useAuthStore();
 const { updateScore } = useScoring();

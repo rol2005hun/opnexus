@@ -29,14 +29,14 @@
       <div class="emails-container">
         <div v-for="email in currentEmails" :key="email.id" class="email-item" :class="{
           selected: selectedEmail === email.id,
-          unread: !email.read,
-          important: email.important
+          unread: !isEmailRead(email.id),
+          important: isEmailImportant(email.id)
         }" @click="selectEmail(email.id)">
           <div class="email-sender">{{ displaySender(email) }}</div>
           <div class="email-subject">{{ email.subject }}</div>
-          <div class="email-preview">{{ email.preview }}</div>
+          <div class="email-preview">{{ getEmailPreview(email) }}</div>
           <div class="email-time">{{ formatTime(email.timestamp) }}</div>
-          <div v-if="email.hasAttachment" class="attachment-indicator">📎</div>
+          <div v-if="hasAttachment(email)" class="attachment-indicator">📎</div>
           <div class="email-item-actions">
             <button v-if="activeFolder !== 'trash'" class="action-btn trash" @click.stop="moveToTrash(email.id)"
               title="Move to Trash">🗑️</button>
@@ -45,7 +45,7 @@
             <button v-if="activeFolder === 'trash'" class="action-btn delete" @click.stop="permanentDelete(email.id)"
               title="Delete Forever">❌</button>
             <button class="action-btn important" @click.stop="toggleImportant(email.id)"
-              :class="{ active: email.important }" title="Toggle Important">⭐</button>
+              :class="{ active: isEmailImportant(email.id) }" title="Toggle Important">⭐</button>
           </div>
         </div>
 
@@ -59,31 +59,30 @@
       <div v-if="selectedEmailData" class="email-view">
         <div class="email-headers">
           <div class="header-main">
-            <h2>{{ selectedEmailData.subject }}</h2>
-            <button class="mark-evidence-btn" :class="{ 'marked': isMarkedAsEvidence(selectedEmailData.id) }"
+            <h2>{{ selectedEmailData?.subject }}</h2>
+            <button v-if="selectedEmailData" class="mark-evidence-btn"
+              :class="{ 'marked': isMarkedAsEvidence(selectedEmailData.id) }"
               @click="toggleEvidence(selectedEmailData.id)">
               {{ isMarkedAsEvidence(selectedEmailData.id) ? '🔍 Evidence' : '🔍 Mark as Evidence' }}
             </button>
           </div>
-          <div class="email-meta">
-            <div><strong>From:</strong> {{ displayEmailAddress(selectedEmailData.sender) }}</div>
+          <div v-if="selectedEmailData" class="email-meta">
+            <div><strong>From:</strong> {{ displayEmailAddress(selectedEmailData.from) }}</div>
             <div><strong>To:</strong> {{ displayRecipients(selectedEmailData) }}</div>
-            <div><strong>Date:</strong> {{ useDate().formatDate(selectedEmailData.timestamp) }}</div>
+            <div><strong>Date:</strong> {{ formatDate(selectedEmailData.timestamp) }}</div>
           </div>
         </div>
 
-        <div class="email-body" v-html="selectedEmailData.content"></div>
+        <div v-if="selectedEmailData" class="email-body" v-html="getEmailContent(selectedEmailData)"></div>
 
-        <div v-if="selectedEmailData.attachments?.length" class="email-attachments">
+        <div v-if="selectedEmailData?.attachments?.length" class="email-attachments">
           <h4>Attachments:</h4>
-          <div v-for="attachment in selectedEmailData.attachments" :key="attachment.name" 
-               class="attachment" 
-               @click="openAttachment(attachment)"
-               :class="{ 'clickable': isDocumentAttachment(attachment) }">
+          <div v-for="file in useAttachment().getAttachments(selectedEmailData.attachments)" :key="file.id"
+            class="attachment" @click="openFileAttachment(file)" :class="{ 'clickable': true }">
             <span class="attachment-icon">📄</span>
-            <span class="attachment-name">{{ attachment.name }}</span>
-            <span class="attachment-size">{{ attachment.size }}</span>
-            <span v-if="isDocumentAttachment(attachment)" class="open-hint">Click to open</span>
+            <span class="attachment-name">{{ file.name }}</span>
+            <span class="attachment-size">{{ file.size }}</span>
+            <span class="open-hint">Click to open</span>
           </div>
         </div>
       </div>
@@ -165,7 +164,7 @@ const currentUsername = computed(() => {
   return authStore.currentUser?.username || 'agent';
 });
 
-const getMissionEmails = (): EmailMessage[] => {
+const getMissionEmails = (): Email[] => {
   return currentMissionContent.value?.emails || [];
 }
 
@@ -177,126 +176,89 @@ const processEmailAddress = (address: string): string => {
   return address.replace(/{username}/g, currentUsername.value);
 };
 
-const processEmails = (rawEmails: EmailMessage[]): ProcessedEmail[] => {
-  return rawEmails.map(email => {
-    const processedAttachments: EmailAttachment[] = (email.attachments || []).map(fileId => {
-      const file = currentMissionContent.value?.files?.find(f => f.id === fileId);
-      if (file) {
-        return {
-          name: file.name,
-          size: file.size || 'Unknown size',
-          type: file.type || 'document',
-          fileId: file.id
-        };
-      }
-      return {
-        name: `Document ${fileId}`,
-        size: 'Unknown size',
-        type: 'document',
-        fileId: fileId
-      };
-    });
-
-    const processedFrom = processEmailAddress(email.from);
-    const processedTo = email.to.map(addr => processEmailAddress(addr));
-    const processedSubject = processEmailContent(email.subject);
-    const processedBody = processEmailContent(email.body);
-
-    const allRecipients = processedTo.length > 0 ? processedTo : [playerEmail.value];
-    const primaryRecipient = allRecipients[0] || playerEmail.value;
-
-    let folder = 'mission';
-
-    const playerEmailValue = playerEmail.value;
-
-    if (processedTo.includes(playerEmailValue) ||
-      processedTo.some(recipient => recipient.includes(currentUsername.value))) {
-      folder = 'inbox';
-    }
-
-    if (processedFrom === playerEmailValue ||
-      processedFrom.includes(`${currentUsername.value}@`)) {
-      folder = 'sent';
-    }
-
-    return {
-      id: email.id,
-      sender: processedFrom,
-      recipient: primaryRecipient,
-      subject: processedSubject,
-      preview: processedBody.length > 100 ? processedBody.substring(0, 100) + '...' : processedBody,
-      content: formatEmailContent(processedBody),
-      timestamp: new Date(email.timestamp),
-      read: false,
-      important: false,
-      hasAttachment: (email.attachments?.length || 0) > 0,
-      attachments: processedAttachments,
-      folder: folder
-    };
-  });
-};
-
-const emails = ref<ProcessedEmail[]>([]);
+const emails = ref<Email[]>([]);
+const emailUIState = ref<Record<string, { read: boolean; important: boolean; folder: string }>>({});
 
 const initializeEmails = () => {
   const missionEmails = getMissionEmails();
-  emails.value = processEmails(missionEmails);
+  emails.value = missionEmails.map(email => ({
+    ...email,
+    from: processEmailAddress(email.from),
+    to: email.to.map(addr => processEmailAddress(addr)),
+    subject: processEmailContent(email.subject),
+    body: processEmailContent(email.body)
+  }));
+
+  emails.value.forEach(email => {
+    const playerEmailValue = playerEmail.value;
+    let folder = 'mission';
+
+    if (email.to.includes(playerEmailValue) ||
+      email.to.some(recipient => recipient.includes(currentUsername.value))) {
+      folder = 'inbox';
+    }
+
+    if (email.from === playerEmailValue ||
+      email.from.includes(`${currentUsername.value}@`)) {
+      folder = 'sent';
+    }
+
+    emailUIState.value[email.id] = {
+      read: false,
+      important: false,
+      folder: folder
+    };
+  });
+
   updateFolderCounts();
 };
 
 const updateFolderCounts = () => {
   folders.forEach(folder => {
     if (folder.id === 'important') {
-      folder.unread = emails.value.filter(email => email.important && !email.read && email.folder !== 'trash').length;
+      folder.unread = emails.value.filter(email => {
+        const uiState = emailUIState.value[email.id];
+        return uiState && uiState.important && !uiState.read && uiState.folder !== 'trash';
+      }).length;
     } else if (folder.id === 'allmails') {
-      folder.unread = emails.value.filter(email => !email.read).length;
+      folder.unread = emails.value.filter(email => {
+        const uiState = emailUIState.value[email.id];
+        return uiState && !uiState.read;
+      }).length;
     } else if (folder.id === 'sent') {
       folder.unread = emails.value.filter(email => {
-        if (email.read || email.folder === 'trash') return false;
-        const missionEmail = getMissionEmails().find(e => e.id === email.id);
-        if (missionEmail) {
-          const processedFrom = processEmailAddress(missionEmail.from);
-          return processedFrom === playerEmail.value ||
-            processedFrom.includes(`${currentUsername.value}@`) ||
-            processedFrom.includes(currentUsername.value);
-        }
-        return false;
+        const uiState = emailUIState.value[email.id];
+        if (!uiState || uiState.read || uiState.folder === 'trash') return false;
+        return email.from === playerEmail.value ||
+          email.from.includes(`${currentUsername.value}@`) ||
+          email.from.includes(currentUsername.value);
       }).length;
     } else if (folder.id === 'mission') {
       folder.unread = emails.value.filter(email => {
-        if (email.read || email.folder === 'trash') return false;
+        const uiState = emailUIState.value[email.id];
+        if (!uiState || uiState.read || uiState.folder === 'trash') return false;
 
-        const missionEmail = getMissionEmails().find(e => e.id === email.id);
-        if (missionEmail) {
-          const processedFrom = processEmailAddress(missionEmail.from);
-          const processedTo = missionEmail.to.map(addr => processEmailAddress(addr));
-          const playerEmailValue = playerEmail.value;
+        const playerEmailValue = playerEmail.value;
+        const isFromPlayer = email.from === playerEmailValue ||
+          email.from.includes(`${currentUsername.value}@`);
+        const isToPlayer = email.to.includes(playerEmailValue) ||
+          email.to.some(recipient => recipient.includes(currentUsername.value));
 
-          const isFromPlayer = processedFrom === playerEmailValue ||
-            processedFrom.includes(`${currentUsername.value}@`);
-          const isToPlayer = processedTo.includes(playerEmailValue) ||
-            processedTo.some(recipient => recipient.includes(currentUsername.value));
-
-          return !isFromPlayer && !isToPlayer;
-        }
-        return false;
+        return !isFromPlayer && !isToPlayer;
       }).length;
     } else if (folder.id === 'inbox') {
       folder.unread = emails.value.filter(email => {
-        if (email.read || email.folder === 'trash') return false;
+        const uiState = emailUIState.value[email.id];
+        if (!uiState || uiState.read || uiState.folder === 'trash') return false;
 
-        const missionEmail = getMissionEmails().find(e => e.id === email.id);
-        if (missionEmail) {
-          const processedTo = missionEmail.to.map(addr => processEmailAddress(addr));
-          return processedTo.includes(playerEmail.value) ||
-            processedTo.some(recipient => recipient.includes(currentUsername.value));
-        }
-        return false;
+        return email.to.includes(playerEmail.value) ||
+          email.to.some(recipient => recipient.includes(currentUsername.value));
       }).length;
     } else {
-      folder.unread = emails.value.filter(email =>
-        email.folder === folder.id && !email.read
-      ).length;
+      folder.unread = emails.value.filter(email => {
+        const uiState = emailUIState.value[email.id];
+        return uiState && uiState.folder === folder.id && !uiState.read;
+      }).length;
     }
   });
 };
@@ -306,63 +268,58 @@ const getCurrentFolder = () => {
 };
 
 const getUnreadCount = () => {
-  return currentEmails.value.filter(email => !email.read).length;
+  return currentEmails.value.filter(email => {
+    const uiState = emailUIState.value[email.id];
+    return uiState && !uiState.read;
+  }).length;
 };
 
 const currentEmails = computed(() => {
-  let filteredEmails: ProcessedEmail[] = [];
+  let filteredEmails: Email[] = [];
 
   if (activeFolder.value === 'important') {
-    filteredEmails = emails.value.filter(email => email.important && email.folder !== 'trash');
+    filteredEmails = emails.value.filter(email => {
+      const uiState = emailUIState.value[email.id];
+      return uiState && uiState.important && uiState.folder !== 'trash';
+    });
   } else if (activeFolder.value === 'allmails') {
     filteredEmails = emails.value;
   } else if (activeFolder.value === 'sent') {
     filteredEmails = emails.value.filter(email => {
-      if (email.folder === 'trash') return false;
-      if (email.folder === 'sent') return true;
-      
-      const missionEmail = getMissionEmails().find(e => e.id === email.id);
-      if (missionEmail) {
-        const processedFrom = processEmailAddress(missionEmail.from);
-        return processedFrom === playerEmail.value ||
-          processedFrom.includes(`${currentUsername.value}@`) ||
-          processedFrom.includes(currentUsername.value);
-      }
-      return false;
+      const uiState = emailUIState.value[email.id];
+      if (!uiState || uiState.folder === 'trash') return false;
+      if (uiState.folder === 'sent') return true;
+
+      return email.from === playerEmail.value ||
+        email.from.includes(`${currentUsername.value}@`) ||
+        email.from.includes(currentUsername.value);
     });
   } else if (activeFolder.value === 'mission') {
     filteredEmails = emails.value.filter(email => {
-      if (email.folder === 'trash') return false;
+      const uiState = emailUIState.value[email.id];
+      if (!uiState || uiState.folder === 'trash') return false;
 
-      const missionEmail = getMissionEmails().find(e => e.id === email.id);
-      if (missionEmail) {
-        const processedFrom = processEmailAddress(missionEmail.from);
-        const processedTo = missionEmail.to.map(addr => processEmailAddress(addr));
-        const playerEmailValue = playerEmail.value;
+      const playerEmailValue = playerEmail.value;
+      const isFromPlayer = email.from === playerEmailValue ||
+        email.from.includes(`${currentUsername.value}@`);
+      const isToPlayer = email.to.includes(playerEmailValue) ||
+        email.to.some(recipient => recipient.includes(currentUsername.value));
 
-        const isFromPlayer = processedFrom === playerEmailValue ||
-          processedFrom.includes(`${currentUsername.value}@`);
-        const isToPlayer = processedTo.includes(playerEmailValue) ||
-          processedTo.some(recipient => recipient.includes(currentUsername.value));
-
-        return !isFromPlayer && !isToPlayer;
-      }
-      return false;
+      return !isFromPlayer && !isToPlayer;
     });
   } else if (activeFolder.value === 'inbox') {
     filteredEmails = emails.value.filter(email => {
-      if (email.folder === 'trash') return false;
+      const uiState = emailUIState.value[email.id];
+      if (!uiState || uiState.folder === 'trash') return false;
 
-      const missionEmail = getMissionEmails().find(e => e.id === email.id);
-      if (missionEmail) {
-        const processedTo = missionEmail.to.map(addr => processEmailAddress(addr));
-        return processedTo.includes(playerEmail.value) ||
-          processedTo.some(recipient => recipient.includes(currentUsername.value));
-      }
-      return false;
+      return email.to.includes(playerEmail.value) ||
+        email.to.some(recipient => recipient.includes(currentUsername.value));
     });
   } else {
-    filteredEmails = emails.value.filter(email => email.folder === activeFolder.value);
+    filteredEmails = emails.value.filter(email => {
+      const uiState = emailUIState.value[email.id];
+      return uiState && uiState.folder === activeFolder.value;
+    });
   }
 
   return filteredEmails.sort((a, b) => {
@@ -380,8 +337,10 @@ const selectedEmailData = computed(() => {
 const selectEmail = (emailId: string) => {
   selectedEmail.value = emailId;
   const email = emails.value.find(e => e.id === emailId);
-  if (email && !email.read) {
-    email.read = true;
+  const uiState = emailUIState.value[emailId];
+
+  if (email && uiState && !uiState.read) {
+    uiState.read = true;
     updateFolderCounts();
 
     if (gameStore.currentMissionData) {
@@ -395,9 +354,9 @@ const refreshEmails = () => {
 };
 
 const moveToTrash = (emailId: string) => {
-  const email = emails.value.find(e => e.id === emailId);
-  if (email) {
-    email.folder = 'trash';
+  const uiState = emailUIState.value[emailId];
+  if (uiState) {
+    uiState.folder = 'trash';
     updateFolderCounts();
     if (selectedEmail.value === emailId) {
       selectedEmail.value = null;
@@ -406,17 +365,17 @@ const moveToTrash = (emailId: string) => {
 };
 
 const toggleImportant = (emailId: string) => {
-  const email = emails.value.find(e => e.id === emailId);
-  if (email) {
-    email.important = !email.important;
+  const uiState = emailUIState.value[emailId];
+  if (uiState) {
+    uiState.important = !uiState.important;
     updateFolderCounts();
   }
 };
 
 const restoreFromTrash = (emailId: string) => {
-  const email = emails.value.find(e => e.id === emailId);
-  if (email) {
-    email.folder = 'inbox';
+  const uiState = emailUIState.value[emailId];
+  if (uiState) {
+    uiState.folder = 'inbox';
     updateFolderCounts();
   }
 };
@@ -425,6 +384,7 @@ const permanentDelete = (emailId: string) => {
   const index = emails.value.findIndex(e => e.id === emailId);
   if (index !== -1) {
     emails.value.splice(index, 1);
+    delete emailUIState.value[emailId];
     updateFolderCounts();
     if (selectedEmail.value === emailId) {
       selectedEmail.value = null;
@@ -458,24 +418,58 @@ const closeCompose = () => {
 };
 
 const sendEmail = () => {
-  const newEmail: ProcessedEmail = {
+  const newEmail: Email = {
     id: `email_${Date.now()}`,
-    sender: playerEmail.value,
-    recipient: composeForm.value.to,
+    from: playerEmail.value,
+    to: [composeForm.value.to],
+    cc: composeForm.value.cc ? [composeForm.value.cc] : undefined,
     subject: composeForm.value.subject,
-    preview: composeForm.value.body.length > 100 ? composeForm.value.body.substring(0, 100) + '...' : composeForm.value.body,
-    content: formatEmailContent(composeForm.value.body),
+    body: composeForm.value.body,
     timestamp: new Date(),
-    read: true,
-    important: false,
-    hasAttachment: false,
+    encrypted: false,
+    importance: 'normal',
+    isEvidence: false,
     attachments: [],
-    folder: 'sent'
+    clueIds: [],
+    folder: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date()
   };
 
   emails.value.push(newEmail);
+
+  emailUIState.value[newEmail.id] = {
+    read: true,
+    important: false,
+    folder: 'sent'
+  };
+
   updateFolderCounts();
   showCompose.value = false;
+};
+
+const getEmailUIState = (emailId: string) => {
+  return emailUIState.value[emailId] || { read: false, important: false, folder: 'inbox' };
+};
+
+const isEmailRead = (emailId: string) => {
+  return getEmailUIState(emailId).read;
+};
+
+const isEmailImportant = (emailId: string) => {
+  return getEmailUIState(emailId).important;
+};
+
+const hasAttachment = (email: Email) => {
+  return (email.attachments?.length || 0) > 0;
+};
+
+const getEmailPreview = (email: Email) => {
+  return email.body.length > 100 ? email.body.substring(0, 100) + '...' : email.body;
+};
+
+const getEmailContent = (email: Email) => {
+  return formatEmailContent(email.body);
 };
 
 const formatEmailContent = (content: string): string => {
@@ -491,57 +485,27 @@ function displayEmailAddress(address: string): string {
   return processedAddress;
 }
 
-function displayRecipients(email: ProcessedEmail): string {
-  const missionEmail = getMissionEmails().find(e => e.id === email.id);
-  if (missionEmail) {
-    const recipients: string[] = [];
+function displayRecipients(email: Email): string {
+  const recipients: string[] = [];
 
-    if (missionEmail.to && missionEmail.to.length > 0) {
-      recipients.push(...missionEmail.to.map(recipient => displayEmailAddress(recipient)));
-    }
-
-    if (missionEmail.cc && missionEmail.cc.length > 0) {
-      recipients.push(...missionEmail.cc.map(recipient => `${displayEmailAddress(recipient)} (CC)`));
-    }
-
-    return recipients.length > 0 ? recipients.join(', ') : displayEmailAddress(email.recipient);
+  if (email.to && email.to.length > 0) {
+    recipients.push(...email.to.map(recipient => displayEmailAddress(recipient)));
   }
 
-  return displayEmailAddress(email.recipient);
+  if (email.cc && email.cc.length > 0) {
+    recipients.push(...email.cc.map(recipient => `${displayEmailAddress(recipient)} (CC)`));
+  }
+
+  return recipients.length > 0 ? recipients.join(', ') : displayEmailAddress(email.to[0] || '');
 }
 
-function displaySender(email: ProcessedEmail): string {
-  return displayEmailAddress(email.sender);
+function displaySender(email: Email): string {
+  return displayEmailAddress(email.from);
 }
 
-const isDocumentAttachment = (attachment: EmailAttachment): boolean => {
-  const documentExtensions = ['.pdf', '.doc', '.docx', '.txt', '.rtf'];
-  return documentExtensions.some(ext => 
-    attachment.name.toLowerCase().endsWith(ext)
-  );
-};
-
-const openAttachment = async (attachment: EmailAttachment) => {
-  if (!isDocumentAttachment(attachment)) {
-    return;
-  }
-  
-  if (attachment.fileId) {
-    const laptopStore = useLaptopStore();
-    laptopStore.openDocumentInReader(attachment.fileId);
-  } else {
-    if (currentMissionContent.value?.files) {
-      const matchedFile = currentMissionContent.value.files.find(file => 
-        file.name === attachment.name || 
-        file.name.toLowerCase() === attachment.name.toLowerCase()
-      );
-      
-      if (matchedFile) {
-        const laptopStore = useLaptopStore();
-        laptopStore.openDocumentInReader(matchedFile.id);
-      }
-    }
-  }
+const openFileAttachment = async (file: FileDocument) => {
+  const laptopStore = useLaptopStore();
+  laptopStore.openDocumentInReader(file.id);
 };
 
 onMounted(async () => {

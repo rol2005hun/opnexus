@@ -1,30 +1,34 @@
 import type { BaseEntity } from '..';
 
 export interface Chat extends BaseEntity {
-    name: string;
-    avatar: string;
+    name?: string;
+    avatar?: string;
     participants: string[];
-    type: 'private' | 'group';
-    status: 'online' | 'offline' | 'away' | 'busy';
-    lastMessage: string;
-    lastMessageTime: Date;
-    unreadCount: number;
+    type?: 'private' | 'group';
+    status?: 'online' | 'offline' | 'away' | 'busy';
+    lastMessage?: string;
+    lastMessageTime?: Date;
+    unreadCount?: number;
     messages: ChatMessage[];
-    isOwnChat: boolean;
-    canSendMessage: boolean;
-    canView: boolean;
+    isOwnChat?: boolean;
+    canSendMessage?: boolean;
+    canView?: boolean;
     isEvidence?: boolean;
     platform?: string;
     deleted?: boolean;
+    encrypted?: boolean;
+    groupName?: string;
+    title?: string;
 }
 
 export interface ChatMessage extends BaseEntity {
     sender: string;
     content: string;
     timestamp: Date;
-    sent: boolean;
+    sent?: boolean;
     isPlayerMessage?: boolean;
     attachments?: string[];
+    isClue?: boolean;
 }
 
 export interface ChatFilter {

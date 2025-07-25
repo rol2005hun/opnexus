@@ -1,3 +1,5 @@
+import { Mission } from "../../shared/types";
+
 export const missionMetadata: Mission = {
     id: 'the-insider',
     title: 'The Insider',
@@ -6,10 +8,8 @@ export const missionMetadata: Mission = {
     thumbnail: '/missions/insider.jpg',
     difficulty: 'Special Agent',
     estimatedTime: '120-180 mins',
-    completed: false,
     available: false,
     securityClearance: 5,
     icon: '🎭',
-    price: 1,
-    isPaid: true
+    price: 1
 };

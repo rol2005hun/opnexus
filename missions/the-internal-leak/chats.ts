@@ -1,6 +1,6 @@
-import type { EvidenceConversation } from '../../shared/types';
+import type { Chat } from '../../shared/types';
 
-export const chats: EvidenceConversation[] = [
+export const chats: Chat[] = [
     {
         id: 'company_wide_chat',
         title: 'General Discussion',
@@ -210,14 +210,7 @@ export const chats: EvidenceConversation[] = [
                 sender: 'Elena Rodriguez',
                 content: 'The new security scanner flagged some files as suspicious. False positive?',
                 timestamp: new Date('2025-07-08 09:30:00'),
-                isClue: false,
-                attachments: [
-                    {
-                        name: 'security_scan_report.log',
-                        type: 'document',
-                        fileId: 'file_006'
-                    }
-                ]
+                isClue: false
             },
             {
                 id: 'it_007',
@@ -231,14 +224,7 @@ export const chats: EvidenceConversation[] = [
                 sender: 'Anna Lee',
                 content: 'System backup completed successfully last night.',
                 timestamp: new Date('2025-07-08 10:00:00'),
-                isClue: false,
-                attachments: [
-                    {
-                        name: 'backup_summary_20250708.txt',
-                        type: 'document',
-                        fileId: 'file_007'
-                    }
-                ]
+                isClue: false
             },
             {
                 id: 'it_009',
@@ -338,14 +324,7 @@ export const chats: EvidenceConversation[] = [
                 sender: 'Jessica Clark',
                 content: 'I\'ll have them ready by Friday. Working on the color schemes now.',
                 timestamp: new Date('2025-07-04 11:08:00'),
-                isClue: false,
-                attachments: [
-                    {
-                        name: 'design_concepts_draft.psd',
-                        type: 'image',
-                        fileId: 'file_011'
-                    }
-                ]
+                isClue: false
             },
             {
                 id: 'marketing_004',
@@ -366,14 +345,7 @@ export const chats: EvidenceConversation[] = [
                 sender: 'Mark Thompson',
                 content: 'The budget for Q3 advertising looks tight. We might need to prioritize.',
                 timestamp: new Date('2025-07-06 09:15:00'),
-                isClue: false,
-                attachments: [
-                    {
-                        name: 'q3_marketing_budget.xlsx',
-                        type: 'spreadsheet',
-                        fileId: 'file_012'
-                    }
-                ]
+                isClue: false
             },
             {
                 id: 'marketing_007',
@@ -387,14 +359,7 @@ export const chats: EvidenceConversation[] = [
                 sender: 'Robert Davis',
                 content: 'The analytics from last quarter look promising.',
                 timestamp: new Date('2025-07-06 10:30:00'),
-                isClue: false,
-                attachments: [
-                    {
-                        name: 'q2_analytics_report.pdf',
-                        type: 'document',
-                        fileId: 'file_013'
-                    }
-                ]
+                isClue: false
             },
             {
                 id: 'marketing_009',
@@ -622,14 +587,7 @@ export const chats: EvidenceConversation[] = [
                 sender: 'Laura Smith',
                 content: 'Almost done with the documentation. Just need to review the technical specs.',
                 timestamp: new Date('2025-07-07 10:05:00'),
-                isClue: false,
-                attachments: [
-                    {
-                        name: 'project_alpha_specs_v2.docx',
-                        type: 'document',
-                        fileId: 'file_008'
-                    }
-                ]
+                isClue: false
             },
             {
                 id: 'alpha_003',
@@ -637,27 +595,14 @@ export const chats: EvidenceConversation[] = [
                 content: 'Testing is complete. Found a few minor bugs but nothing critical.',
                 timestamp: new Date('2025-07-07 10:08:00'),
                 isClue: false,
-                attachments: [
-                    {
-                        name: 'test_results_july2025.xlsx',
-                        type: 'spreadsheet',
-                        fileId: 'file_009'
-                    }
-                ]
+                attachments: ['file_007']
             },
             {
                 id: 'alpha_004',
                 sender: 'Nina Patel',
                 content: 'UI design is finalized. Client feedback was very positive.',
                 timestamp: new Date('2025-07-07 10:12:00'),
-                isClue: false,
-                attachments: [
-                    {
-                        name: 'ui_mockups_final.png',
-                        type: 'image',
-                        fileId: 'file_010'
-                    }
-                ]
+                isClue: false
             },
             {
                 id: 'alpha_005',
@@ -807,18 +752,7 @@ export const chats: EvidenceConversation[] = [
                 content: 'The files you wanted are ready. Sentinel-X complete package.',
                 timestamp: new Date('2025-07-10 03:52:00'),
                 isClue: true,
-                attachments: [
-                    {
-                        name: 'sentinel_x_core_algorithms.pdf',
-                        type: 'document',
-                        fileId: 'file_001'
-                    },
-                    {
-                        name: 'source_code_archive.zip',
-                        type: 'archive',
-                        fileId: 'file_005'
-                    }
-                ]
+                attachments: ['file_001', 'file_004']
             },
             {
                 id: 'chat_002',
@@ -826,13 +760,7 @@ export const chats: EvidenceConversation[] = [
                 content: 'Perfect timing. Payment transferred to your offshore account. $75K as agreed.',
                 timestamp: new Date('2025-07-10 04:15:00'),
                 isClue: true,
-                attachments: [
-                    {
-                        name: 'payment_confirmation.pdf',
-                        type: 'document',
-                        fileId: 'file_003'
-                    }
-                ]
+                attachments: ['file_002']
             },
             {
                 id: 'chat_003',

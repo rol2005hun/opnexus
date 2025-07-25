@@ -12,7 +12,7 @@
       <div class="investigation-brief">
         <h3>🎯 Mission Assignment</h3>
         <div class="mission-briefing" v-if="missionMetadata?.briefing"
-          v-html="useMarkdown().formatMarkdown(missionMetadata.briefing)"></div>
+          v-html="formatMarkdown(missionMetadata.briefing)"></div>
 
         <p v-else>
           Agent, you have been assigned to investigate a suspected data breach at <strong>{{
